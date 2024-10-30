@@ -6,5 +6,6 @@ npm install -D drizzle-kit
 
 npm install -D unocss @unocss/postcss
 
-
+npm install -D @unocss/preset-icons @iconify-json/[the-collection-you-want]
+npm install -D @iconify/json
 ```
