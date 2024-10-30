@@ -9,6 +9,6 @@ export default defineConfig({
         password: process.env["DB_PSWD"],
         database: process.env["DB_NAME"],
     },
-    schema: "./src/database/schema.ts",
+    schema: './src/database/schema.ts',
     out: './src/database/drizzle',
 });
