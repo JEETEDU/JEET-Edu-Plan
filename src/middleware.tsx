@@ -1,6 +1,6 @@
 import {NextRequest, NextResponse} from "next/server";
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
     const userAgent = req.headers.get('user-agent') || '';
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
     const url = req.nextUrl.clone();
@@ -10,21 +10,27 @@ export function middleware(req: NextRequest) {
         return NextResponse.next();
     }
 
-    const _url = req.url.split('/');
-    _url.pop();
-    const parentUrl = _url.join("/");
+    const res = NextResponse.next();
+    res.cookies.set("isMobile", isMobile);
 
-    if (isMobile) {
-        if (url.pathname.endsWith('/mobile')) {
-            return NextResponse.next();
-        }
-        return NextResponse.redirect(new URL('/mobile', parentUrl));
-    } else {
-        if (url.pathname.endsWith('/desktop')) {
-            return NextResponse.next();
-        }
-        return NextResponse.redirect(new URL('/desktop', parentUrl));
-    }
+    return res;
+
+    //
+    // const _url = req.url.split('/');
+    // _url.pop();
+    // const parentUrl = _url.join("/");
+    //
+    // if (isMobile) {
+    //     if (url.pathname.endsWith('/mobile')) {
+    //         return NextResponse.next();
+    //     }
+    //     return NextResponse.redirect(new URL('/mobile', parentUrl));
+    // } else {
+    //     if (url.pathname.endsWith('/desktop')) {
+    //         return NextResponse.next();
+    //     }
+    //     return NextResponse.redirect(new URL('/desktop', parentUrl));
+    // }
 }
 
 export const config = {
