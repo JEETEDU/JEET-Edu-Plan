@@ -1,6 +1,6 @@
 import Navigation from "@/app/components/mobile/Navigation";
 
-export default function Home() {
+export default function Mobile() {
     return (<>
         <Navigation/>
         <div>
