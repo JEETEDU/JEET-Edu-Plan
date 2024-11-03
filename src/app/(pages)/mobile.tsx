@@ -1,10 +1,8 @@
-import {Navigation1, Navigation2} from "@/app/components/mobile/Navigation";
 import Link from "next/link";
 
 export default function Mobile() {
     return (
         <>
-            <Navigation1/>
             {/* 부모 컨테이너에 Flexbox 적용 */}
             <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900 p-4">
                 <div className="w-full max-w-xs bg-white dark:bg-gray-800 rounded-lg p-6">
@@ -49,7 +47,6 @@ export default function Mobile() {
                     </form>
                 </div>
             </div>
-            <Navigation2/>
         </>
     );
 }

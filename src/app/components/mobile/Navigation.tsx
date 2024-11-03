@@ -1,11 +1,15 @@
+"use client";
+
 import Link from "next/link";
+import {usePathname} from "next/navigation";
+import {cn} from "@/app/components/functions"
 
 export function Navigation1() {
     return (
-        <div className="w-full fixed bg-gray-100 dark:bg-gray-900">
+        <div className="nav">
             {/* 상단 로고 */}
-            <header className="w-full p-4 flex items-center justify-start bg-gray-100 dark:bg-gray-800">
-                <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
+            <header className="nav-header">
+                <div className="nav-title">
                     JEET Education
                 </div>
             </header>
@@ -14,21 +18,30 @@ export function Navigation1() {
 }
 
 export function Navigation2() {
+    const path = usePathname();
     return (
-        <div className="w-full flex flex-col bg-gray-100 dark:bg-gray-900">
+        <div className="nav">
             {/* 네비게이션 링크 (하단 고정) */}
-            <nav className="fixed bottom-0 left-0 w-full bg-gray-100 dark:bg-gray-800 flex justify-around py-3 border-t border-gray-300 dark:border-gray-700">
-                <Link href="/home" className="nav-item flex flex-col items-center text-gray-700 dark:text-gray-300 hover:text-blue-500">
-                    <span>Home</span>
+            <nav className="nav-bar">
+                <Link href="/home" className="nav-item">
+                    <span className={cn("_nav-item", {"bg-white": path === '/home'})}>
+                        Home
+                    </span>
                 </Link>
-                <Link href="/" className="nav-item flex flex-col items-center text-gray-700 dark:text-gray-300 hover:text-blue-500">
-                    <span>Classroom</span>
+                <Link href="/" className="nav-item">
+                    <span className={cn("_nav-item", {"bg-white": path === '/home'})}>
+                        Classroom
+                    </span>
                 </Link>
-                <Link href="/" className="nav-item flex flex-col items-center text-gray-700 dark:text-gray-300 hover:text-blue-500">
-                    <span>Time table</span>
+                <Link href="/" className="nav-item">
+                    <span className={cn("_nav-item", {"bg-white": path === '/home'})}>
+                        Time Table
+                    </span>
                 </Link>
-                <Link href="/" className="nav-item flex flex-col items-center text-gray-700 dark:text-gray-300 hover:text-blue-500">
-                    <span>MyPage</span>
+                <Link href="/" className="nav-item">
+                    <span className={cn("_nav-item", {"bg-white": path === '/home'})}>
+                        My Page
+                    </span>
                 </Link>
             </nav>
         </div>

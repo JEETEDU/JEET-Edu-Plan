@@ -1,11 +1,9 @@
-import Navigation from "@/app/components/desktop/Navigation";
 import Link from "next/link";
 import React from "react";
 
 export default function Desktop() {
     return (
         <>
-            <Navigation />
             <div className="custom-container min-h-screen flex flex-col items-center justify-center py-10 bg-gray-100 dark:bg-gray-900">
                 <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-lg p-8">
                     <h2 className="text-2xl font-semibold text-center text-gray-700 dark:text-gray-200 mb-6">
