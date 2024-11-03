@@ -1,10 +1,8 @@
-import Navigation from "@/app/components/desktop/Navigation";
 import Link from "next/link";
 import React from "react";
 
 export default function Desktop() {
     return (<>
-        <Navigation/>
         <div className="custom-container min-h-screen flex flex-col items-center py-10">
             <div className={`custom-container`}>
                 <form
@@ -38,9 +36,8 @@ export default function Desktop() {
                     </div>
                     <div className='flex-row align-left'>
                         <Link
-                            type="submit"
                             className="custom-btn"
-                            href={}
+                            href={'/'}
                         >
                             Login
                         </Link>

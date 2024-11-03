@@ -6,6 +6,5 @@ export default async function Login() {
     const cookieStore= await cookies();
     const isMobile = cookieStore.get("isMobile");
 
-    // console.log(isMobile)
     return (isMobile.value === 'true' ? <Mobile/> : <Desktop/>)
 }
