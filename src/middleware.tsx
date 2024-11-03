@@ -12,6 +12,7 @@ export async function middleware(req: NextRequest) {
 
     const res = NextResponse.next();
     res.cookies.set("isMobile", isMobile);
+    // res.cookies.set("user", false);
 
     return res;
 

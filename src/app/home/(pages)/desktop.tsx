@@ -1,7 +1,16 @@
+"use client";
+
 import Link from "next/link";
 import React from "react";
+// import {useCookies} from "next-client-cookies";
 
 export default function Desktop() {
+    // const cookies = useCookies();
+    // if (cookies.get('user') === 'false') {
+    //     cookies.set('user', 'true');
+    // }
+    // console.log(`page: ${cookies.get('user')}`)
+
     return (<>
         <div className="custom-container min-h-screen flex flex-col items-center py-10">
             <div className={`custom-container`}>
