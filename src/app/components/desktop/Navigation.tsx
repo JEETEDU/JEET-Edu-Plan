@@ -1,6 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import {cn} from "@/app/components/functions";
+import {usePathname} from "next/navigation";
 
 export default function Navigation() {
+    const path = usePathname();
     return (
         <div className='fixed'>
             <nav className="min-w-screen bg-gray-100 dark:bg-gray-800 flex items-center justify-between px-6 py-4">
@@ -11,18 +16,26 @@ export default function Navigation() {
                     </div>
                 </div>
                 {/* 네비게이션 링크 */}
-                <div className="flex space-x-6">
+                <div className="flex w-1/3 justify-around">
                     <Link href={"/home"} className="nav-item">
-                        Home
+                        <span className={cn("_nav-item", {"bg-white": path === '/home'})}>
+                            Home
+                        </span>
                     </Link>
                     <Link href={"/"} className="nav-item">
-                        Classroom
+                        <span className={cn("_nav-item", {"bg-white": path === '/home'})}>
+                            Classroom
+                        </span>
                     </Link>
                     <Link href={"/"} className="nav-item">
-                        Time table
+                        <span className={cn("_nav-item", {"bg-white": path === '/home'})}>
+                            Time Table
+                        </span>
                     </Link>
                     <Link href={"/"} className="nav-item">
-                        MyPage
+                        <span className={cn("_nav-item", {"bg-white": path === '/home'})}>
+                            My Page
+                        </span>
                     </Link>
                 </div>
             </nav>

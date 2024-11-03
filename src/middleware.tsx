@@ -15,7 +15,6 @@ export async function middleware(req: NextRequest) {
 
     return res;
 
-    //
     // const _url = req.url.split('/');
     // _url.pop();
     // const parentUrl = _url.join("/");
@@ -31,6 +30,7 @@ export async function middleware(req: NextRequest) {
     //     }
     //     return NextResponse.redirect(new URL('/desktop', parentUrl));
     // }
+
 }
 
 export const config = {

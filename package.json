@@ -23,6 +23,7 @@
     "tailwind-merge": "^2.5.4"
   },
   "devDependencies": {
+    "@iconify-json/system-uicons": "^1.2.1",
     "@iconify/json": "^2.2.266",
     "@types/node": "^20.17.3",
     "@types/react": "^18.3.12",
