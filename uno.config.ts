@@ -11,15 +11,15 @@ export default defineConfig({
     // theme: {},
     shortcuts: {
         "nav":
-            cn("w-screen bg-gray-100 dark:bg-gray-900"),
+            cn("w-screen h-fit bg-gray-100 dark:bg-gray-900"),
         "nav-bar":
-            cn("fixed bottom-0 left-0 w-full bg-gray-100 py-2 dark:bg-gray-800 flex justify-around border-t border-gray-300 dark:border-gray-700"),
+            cn("h-fit bottom-0 left-0 w-full bg-gray-100 py-2 dark:bg-gray-800 flex justify-around border-t border-gray-300 dark:border-gray-700"),
         "nav-item":
-            cn("px-2 w-full min-w-fit content-center text-gray-700 dark:text-gray-300 hover:text-blue-500 grid place-items-center"),
+            cn("h-fit px-2 w-full min-w-fit content-center text-gray-700 dark:text-gray-300 hover:text-blue-500 grid place-items-center"),
         "_nav-item":
-            cn("w-full min-w-fit py-1 rounded flex justify-center"),
+            cn("h-fit w-full min-w-fit py-1 rounded flex justify-center"),
         "nav-header":
-            cn("w-full p-4 flex items-center justify-start bg-gray-100 dark:bg-gray-800"),
+            cn("h-fit w-full p-4 flex items-center justify-start bg-gray-100 dark:bg-gray-800"),
         "nav-title":
             cn("text-lg font-bold text-blue-600 dark:text-blue-400"),
         "component-input":

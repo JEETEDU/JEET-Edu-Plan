@@ -3,16 +3,46 @@
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {cn} from "@/app/components/functions"
+import React, {useState} from "react";
 
 export function Navigation1() {
+    const [isModalOpen, setModalOpen] = useState(false);
+    const toggleModal = () => setModalOpen((prev) => !prev);
     return (
         <div className="nav">
             {/* 상단 로고 */}
-            <header className="nav-header">
+            <header className="nav-header flex justify-between">
                 <div className="nav-title">
                     JEET Education
                 </div>
+                <div>
+                    <div onClick={toggleModal} className="i-system-uicons-bell"/>
+                    {/* If there exist unread notice, "i-system-uicons-bell-ringing"   */}
+                </div>
             </header>
+
+            {isModalOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 flex items-center justify-center z-10"
+                    onClick={toggleModal} // 모달 바깥 클릭 시 닫힘
+                >
+                    <div
+                        className="bg-white rounded-lg shadow-lg p-6 w-96"
+                        onClick={(e) => e.stopPropagation()} // 모달 내부 클릭 시 닫히지 않도록 방지
+                    >
+                        <h2 className="text-xl font-bold mb-4">알림</h2>
+                        <ul>
+                            <li>읽지 않은 알림이 없습니다.</li>
+                        </ul>
+                        <button
+                            onClick={toggleModal}
+                            className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
+                        >
+                            닫기
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
