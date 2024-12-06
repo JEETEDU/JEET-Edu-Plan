@@ -20,11 +20,16 @@ export default async function RootLayout(
     return (
         <CookiesProvider>
             <html lang="en">
-            <body>
-            {isMobile.value === 'true' ? <Navigation1/> : <Navigation/>}
-            {/*<Navigation/>*/}
-            {children}
-            {isMobile.value === 'true' ? <Navigation2/> : ""}
+            <body className="flex flex-col">
+            <div className="flex-none w-fit">
+                {isMobile.value === 'true' ? <Navigation1/> : <Navigation/>}
+            </div>
+            <main className="grow overflow-auto">
+                {children}
+            </main>
+            <div className="flex-none w-fit">
+                {isMobile.value === 'true' ? <Navigation2/> : null}
+            </div>
             </body>
             </html>
         </CookiesProvider>
