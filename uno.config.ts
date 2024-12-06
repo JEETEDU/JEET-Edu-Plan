@@ -11,7 +11,7 @@ export default defineConfig({
     // theme: {},
     shortcuts: {
         "nav":
-            cn("w-full fixed bg-gray-100 dark:bg-gray-900"),
+            cn("w-screen bg-gray-100 dark:bg-gray-900"),
         "nav-bar":
             cn("fixed bottom-0 left-0 w-full bg-gray-100 py-2 dark:bg-gray-800 flex justify-around border-t border-gray-300 dark:border-gray-700"),
         "nav-item":

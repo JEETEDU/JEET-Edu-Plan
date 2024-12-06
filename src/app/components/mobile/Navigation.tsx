@@ -28,18 +28,18 @@ export function Navigation2() {
                         Home
                     </span>
                 </Link>
-                <Link href="/" className="nav-item">
-                    <span className={cn("_nav-item", {"bg-white": path === '/home'})}>
+                <Link href="/classroom" className="nav-item">
+                    <span className={cn("_nav-item", {"bg-white": path === '/classroom'})}>
                         Classroom
                     </span>
                 </Link>
-                <Link href="/" className="nav-item">
-                    <span className={cn("_nav-item", {"bg-white": path === '/home'})}>
+                <Link href="/timeTable" className="nav-item">
+                    <span className={cn("_nav-item", {"bg-white": path === '/timeTable'})}>
                         Time Table
                     </span>
                 </Link>
-                <Link href="/" className="nav-item">
-                    <span className={cn("_nav-item", {"bg-white": path === '/home'})}>
+                <Link href="/mypage" className="nav-item">
+                    <span className={cn("_nav-item", {"bg-white": path === '/mypage'})}>
                         My Page
                     </span>
                 </Link>
