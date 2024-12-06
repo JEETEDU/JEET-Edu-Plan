@@ -1,7 +1,7 @@
 export default function Mobile() {
     return (<>
         <div>
-            Home
+            My Page
         </div>
     </>)
 }
