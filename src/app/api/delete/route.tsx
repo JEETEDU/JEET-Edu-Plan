@@ -1,5 +1,5 @@
 import {NextRequest, NextResponse} from "next/server";
-import {users} from "@/database/schema";
+import {usersTable} from "@/database/schema";
 import {db} from "@/database";
 import {eq} from "drizzle-orm/sql/expressions/conditions";
 
@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
 
         console.log("Received data:", id);
 
-        await db.delete(users).where(eq(users.id, id));
+        await db.delete(usersTable).where(eq(usersTable.id, id));
 
         return NextResponse.json({
             success: true,

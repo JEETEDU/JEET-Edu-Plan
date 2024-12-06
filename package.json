@@ -9,7 +9,8 @@
     "lint": "next lint",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push"
+    "db:push": "drizzle-kit push",
+    "db:setup": "npm run db:generate && npm run db:migrate && npm run db:push"
   },
   "dependencies": {
     "@iconify-json/heroicons": "^1.2.1",
@@ -19,8 +20,10 @@
     "mysql2": "^3.11.3",
     "next": "15.0.2",
     "next-client-cookies": "^2.0.0",
+    "next-swagger-doc": "^0.4.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
+    "swagger-ui-react": "^5.18.2",
     "tailwind-merge": "^2.5.4"
   },
   "devDependencies": {

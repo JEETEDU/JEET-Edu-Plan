@@ -1,18 +1,19 @@
 import {NextRequest, NextResponse} from "next/server";
-import {users} from "@/database/schema";
+import {usersTable} from "@/database/schema";
 import {db} from "@/database";
 
 export async function POST(req: NextRequest) {
     try {
-        const data = await req.json();
-        const { name, pw } = data;
+        const data = await req.formData();
+        const name = data.get("name");
+        const pw = data.get("pw");
 
-        console.log("Received data:", data);
-
-        await db.insert(users).values({
-            name: name,
-            password: pw,
-        });
+        await db.insert(usersTable).values(
+            {
+                name: name,
+                password: pw,
+            }
+        );
 
         return NextResponse.json({
             success: true,
