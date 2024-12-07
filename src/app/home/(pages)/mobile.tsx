@@ -6,11 +6,20 @@ import Link from "next/link";
 
 // 더 할 작업
 // 1. 공지사항은 종류에 따라 색으로 구분, 기한 표시 등등
-// 2. 공지사항/할 일 목록은 각각 페이지로 리다이렉트 되어야됨
 // 3. 디자인 좀 수정해야됨...(그림자 빼기 등)
 
 export default function Mobile() {
     const notifications = [
+        "이 알림은 테스트 메시지입니다.",
+        "새로운 알림이 도착했습니다!",
+        "오늘 할 일을 체크하세요.",
+        "이벤트 참여 기회를 놓치지 마세요.",
+        "보안 업데이트가 필요합니다.",
+        "새로운 메시지가 있습니다.",
+        "친구 요청을 확인하세요.",
+        "업데이트 알림: 새로운 기능이 추가되었습니다.",
+        "건강 체크를 위한 알림입니다.",
+        "계정 설정을 확인하세요.",
         "새로운 알림이 도착했습니다!",
         "오늘 할 일을 체크하세요.",
         "이벤트 참여 기회를 놓치지 마세요.",
@@ -78,18 +87,21 @@ export default function Mobile() {
                     <div className="flex flex-col h-full">
                         <div className="flex-grow overflow-y-auto p-4 bg-gray-50">
                             {notifications.map((notification, index) => (
-                                <div
+                                <Link
+                                    href={`/notifications/${index}`}
                                     key={index}
-                                    className="p-3 mb-2 bg-white rounded-lg shadow-lg border border-gray-200"
+                                    className="block w-full"
                                 >
-                                    {notification}
-                                </div>
+                                    <div className="p-3 mb-2 bg-white rounded-lg shadow-lg border border-gray-200 w-full">
+                                        {notification}
+                                    </div>
+                                </Link>
                             ))}
                         </div>
                         <div className="h-fit mx-1 pb-1 text-center flex items-center justify-center">
                             <Link
                                 className="component-button mx-1"
-                                href={'/home'}
+                                href={'/notifications'}
                             >
                                 공지사항 보러가기
                             </Link>
@@ -125,23 +137,26 @@ export default function Mobile() {
 
                         <div className="flex-grow overflow-y-auto p-4 bg-gray-50">
                             {filteredTasks.map((task, index) => (
-                                <div
+                                <Link
+                                    href={`/homeworks/${index}`}
                                     key={index}
-                                    className={`px-4 py-3 mb-4 bg-white rounded-lg shadow-md border-2 ${task.completed ? "border-green-400 bg-green-50" : "border-gray-300"}`}
+                                    className="block w-full"
                                 >
-                                    <div className="flex items-center">
+                                    <div className={`px-4 py-3 mb-4 bg-white rounded-lg shadow-md border-2 ${task.completed ? "border-green-400 bg-green-50" : "border-gray-300"}`}>
+                                        <div className="flex items-center">
                                         <span className={`${task.completed ? "text-green-600" : "text-gray-700"}`}>
                                             {task.text}
                                         </span>
-                                        {task.completed && <div className="i-system-uicons-check"/>}
+                                            {task.completed && <div className="i-system-uicons-check"/>}
+                                        </div>
                                     </div>
-                                </div>
+                                </Link>
                             ))}
                         </div>
                         <div className="h-fit mx-1 pb-1 text-center flex items-center justify-center">
                             <Link
                                 className="component-button mx-1"
-                                href={'/home'}
+                                href={'/homeworks'}
                             >
                                 숙제 보러가기
                             </Link>
