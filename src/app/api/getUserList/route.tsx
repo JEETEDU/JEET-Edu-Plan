@@ -29,7 +29,15 @@ import {usersTable} from "@/database/schema";
  */
 export async function GET() {
     try {
-        const userList = await db.select().from(usersTable); // 사용자 테이블에서 모든 사용자 선택
+        const userList = await db.select({
+            uid: usersTable.uid,
+            login_id: usersTable.login_id,
+            user_type: usersTable.user_type,
+            name: usersTable.name,
+            first_year: usersTable.first_year,
+            school: usersTable.school,
+            joined_term: usersTable.joined_term,
+        }).from(usersTable); // 사용자 테이블에서 모든 사용자 선택
         return NextResponse.json({
             success: true,
             message: userList
