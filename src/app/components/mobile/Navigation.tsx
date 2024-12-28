@@ -4,7 +4,6 @@ import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {cn} from "@/app/components/functions"
 import React, {useState} from "react";
-import Alert from "@/app/components/mobile/Alert";
 
 export function Navigation1() {
     const [isModalOpen, setModalOpen] = useState(false);
