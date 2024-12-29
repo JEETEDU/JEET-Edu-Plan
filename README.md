@@ -31,9 +31,9 @@
  ┃ ┃ ┃ ┗ 📜page.tsx
  ┃ ┣ 📂components
  ┃ ┃ ┣ 📂desktop
- ┃ ┃ ┃ ┗ 📜Navigation.tsx
+ ┃ ┃ ┃ ┗ 📜mobile.tsx
  ┃ ┃ ┣ 📂mobile
- ┃ ┃ ┃ ┗ 📜Navigation.tsx
+ ┃ ┃ ┃ ┗ 📜mobile.tsx
  ┃ ┃ ┣ 📜alert.tsx
  ┃ ┃ ┗ 📜functions.tsx
  ┃ ┣ 📂home

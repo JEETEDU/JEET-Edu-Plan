@@ -1,6 +1,6 @@
 import {cookies} from "next/headers";
-import Desktop from "@/app/home/(pages)/desktop";
-import Mobile from "@/app/home/(pages)/mobile";
+import Desktop from "./desktop";
+import Mobile from "./mobile";
 
 export default async function Login() {
     const cookieStore= await cookies();
