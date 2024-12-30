@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import React, {useState} from "react";
 import {cn} from "@/app/(main)/components/functions";
+import Link from "next/link";
 
 export default function Desktop() {
     const [isInfo, setIsInfo] = useState(true);
@@ -32,88 +32,132 @@ export default function Desktop() {
         "이 알림은 테스트 메시지입니다.",
     ];
 
+    const todo = [
+        {title: "할 일 목록은 만들기 귀찮아요", done: true, due: "12/31"},
+    ];
+
     const headNotification = {
         content: "1월 10일에 겨울학기가 시작합니다.",
     };
 
     return (
         <>
-            <div className="h-full">
+            <div className="h-full flex flex-col">
                 <div className={cn(
-                    "text-center text-3xl py-2 bg-gray-100",
-                    "border-red-600 border-8"
+                    "text-center text-3xl py-2 bg-gray-100 border-red-600 border-8 h-fit"
                 )}>
                     {headNotification.content}
                 </div>
-                <div className="h-150 grid grid-cols-3"> {/* hear */}
-                    <div className="col-span-2 border-15 border-gray-200">
-                        <div className="flex flex-col gap-5 h-full w-full items-center justify-center">
-                            <div className="text-center text-4xl">
-                                {notifications[head]}
+                {isInfo ? (
+                    <div className="flex-1 grid grid-cols-3 overflow-hidden"> {/* hear */}
+                        <div className="col-span-2">
+                            <div className="flex flex-col gap-5 h-full w-full items-center justify-center">
+                                <div className="text-center text-4xl">
+                                    {notifications[head]}
+                                </div>
+                                <div>
+                                    여기에는 상세 내용이 자세하게 보이게 하고싶다
+                                </div>
                             </div>
-                            <div>
-                                여기에는 상세 내용이 자세하게 보이게 하고싶다
+                        </div>
+                        <div className="overflow-y-auto p-4 bg-gray-50">
+                            {notifications.map((notification, index) => (
+                                <div
+                                    key={index}
+                                    className="block w-full"
+                                    onClick={() => setHead(index)}
+                                >
+                                    <div className={cn(
+                                        "p-3 mb-2 hover:bg-gray-100 rounded-lg shadow-lg border border-gray-200 w-full",
+                                        (index === head) ? "bg-gray-200" : "bg-white"
+                                    )}>
+                                        {notification}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ) : (
+                    <div className="flex-1 grid grid-cols-2 overflow-hidden">
+                        <div className="overflow-hidden p-4 bg-gray-50">
+                            <div className="text-center text-2xl mb-4">
+                                숙제 목록
+                            </div>
+                            <div className='overflow-y-auto h-full'>
+                                {notifications.map((notification, index) => (
+                                    <Link
+                                        key={index}
+                                        className="block w-full"
+                                        href={'/'}
+                                    >
+                                        <div className={cn(
+                                            "p-3 mb-2 hover:bg-gray-100 rounded-lg shadow-lg border border-gray-200 w-full",
+                                            "bg-white"
+                                        )}>
+                                            {notification}
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="overflow-hidden p-4 bg-gray-50">
+                            <div className="text-center text-2xl mb-4">
+                                내 할일 목록
+                            </div>
+                            <div className='overflow-y-auto h-full'>
+                                {notifications.map((notification, index) => (
+                                    <Link
+                                        key={index}
+                                        className="block w-full"
+                                        href={'/'}
+                                    >
+                                        <div className={cn(
+                                            "p-3 mb-2 hover:bg-gray-100 rounded-lg shadow-lg border border-gray-200 w-full",
+                                            "bg-white"
+                                        )}>
+                                            {notification}
+                                        </div>
+                                    </Link>
+                                ))}
                             </div>
                         </div>
                     </div>
-                    <div className="overflow-y-auto p-4 bg-gray-50">
-                        {notifications.map((notification, index) => (
-                            <div
-                                key={index}
-                                className="block w-full"
-                                onClick={() => setHead(index)}
-                            >
-                                <div className={cn(
-                                    "p-3 mb-2 hover:bg-gray-100 rounded-lg shadow-lg border border-gray-200 w-full",
-                                    (index === head) ? "bg-gray-200" : "bg-white"
-                                )}>
-                                    {notification}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-            <div className="fixed items-end justify-center inset-0 flex z-5 pointer-events-none">
-                <div
-                    className="p-0 rounded-2xl shadow-2xl pointer-events-auto mb-10 grid grid-cols-2 component-form"
-                    // onClick={() => setShowQuestion(!showQuestion)}
-                >
+                )}
+                <div className="bg-gray-50 p-4 flex justify-between">
                     <button
-                        className={cn({
-                            "bg-white pointer-events-none": isInfo,
-                            "bg-gray-300 hover:bg-gray-200 transition duration-200": !isInfo,
-                        }, "h-fit rounded-l-lg text-center p-2")}
-                        onClick={() => setIsInfo(!isInfo)}
+                        className="bg-white hover:bg-gray-200 transition duration-200 h-fit rounded-lg text-center py-2 px-5"
+                        onClick={() => setIsTeacher(!isTeacher)}
                     >
-                        공지사항
+                        공지 추가하기
                     </button>
-                    <button
-                        className={cn({
-                            "bg-white pointer-events-none": !isInfo,
-                            "bg-gray-300 hover:bg-gray-200 transition duration-200": isInfo,
-                        }, "h-fit rounded-r-lg text-center p-2")}
-                        onClick={() => setIsInfo(!isInfo)}
-                    >
-                        할 일 목록
-                    </button>
-                </div>
-            </div>
-            {isTeacher && (
-                <div className="fixed items-end justify-start inset-0 flex z-7 pointer-events-none">
-                    <div
-                        className="p-0 rounded-2xl shadow-2xl pointer-events-auto grid mb-10 ml-10"
-                        // onClick={() => setShowQuestion(!showQuestion)}
-                    >
+                    <div className="p-0 rounded-2xl shadow-2xl pointer-events-auto grid grid-cols-2 component-form">
                         <button
-                            className="bg-white hover:bg-gray-200 transition duration-200 h-fit rounded-lg text-center py-2 px-5"
-                            onClick={() => setIsTeacher(!isTeacher)}
+                            className={cn({
+                                "bg-white pointer-events-none": isInfo,
+                                "bg-gray-300 hover:bg-gray-200 transition duration-200": !isInfo,
+                            }, "h-fit rounded-l-lg text-center p-2")}
+                            onClick={() => setIsInfo(!isInfo)}
                         >
-                            공지 추가하기
+                            학원 공지사항
+                        </button>
+                        <button
+                            className={cn({
+                                "bg-white pointer-events-none": !isInfo,
+                                "bg-gray-300 hover:bg-gray-200 transition duration-200": isInfo,
+                            }, "h-fit rounded-r-lg text-center p-2")}
+                            onClick={() => setIsInfo(!isInfo)}
+                        >
+                            할 일 목록
                         </button>
                     </div>
+                    <button
+                        className="bg-white hover:bg-gray-200 transition duration-200 h-fit rounded-lg text-center py-2 px-5 invisible"
+                        onClick={() => setIsTeacher(!isTeacher)}
+                    >
+                        공지 추가하기
+                    </button>
                 </div>
-            )}
+            </div>
         </>
     );
 }
