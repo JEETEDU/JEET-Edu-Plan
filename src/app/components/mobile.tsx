@@ -4,8 +4,10 @@ import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {cn} from "@/app/components/functions"
 import React, {useState} from "react";
+import {TodayQuestion} from "@/app/components/common";
 
 export function Navigation1() {
+    const path = usePathname();
     const [isModalOpen, setModalOpen] = useState(false);
     const toggleModal = () => setModalOpen((prev) => !prev);
     return (
@@ -15,10 +17,12 @@ export function Navigation1() {
                 <div className="nav-title">
                     JEET Education
                 </div>
-                <div>
-                    <div onClick={toggleModal} className="i-system-uicons-bell"/>
-                    {/* If there exist unread notice, "i-system-uicons-bell-ringing"   */}
-                </div>
+                {path !== '/' && (
+                    <div>
+                        <div onClick={toggleModal} className="i-system-uicons-bell"/>
+                        {/* If there exist unread notice, "i-system-uicons-bell-ringing"   */}
+                    </div>
+                )}
             </header>
 
             {isModalOpen && (
@@ -49,40 +53,34 @@ export function Navigation1() {
 
 export function Navigation2() {
     const path = usePathname();
-    const [answered, setAnswered] = useState(false);
-    // const answer = () => setAnswered((prev) => !prev);
 
-    return (
-        <>
-            <div className="nav">
-                {/* 네비게이션 링크 (하단 고정) */}
-                <nav className="nav-bar">
-                    <Link href="/home" className="nav-item">
+    return (<> {path !== '/' && (
+        <div className="nav">
+            <TodayQuestion device="mobile"/>
+
+            {/* 네비게이션 링크 (하단 고정) */}
+            <nav className="nav-bar">
+                <Link href="/home" className="nav-item">
                     <span className={cn("_nav-item", {"bg-white": path === '/home'})}>
                         Home
                     </span>
-                    </Link>
-                    <Link href="/classroom" className="nav-item">
+                </Link>
+                <Link href="/classroom" className="nav-item">
                     <span className={cn("_nav-item", {"bg-white": path === '/classroom'})}>
                         Classroom
                     </span>
-                    </Link>
-                    <Link href="/timeTable" className="nav-item">
+                </Link>
+                <Link href="/timeTable" className="nav-item">
                     <span className={cn("_nav-item", {"bg-white": path === '/timeTable'})}>
                         Time Table
                     </span>
-                    </Link>
-                    <Link href="/mypage" className="nav-item">
+                </Link>
+                <Link href="/mypage" className="nav-item">
                     <span className={cn("_nav-item", {"bg-white": path === '/mypage'})}>
                         My Page
                     </span>
-                    </Link>
-                </nav>
-                {!answered && (
-                    123
-                )}
-            </div>
-
-        </>
-    );
+                </Link>
+            </nav>
+        </div>
+    )} </>);
 }
