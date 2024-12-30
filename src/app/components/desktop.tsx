@@ -3,16 +3,17 @@
 import Link from "next/link";
 import {cn} from "@/app/components/functions";
 import {usePathname} from "next/navigation";
-// import {useCookies} from "next-client-cookies";
+import React from "react";
+import {TodayQuestion} from "@/app/components/common";
 
 export default function Navigation() {
     const path = usePathname();
-    // const cookies = useCookies();
-
-    // console.log(`navigation: ${cookies.get('user')}`)
+    // const [answered, setAnswered] = useState(false);
+    // const [showQuestion, setShowQuestion] = useState(false);
 
     return (
         <div className='fixed'>
+            <TodayQuestion device="desktop"/>
             <nav className="min-w-screen bg-gray-100 dark:bg-gray-800 flex items-center justify-between px-6 py-4">
                 {/* 로고 자리 */}
                 <div className="flex items-center space-x-4">
@@ -27,18 +28,18 @@ export default function Navigation() {
                             Home
                         </span>
                     </Link>
-                    <Link href={"/"} className="nav-item">
-                        <span className={cn("_nav-item", {"bg-white": path === '/home'})}>
+                    <Link href={"/classroom"} className="nav-item">
+                        <span className={cn("_nav-item", {"bg-white": path === '/classroom'})}>
                             Classroom
                         </span>
                     </Link>
-                    <Link href={"/"} className="nav-item">
-                        <span className={cn("_nav-item", {"bg-white": path === '/home'})}>
+                    <Link href={"/timeTable"} className="nav-item">
+                        <span className={cn("_nav-item", {"bg-white": path === '/timeTable'})}>
                             Time Table
                         </span>
                     </Link>
-                    <Link href={"/"} className="nav-item">
-                        <span className={cn("_nav-item", {"bg-white": path === '/home'})}>
+                    <Link href={"/mypage"} className="nav-item">
+                        <span className={cn("_nav-item", {"bg-white": path === '/mypage'})}>
                             My Page
                         </span>
                     </Link>
