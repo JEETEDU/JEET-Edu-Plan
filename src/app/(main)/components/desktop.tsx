@@ -25,30 +25,32 @@ export default function Navigation() {
                 <div className="flex w-1/3 min-w-fit justify-around items-center min-w-fit">
                     <Link href={"/home"} className="nav-item">
                         <span className={cn("_nav-item", {"bg-white": path === '/home'})}>
-                            Home
+                            공지사항
                         </span>
                     </Link>
                     <Link href={"/classroom"} className="nav-item">
                         <span className={cn("_nav-item", {"bg-white": path === '/classroom'})}>
-                            Classroom
+                            게시판
                         </span>
                     </Link>
                     <Link href={"/timeTable"} className="nav-item">
                         <span className={cn("_nav-item", {"bg-white": path === '/timeTable'})}>
-                            Time Table
+                            시간표
                         </span>
                     </Link>
                     <Link href={"/mypage"} className="nav-item">
                         <span className={cn("_nav-item", {"bg-white": path === '/mypage'})}>
-                            My Page
+                            프로필
                         </span>
                     </Link>
-                    {path !== '/' && (
-                        <div className="ml-2">
+                    <div className="ml-2">
+                        {(path !== '/') ? (
                             <div onClick={toggleModal} className="i-system-uicons-bell"/>
-                            {/* If there exist unread notice, "i-system-uicons-bell-ringing"   */}
-                        </div>
-                    )}
+                        ) : (
+                            <div className="i-system-uicons-bell invisible"/>
+                        )}
+                        {/* If there exist unread notice, "i-system-uicons-bell-ringing"   */}
+                    </div>
                 </div>
 
                 {isModalOpen && (
