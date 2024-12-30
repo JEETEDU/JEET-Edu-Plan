@@ -7,8 +7,65 @@ import {NextResponse} from "next/server";
 import {and, or, eq, DrizzleError} from "drizzle-orm";
 import {return_400} from "@/app/(others)/api/tools";
 import {setCookie} from "undici-types";
-import {generateToken, generateRefreshToken, verifyToken} from "@/app/(others)/api/auth";
+import {generateToken, verifyToken} from "@/app/(others)/api/auth";
 
+/**
+ * @swagger
+ * /api/user/login:
+ *  post:
+ *      tags:
+ *          - User
+ *      description: Login
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/x-www-form-urlencoded:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          login_id:
+ *                              type: string
+ *                              description: User's login id
+ *                              example: "john123"
+ *                          pw:
+ *                              type: string
+ *                              description: User's password
+ *                              example: "password"
+ *                      required:
+ *                          - login_id
+ *                          - pw
+ *      responses:
+ *          "200":
+ *              description: Login successful
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              success:
+ *                                  type: boolean
+ *                                  example: true
+ *                              message:
+ *                                  type: string
+ *                                  example: "Login successful"
+ *              headers:
+ *                  Set-Cookie:
+ *                      schema:
+ *                          type: string
+ *          "400":
+ *              description: Login failed
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              success:
+ *                                  type: boolean
+ *                                  example: false
+ *                              message:
+ *                                  type: string
+ *                                  example: "error message"
+ */
 export async function POST(req: NextRequest) {
     try {
         const data = await req.formData();
@@ -33,13 +90,13 @@ export async function POST(req: NextRequest) {
         login_id = login_id.toString().trim();
         let pw_hash: Buffer = crypto.createHash('sha256').update(pw.toString().trim()).digest();
 
-        // @ts-ignore
         let query_result =
             await db.select()
                 .from(schema.usersTable)
                 .where(
                     and(
                         eq(schema.usersTable.login_id, login_id),
+                        // @ts-ignore
                         eq(schema.usersTable.pw, pw_hash)
                     )
                 );
