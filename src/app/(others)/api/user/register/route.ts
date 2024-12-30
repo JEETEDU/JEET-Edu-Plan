@@ -25,19 +25,16 @@ import {return_400} from "@/app/(others)/api/tools";
  *                              type: string
  *                              description: User's name
  *                              example: "John"
- *                              required: true
  *                              maxLength: 5
  *                          login_id:
  *                              type: string
  *                              description: User's login id
  *                              example: "john123"
- *                              required: true
  *                              maxLength: 20
  *                          pw:
  *                              type: string
  *                              description: User's password
  *                              example: "password"
- *                              required: true
  *                              minLength: 8
  *                      required:
  *                          - name
