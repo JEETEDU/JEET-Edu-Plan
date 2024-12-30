@@ -1,7 +1,7 @@
 "use client";
 
 import React, {useState} from "react";
-import {cn} from "@/app/components/functions";
+import {cn} from "@/app/(main)/components/functions";
 import Link from "next/link";
 
 // 더 할 작업

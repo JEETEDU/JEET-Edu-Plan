@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import React, {useState} from "react";
-import {cn} from "../../../components/functions";
+import {cn} from "@/app/(main)/components/functions";
 
 export default function Desktop() {
     const [isInfo, setIsInfo] = useState(true);

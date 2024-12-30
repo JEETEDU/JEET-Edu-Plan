@@ -5,9 +5,9 @@ import * as schema from '@/database/schema'
 import crypto from 'crypto'
 import {NextResponse} from "next/server";
 import {and, or, eq, DrizzleError} from "drizzle-orm";
-import {return_400} from "@/app/api/tools";
+import {return_400} from "@/app/(others)/api/tools";
 import {setCookie} from "undici-types";
-import {generateToken, generateRefreshToken, verifyToken} from "@/app/api/auth";
+import {generateToken, generateRefreshToken, verifyToken} from "@/app/(others)/api/auth";
 
 export async function POST(req: NextRequest) {
     try {

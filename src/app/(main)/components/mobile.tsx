@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import {usePathname} from "next/navigation";
-import {cn} from "@/app/components/functions"
+import {cn} from "@/app/(main)/components/functions"
 import React, {useState} from "react";
-import {TodayQuestion} from "@/app/components/common";
+import {TodayQuestion} from "@/app/(main)/components/common";
 
 export function Navigation1() {
     const path = usePathname();
