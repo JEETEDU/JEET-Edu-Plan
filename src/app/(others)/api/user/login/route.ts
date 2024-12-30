@@ -1,12 +1,10 @@
-import type { NextApiResponse } from 'next'
 import type { NextRequest } from 'next/server'
 import { db } from '@/database'
 import * as schema from '@/database/schema'
 import crypto from 'crypto'
 import {NextResponse} from "next/server";
-import {and, or, eq, DrizzleError} from "drizzle-orm";
+import {and, eq} from "drizzle-orm";
 import {return_400} from "@/app/(others)/api/tools";
-import {setCookie} from "undici-types";
 import {generateToken, verifyToken} from "@/app/(others)/api/auth";
 
 /**
@@ -68,9 +66,9 @@ import {generateToken, verifyToken} from "@/app/(others)/api/auth";
  */
 export async function POST(req: NextRequest) {
     try {
-        const data = await req.formData();
-        let login_id = data.get("login_id");
-        let pw = data.get("pw");
+        const data = await req.json();
+        let login_id = data.login_id;
+        let pw = data.pw;
 
         const token: string = req.cookies.get("token")?.value ?? '';
         if (token) {
@@ -115,7 +113,7 @@ export async function POST(req: NextRequest) {
             success: true,
             message: "Login successful"
         })
-        res.cookies.set("token", new_token, { path: '/', httpOnly: true, sameSite: 'strict', maxAge: 60*60, secure: true });
+        res.cookies.set("token", new_token, { path: '/', httpOnly: true, sameSite: 'strict', maxAge: 3*60*60, secure: true });
 
         return res;
 

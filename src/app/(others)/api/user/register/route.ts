@@ -70,10 +70,10 @@ import {return_400} from "@/app/(others)/api/tools";
  */
 export async function POST(req: NextRequest) {
     try {
-        const data = await req.formData();
-        let name = data.get("name");
-        let login_id = data.get("login_id");
-        let pw = data.get("pw");
+        const data = await req.json();
+        let name = data.name;
+        let login_id = data.login_id;
+        let pw = data.pw;
 
         if (!login_id || !name || !pw) {
             return NextResponse.json({
@@ -133,7 +133,7 @@ export async function POST(req: NextRequest) {
             path: '/',
             httpOnly: true,
             sameSite: 'strict',
-            maxAge: 60 * 60,
+            maxAge: 3 * 60 * 60,
             secure: true
         });
         return res;
@@ -141,6 +141,7 @@ export async function POST(req: NextRequest) {
         if (e.code == 'ER_DUP_ENTRY') {
             return return_400("User id already exists");
         }
+        console.error(e);
         return NextResponse.json({
             success: false,
             message: "Internal Server Error"
