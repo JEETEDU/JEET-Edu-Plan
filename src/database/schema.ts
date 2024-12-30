@@ -53,7 +53,7 @@ export const boardTable = mysqlTable('board', {
     attach_files: json(),
     category: tinyint(),
     notice: tinyint(),
-    date: date(),
+    due_date: date(),
     tag_user_id: int().references(() => usersTable.uid),
     view_count: int().notNull(),
     comment_count: int().notNull(),
@@ -70,7 +70,7 @@ export const studentClassTable = mysqlTable('student_class', {
 export const homeworkTable = mysqlTable('homework', {
     article_id: int().notNull().references(() => boardTable.id),
     user_id: int().notNull().references(() => usersTable.uid),
-    date: date(),
+    due_date: date(),
     done: tinyint(),
     cid: int().notNull().references(() => classInfoTable.id),
     title: varchar({ length: 255 }).notNull(),
