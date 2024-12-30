@@ -4,7 +4,7 @@ import * as schema from '@/database/schema'
 import crypto from 'crypto'
 import {NextResponse} from "next/server";
 import {eq} from "drizzle-orm";
-import {generateToken} from "@/app/(others)/api/auth";
+import {generateToken, verifyToken} from "@/app/(others)/api/auth";
 import {return_400} from "@/app/(others)/api/tools";
 
 /**
@@ -17,7 +17,7 @@ import {return_400} from "@/app/(others)/api/tools";
  *      requestBody:
  *          required: true
  *          content:
- *              application/x-www-form-urlencoded:
+ *              application/json:
  *                  schema:
  *                      type: object
  *                      properties:
@@ -70,6 +70,14 @@ import {return_400} from "@/app/(others)/api/tools";
  */
 export async function POST(req: NextRequest) {
     try {
+        const token: string = req.cookies.get("token")?.value ?? '';
+        if (token) {
+            let decoded = verifyToken(token);
+            if (decoded) {
+                return return_400("Already logged in");
+            }
+        }
+
         const data = await req.json();
         let name = data.name;
         let login_id = data.login_id;

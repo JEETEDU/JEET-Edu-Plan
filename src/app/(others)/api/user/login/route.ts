@@ -17,7 +17,7 @@ import {generateToken, verifyToken} from "@/app/(others)/api/auth";
  *      requestBody:
  *          required: true
  *          content:
- *              application/x-www-form-urlencoded:
+ *              application/json:
  *                  schema:
  *                      type: object
  *                      properties:
@@ -66,20 +66,20 @@ import {generateToken, verifyToken} from "@/app/(others)/api/auth";
  */
 export async function POST(req: NextRequest) {
     try {
-        const data = await req.json();
-        let login_id = data.login_id;
-        let pw = data.pw;
-
         const token: string = req.cookies.get("token")?.value ?? '';
         if (token) {
             let decoded = verifyToken(token);
             if (decoded) {
                 return NextResponse.json({
-                    success: true,
+                    success: false,
                     message: "Already logged in"
-                }, {status: 200});
+                }, {status: 400});
             }
         }
+
+        const data = await req.json();
+        let login_id = data.login_id;
+        let pw = data.pw;
 
         if (!login_id || !pw) {
             return return_400("Please fill out all fields");
@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
         login_id = login_id.toString().trim();
         let pw_hash: Buffer = crypto.createHash('sha256').update(pw.toString().trim()).digest();
 
-        let query_result =
+        let [user] =
             await db.select()
                 .from(schema.usersTable)
                 .where(
@@ -98,10 +98,9 @@ export async function POST(req: NextRequest) {
                         eq(schema.usersTable.pw, pw_hash)
                     )
                 );
-
-        if (query_result.length == 0) return return_400("Cannot find user or password is incorrect");
-
-        let user = query_result[0];
+        if(!user) {
+            return return_400("Invalid login_id or password");
+        }
         if (user.user_type == 0) {
             return return_400("User has not been approved yet");
         }
