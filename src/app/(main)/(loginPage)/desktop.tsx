@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import React, {useState} from "react";
-import {cn} from "@/app/components/functions";
+import {cn} from "@/app/(main)/components/functions";
 
 export default function Desktop() {
     const [showPassword, setShowPassword] = useState(false);

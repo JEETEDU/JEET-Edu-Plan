@@ -2,8 +2,8 @@ import type {Metadata} from "next";
 import "./globals.css";
 import React from "react";
 import {cookies} from "next/headers";
-import Navigation from "@/app/components/desktop";
-import {Navigation1, Navigation2} from "@/app/components/mobile";
+import Navigation from "@/app/(main)/components/desktop";
+import {Navigation1, Navigation2} from "@/app/(main)/components/mobile";
 import {CookiesProvider} from "next-client-cookies/server";
 
 export const metadata: Metadata = {

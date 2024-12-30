@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import {cn} from "@/app/components/functions";
+import {cn} from "@/app/(main)/components/functions";
 import {usePathname} from "next/navigation";
 import React, {useState} from "react";
-import {TodayQuestion} from "@/app/components/common";
+import {TodayQuestion} from "@/app/(main)/components/common";
 
 export default function Navigation() {
     const path = usePathname();

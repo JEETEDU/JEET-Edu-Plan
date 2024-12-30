@@ -4,8 +4,8 @@ import * as schema from '@/database/schema'
 import crypto from 'crypto'
 import {NextResponse} from "next/server";
 import {eq} from "drizzle-orm";
-import {generateToken} from "@/app/api/auth";
-import {return_400} from "@/app/api/tools";
+import {generateToken} from "@/app/(others)/api/auth";
+import {return_400} from "@/app/(others)/api/tools";
 
 export async function POST(req: NextRequest) {
     try {

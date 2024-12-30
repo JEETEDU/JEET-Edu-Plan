@@ -1,6 +1,6 @@
 'use client';
 
-import {cn} from "@/app/components/functions";
+import {cn} from "@/app/(main)/components/functions";
 import React, {useState} from "react";
 import {usePathname} from "next/navigation";
 

@@ -5,7 +5,7 @@ import {
     presetUno,
     presetWebFonts
 } from 'unocss'
-import {cn} from "@/app/components/functions";
+import {cn} from "@/app/(main)/components/functions";
 
 export default defineConfig({
     // theme: {},
