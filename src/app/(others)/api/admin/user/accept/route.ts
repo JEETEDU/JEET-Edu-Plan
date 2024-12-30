@@ -11,7 +11,7 @@ import {verifyToken} from "@/app/(others)/api/auth";
  * /api/admin/user/accept:
  *  post:
  *      tags:
- *          - Admin
+ *          - Admin/User
  *      description: Accept a user
  *      requestBody:
  *          required: true

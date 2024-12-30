@@ -11,7 +11,7 @@ import {verifyToken} from "@/app/(others)/api/auth";
  * /api/admin/user/delete:
  *  post:
  *      tags:
- *          - Admin
+ *          - Admin/User
  *      description: Delete a user
  *      requestBody:
  *          required: true
