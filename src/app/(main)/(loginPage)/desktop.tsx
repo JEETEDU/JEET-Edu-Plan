@@ -1,12 +1,54 @@
 "use client";
 
-import Link from "next/link";
 import React, {useState} from "react";
 import {cn} from "@/app/(main)/components/functions";
+import router from "next/router";
 
 export default function Desktop() {
     const [showPassword, setShowPassword] = useState(false);
     const [isLogin, setIsLogin] = useState(true);
+    const [error, setError] = useState("");
+
+    const login = () => {
+        fetch('/api/user/login', {
+            method: 'POST',
+            body: JSON.stringify({
+                login_id: document.getElementById("id").innerText,
+                pw: document.getElementById("password").innerText
+            }),
+        }).then(
+            (res) => res.json()
+        ).then(
+            (res) => {
+                if (res.success) {
+                    router.push('/home')
+                } else {
+                    setError(res.message)
+                }
+            }
+        )
+    }
+
+    const register = () => {
+        fetch('/api/user/register', {
+            method: 'POST',
+            body: JSON.stringify({
+                name: document.getElementById("name").innerText,
+                login_id: document.getElementById("id").innerText,
+                pw: document.getElementById("password").innerText
+            }),
+        }).then(
+            (res) => res.json()
+        ).then(
+            (res) => {
+                if (res.success) {
+                    router.push('/home')
+                } else {
+                    setError(res.message)
+                }
+            }
+        )
+    }
 
     return (
         <>
@@ -19,7 +61,7 @@ export default function Desktop() {
                         }, "h-fit rounded-l-lg text-center p-2")}
                         onClick={() => setIsLogin(!isLogin)}
                     >
-                        Login
+                        로그인
                     </button>
                     <button
                         className={cn({
@@ -28,35 +70,50 @@ export default function Desktop() {
                         }, "h-fit rounded-r-lg text-center p-2")}
                         onClick={() => setIsLogin(!isLogin)}
                     >
-                        Sign Up
+                        회원가입
                     </button>
                 </div>
                 <div className="component-form">
-                    <h2 className="title-1">{isLogin ? "Login" : "Sign Up"}</h2>
-                    <form className="space-y-6">
+                    <h2 className="title-1">{isLogin ? "로그인" : "회원가입"}</h2>
+                    <form className="space-y-6" onChange={() => setError("")}>
+                        {!isLogin &&
+                            <div>
+                                <label htmlFor="name" className="component-button-info">
+                                    이름:
+                                </label>
+                                <input
+                                    type="text"
+                                    id="name"
+                                    className="component-input"
+                                    placeholder="이름을 입력해 주세요"
+                                    required
+                                />
+                            </div>
+                        }
+
                         <div>
-                            <label htmlFor="name" className="component-button-info">
-                                Name:
+                            <label htmlFor="id" className="component-button-info">
+                                아이디:
                             </label>
                             <input
                                 type="text"
-                                id="name"
+                                id="id"
                                 className="component-input"
-                                placeholder="Enter your name"
+                                placeholder="아이디를 입력해주세요"
                                 required
                             />
                         </div>
 
                         <div>
                             <label htmlFor="password" className="component-button-info">
-                                Password:
+                                비밀번호:
                             </label>
                             <div className="relative">
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     id="password"
                                     className="component-input"
-                                    placeholder="Enter your password"
+                                    placeholder="비밀번호를 입력해주세요"
                                     required
                                 />
                                 <button
@@ -70,32 +127,23 @@ export default function Desktop() {
                             </div>
                         </div>
 
-                        {isLogin ? <></> :
-                            <div>
-                                <label htmlFor="name" className="component-button-info">
-                                    머 적당히 가입할 때 필요한 정보들
-                                </label>
-                                <input
-                                    type="text"
-                                    id="name"
-                                    className="component-input"
-                                    placeholder="뭐가 필요할까"
-                                    required
-                                />
+                        {/*<div className={cn("flex items-center content-end justify-end")}>*/}
+                        {/*    <label className="flex items-center">*/}
+                        {/*        <span className="text-sm text-gray-600 dark:text-gray-300">Remember me</span>*/}
+                        {/*        <input type="checkbox" className="ml-2"/>*/}
+                        {/*    </label>*/}
+                        {/*</div>*/}
+
+                        <div className="flex flex-col items-center space-y-1">
+                            <div className='text-red-600 font-bold'>
+                                {error}
                             </div>
-                        }
-
-                        <div className={cn("flex items-center content-end justify-end")}>
-                            <label className="flex items-center">
-                                <span className="text-sm text-gray-600 dark:text-gray-300">Remember me</span>
-                                <input type="checkbox" className="ml-2"/>
-                            </label>
-                        </div>
-
-                        <div className="flex flex-col items-center space-y-4">
-                            <Link className="component-button" href={'/home'}>
-                                {isLogin ? "Login" : "Sign Up"}
-                            </Link>
+                            <div
+                                className="component-button"
+                                onClick={isLogin ? login : register}
+                            >
+                                {isLogin ? "로그인" : "회원가입"}
+                            </div>
                         </div>
                     </form>
                 </div>
