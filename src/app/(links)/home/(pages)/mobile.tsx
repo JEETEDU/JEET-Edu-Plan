@@ -164,7 +164,7 @@ export default function Mobile() {
                                 className="component-button mx-1"
                                 href={'/home'}
                             >
-                                오늘의 질문
+                                할 일 추가하기
                             </Link>
                         </div>
                     </div>

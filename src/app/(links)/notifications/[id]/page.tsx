@@ -1,6 +1,6 @@
 import {cookies} from "next/headers";
-import Desktop from "@/app/notifications/[id]/desktop";
-import Mobile from "@/app/notifications/[id]/mobile";
+import Desktop from "./desktop";
+import Mobile from "./mobile";
 import {Suspense} from "react";
 
 export default async function showPage({params}) {
