@@ -4,7 +4,7 @@ import Mobile from "./mobile";
 
 export default async function Login() {
     const cookieStore= await cookies();
-    const isMobile = cookieStore.get("isMobile");
+    const isMobile = cookieStore.get("isMobile") ?? { value: 'false' };
 
-    return (isMobile.value === 'true' ? <Mobile/> : <Desktop/>)
+    return (isMobile?.value === 'true' ? <Mobile/> : <Desktop/>)
 }
