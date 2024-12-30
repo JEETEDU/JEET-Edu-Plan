@@ -12,8 +12,59 @@ import {generateToken, verifyToken} from "@/app/(others)/api/auth";
 /**
  * @swagger
  * /api/user/login:
- * post:
- *    description: Login
+ *  post:
+ *      tags:
+ *          - User
+ *      description: Login
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/x-www-form-urlencoded:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          login_id:
+ *                              type: string
+ *                              description: User's login id
+ *                              example: "john123"
+ *                          pw:
+ *                              type: string
+ *                              description: User's password
+ *                              example: "password"
+ *                      required:
+ *                          - login_id
+ *                          - pw
+ *      responses:
+ *          "200":
+ *              description: Login successful
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              success:
+ *                                  type: boolean
+ *                                  example: true
+ *                              message:
+ *                                  type: string
+ *                                  example: "Login successful"
+ *              headers:
+ *                  Set-Cookie:
+ *                      schema:
+ *                          type: string
+ *          "400":
+ *              description: Login failed
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              success:
+ *                                  type: boolean
+ *                                  example: false
+ *                              message:
+ *                                  type: string
+ *                                  example: "error message"
  */
 export async function POST(req: NextRequest) {
     try {
