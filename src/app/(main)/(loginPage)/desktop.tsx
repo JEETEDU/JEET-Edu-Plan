@@ -13,13 +13,19 @@ export default function Desktop() {
             <div className="component-container">
                 <div className="grid grid-cols-2 component-form mb-4 p-0">
                     <button
-                        className={cn({"bg-white pointer-events-none": isLogin, "bg-gray-300 hover:bg-gray-200 transition duration-200": !isLogin}, "h-fit rounded-l-lg text-center p-2")}
+                        className={cn({
+                            "bg-white pointer-events-none": isLogin,
+                            "bg-gray-300 hover:bg-gray-200 transition duration-200": !isLogin
+                        }, "h-fit rounded-l-lg text-center p-2")}
                         onClick={() => setIsLogin(!isLogin)}
                     >
                         Login
                     </button>
                     <button
-                        className={cn({"bg-white pointer-events-none": !isLogin, "bg-gray-300 hover:bg-gray-200 transition duration-200": isLogin}, "h-fit rounded-r-lg text-center p-2")}
+                        className={cn({
+                            "bg-white pointer-events-none": !isLogin,
+                            "bg-gray-300 hover:bg-gray-200 transition duration-200": isLogin
+                        }, "h-fit rounded-r-lg text-center p-2")}
                         onClick={() => setIsLogin(!isLogin)}
                     >
                         Sign Up

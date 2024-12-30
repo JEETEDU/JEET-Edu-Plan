@@ -7,6 +7,7 @@ import Link from "next/link";
 // 더 할 작업
 // 1. 공지사항은 종류에 따라 색으로 구분, 기한 표시 등등
 // 3. 디자인 좀 수정해야됨...(그림자 빼기 등)
+// 3.1. 지금도 나쁘지 않을지도..?
 
 export default function Mobile() {
     const notifications = [
