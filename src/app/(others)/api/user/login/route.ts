@@ -7,8 +7,14 @@ import {NextResponse} from "next/server";
 import {and, or, eq, DrizzleError} from "drizzle-orm";
 import {return_400} from "@/app/(others)/api/tools";
 import {setCookie} from "undici-types";
-import {generateToken, generateRefreshToken, verifyToken} from "@/app/(others)/api/auth";
+import {generateToken, verifyToken} from "@/app/(others)/api/auth";
 
+/**
+ * @swagger
+ * /api/user/login:
+ * post:
+ *    description: Login
+ */
 export async function POST(req: NextRequest) {
     try {
         const data = await req.formData();
@@ -33,13 +39,13 @@ export async function POST(req: NextRequest) {
         login_id = login_id.toString().trim();
         let pw_hash: Buffer = crypto.createHash('sha256').update(pw.toString().trim()).digest();
 
-        // @ts-ignore
         let query_result =
             await db.select()
                 .from(schema.usersTable)
                 .where(
                     and(
                         eq(schema.usersTable.login_id, login_id),
+                        // @ts-ignore
                         eq(schema.usersTable.pw, pw_hash)
                     )
                 );
