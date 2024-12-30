@@ -79,11 +79,11 @@ export default function Desktop() {
                     </div>
                 ) : (
                     <div className="flex-1 grid grid-cols-2 overflow-hidden">
-                        <div className="overflow-hidden p-4 bg-gray-50">
+                        <div className="overflow-hidden bg-gray-50 flex flex-col p-4">
                             <div className="text-center text-2xl mb-4">
                                 숙제 목록
                             </div>
-                            <div className='overflow-y-auto h-full'>
+                            <div className='overflow-y-auto'>
                                 {notifications.map((notification, index) => (
                                     <Link
                                         key={index}
@@ -100,11 +100,11 @@ export default function Desktop() {
                                 ))}
                             </div>
                         </div>
-                        <div className="overflow-hidden p-4 bg-gray-50">
+                        <div className="overflow-hidden p-4 bg-gray-50 flex flex-col">
                             <div className="text-center text-2xl mb-4">
                                 내 할일 목록
                             </div>
-                            <div className='overflow-y-auto h-full'>
+                            <div className='overflow-y-auto'>
                                 {notifications.map((notification, index) => (
                                     <Link
                                         key={index}
