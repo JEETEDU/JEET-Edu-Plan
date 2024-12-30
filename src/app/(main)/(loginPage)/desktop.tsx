@@ -2,26 +2,27 @@
 
 import React, {useState} from "react";
 import {cn} from "@/app/(main)/components/functions";
-import router from "next/router";
+import {useRouter} from "next/navigation";
 
 export default function Desktop() {
     const [showPassword, setShowPassword] = useState(false);
     const [isLogin, setIsLogin] = useState(true);
     const [error, setError] = useState("");
+    const router = useRouter();
 
     const login = () => {
         fetch('/api/user/login', {
             method: 'POST',
             body: JSON.stringify({
-                login_id: document.getElementById("id").innerText,
-                pw: document.getElementById("password").innerText
+                login_id: document.getElementById("id").value,
+                pw: document.getElementById("password").value
             }),
         }).then(
             (res) => res.json()
         ).then(
             (res) => {
                 if (res.success) {
-                    router.push('/home')
+                    router.push("/home")
                 } else {
                     setError(res.message)
                 }
@@ -33,18 +34,19 @@ export default function Desktop() {
         fetch('/api/user/register', {
             method: 'POST',
             body: JSON.stringify({
-                name: document.getElementById("name").innerText,
-                login_id: document.getElementById("id").innerText,
-                pw: document.getElementById("password").innerText
+                name: document.getElementById("name").value,
+                login_id: document.getElementById("id").value,
+                pw: document.getElementById("password").value
             }),
         }).then(
             (res) => res.json()
         ).then(
             (res) => {
+                console.log(res);
                 if (res.success) {
-                    router.push('/home')
+                    router.push('/home');
                 } else {
-                    setError(res.message)
+                    setError(res.message);
                 }
             }
         )
