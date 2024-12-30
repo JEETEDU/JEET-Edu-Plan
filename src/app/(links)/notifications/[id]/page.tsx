@@ -1,6 +1,6 @@
 import {cookies} from "next/headers";
-import Desktop from "@/app/homeworks/[id]/desktop";
-import Mobile from "@/app/homeworks/[id]/mobile";
+import Desktop from "./desktop";
+import Mobile from "./mobile";
 import {Suspense} from "react";
 
 export default async function showPage({params}) {
