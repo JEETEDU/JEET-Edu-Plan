@@ -7,6 +7,67 @@ import {eq} from "drizzle-orm";
 import {generateToken} from "@/app/(others)/api/auth";
 import {return_400} from "@/app/(others)/api/tools";
 
+/**
+ * @swagger
+ * /api/user/register:
+ *  post:
+ *      tags:
+ *          - User
+ *      description: Register a new user
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/x-www-form-urlencoded:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          name:
+ *                              type: string
+ *                              description: User's name
+ *                              example: "John"
+ *                              maxLength: 5
+ *                          login_id:
+ *                              type: string
+ *                              description: User's login id
+ *                              example: "john123"
+ *                              maxLength: 20
+ *                          pw:
+ *                              type: string
+ *                              description: User's password
+ *                              example: "password"
+ *                              minLength: 8
+ *                      required:
+ *                          - name
+ *                          - login_id
+ *                          - pw
+ *      responses:
+ *          "200":
+ *              description: Register successful
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              success:
+ *                                  type: boolean
+ *                                  example: true
+ *                              message:
+ *                                  type: string
+ *                                  example: "Register successful"
+ *          "400":
+ *              description: Bad request
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              success:
+ *                                  type: boolean
+ *                                  example: false
+ *                              message:
+ *                                  type: string
+ *                                  example: "Please fill out all fields"
+ */
 export async function POST(req: NextRequest) {
     try {
         const data = await req.formData();
@@ -66,7 +127,7 @@ export async function POST(req: NextRequest) {
         let new_token = generateToken(user.uid, user.user_type);
         let res = NextResponse.json({
             success: true,
-            message: "Login successful"
+            message: "Register successful"
         })
         res.cookies.set("token", new_token, {
             path: '/',
