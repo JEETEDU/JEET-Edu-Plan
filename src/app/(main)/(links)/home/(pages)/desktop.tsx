@@ -79,7 +79,7 @@ export default function Desktop() {
                     </div>
                 ) : (
                     <div className="flex-1 grid grid-cols-2 overflow-hidden">
-                        <div className="overflow-hidden bg-gray-50 flex flex-col p-4">
+                        <div className="overflow-hidden bg-gray-50 flex flex-col px-4 pt-4">
                             <div className="text-center text-2xl mb-4">
                                 숙제 목록
                             </div>
@@ -100,7 +100,7 @@ export default function Desktop() {
                                 ))}
                             </div>
                         </div>
-                        <div className="overflow-hidden p-4 bg-gray-50 flex flex-col">
+                        <div className="overflow-hidden pt-4 px-4 bg-gray-50 flex flex-col">
                             <div className="text-center text-2xl mb-4">
                                 내 할일 목록
                             </div>
@@ -123,40 +123,58 @@ export default function Desktop() {
                         </div>
                     </div>
                 )}
-                <div className="bg-gray-50 p-4 flex justify-between">
-                    <button
-                        className="bg-white hover:bg-gray-200 transition duration-200 h-fit rounded-lg text-center py-2 px-5"
-                        onClick={() => setIsTeacher(!isTeacher)}
-                    >
-                        공지 추가하기
-                    </button>
-                    <div className="p-0 rounded-2xl shadow-2xl pointer-events-auto grid grid-cols-2 component-form">
+                <div className="bg-gray-50 p-4 grid grid-cols-3 w-full items-center">
+                    <div className="flex justify-start">
                         <button
-                            className={cn({
-                                "bg-white pointer-events-none": isInfo,
-                                "bg-gray-300 hover:bg-gray-200 transition duration-200": !isInfo,
-                            }, "h-fit rounded-l-lg text-center p-2")}
-                            onClick={() => setIsInfo(!isInfo)}
+                            className="bg-white hover:bg-gray-200 transition duration-200 h-fit rounded-lg text-center py-2 px-5"
+                            onClick={() => setIsTeacher(!isTeacher)}
                         >
-                            학원 공지사항
-                        </button>
-                        <button
-                            className={cn({
-                                "bg-white pointer-events-none": !isInfo,
-                                "bg-gray-300 hover:bg-gray-200 transition duration-200": isInfo,
-                            }, "h-fit rounded-r-lg text-center p-2")}
-                            onClick={() => setIsInfo(!isInfo)}
-                        >
-                            할 일 목록
+                            공지 추가하기
                         </button>
                     </div>
-                    <button
-                        className="bg-white hover:bg-gray-200 transition duration-200 h-fit rounded-lg text-center py-2 px-5 invisible"
-                        onClick={() => setIsTeacher(!isTeacher)}
-                    >
-                        공지 추가하기
-                    </button>
+
+                    <div className="flex justify-center">
+                        <div className="p-0 rounded-2xl shadow-2xl pointer-events-auto grid grid-cols-2 component-form">
+                            <button
+                                className={cn(
+                                    {
+                                        "bg-white pointer-events-none": isInfo,
+                                        "bg-gray-300 hover:bg-gray-200 transition duration-200": !isInfo,
+                                    },
+                                    "h-fit rounded-l-lg text-center p-2"
+                                )}
+                                onClick={() => setIsInfo(!isInfo)}
+                            >
+                                학원 공지사항
+                            </button>
+                            <button
+                                className={cn(
+                                    {
+                                        "bg-white pointer-events-none": !isInfo,
+                                        "bg-gray-300 hover:bg-gray-200 transition duration-200": isInfo,
+                                    },
+                                    "h-fit rounded-r-lg text-center p-2"
+                                )}
+                                onClick={() => setIsInfo(!isInfo)}
+                            >
+                                할 일 목록
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="flex justify-end">
+                        <button
+                            className={cn(
+                                "bg-white hover:bg-gray-200 transition duration-200 h-fit rounded-lg text-center py-2 px-5",
+                                {"invisible": isInfo}
+                            )}
+                            onClick={() => setIsTeacher(!isTeacher)}
+                        >
+                            내 할일 추가하기
+                        </button>
+                    </div>
                 </div>
+
             </div>
         </>
     );

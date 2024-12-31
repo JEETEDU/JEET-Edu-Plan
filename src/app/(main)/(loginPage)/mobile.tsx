@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import React, {useState} from "react";
-import {cn} from "@/app/(main)/components/functions";
+import {cn, post} from "@/app/(main)/components/functions";
 import {useRouter} from "next/navigation";
+import {awaitExpression} from "@babel/types";
 
 export default function Mobile() {
     const [showPassword, setShowPassword] = useState(false);
@@ -11,46 +12,31 @@ export default function Mobile() {
     const [error, setError] = useState("");
     const router = useRouter();
 
-    const login = () => {
-        fetch('/api/user/login', {
-            method: 'POST',
-            body: JSON.stringify({
-                login_id: document.getElementById("id").value,
-                pw: document.getElementById("password").value
-            }),
-        }).then(
-            (res) => res.json()
-        ).then(
-            (res) => {
-                if (res.success) {
-                    router.push("/home")
-                } else {
-                    setError(res.message)
-                }
-            }
-        )
+    const login = async () => {
+        const res = await post('/api/user/login', {
+            login_id: document.getElementById("id").value,
+            pw: document.getElementById("password").value
+        })
+        console.log(res);
+        if (res.success) {
+            router.push('/home');
+        } else {
+            setError(res.message);
+        }
     }
 
-    const register = () => {
-        fetch('/api/user/register', {
-            method: 'POST',
-            body: JSON.stringify({
-                name: document.getElementById("name").value,
-                login_id: document.getElementById("id").value,
-                pw: document.getElementById("password").value
-            }),
-        }).then(
-            (res) => res.json()
-        ).then(
-            (res) => {
-                console.log(res);
-                if (res.success) {
-                    router.push('/home');
-                } else {
-                    setError(res.message);
-                }
-            }
-        )
+    const register = async () => {
+        const res = await post('/api/user/register', {
+            name: document.getElementById("name").value,
+            login_id: document.getElementById("id").value,
+            pw: document.getElementById("password").value
+        })
+        console.log(res);
+        if (res.success) {
+            router.push('/home');
+        } else {
+            setError(res.message);
+        }
     }
 
     return (
