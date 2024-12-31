@@ -70,51 +70,51 @@ import {return_400} from "@/app/(others)/api/(tools)/tools";
  */
 export async function POST(req: NextRequest) {
     try {
-        const token: string = req.cookies.get("token")?.value ?? '';
-        if (token) {
-            let decoded = verifyToken(token);
-            if (decoded) {
-                return return_400("Already logged in");
+        return await db.transaction(async (tx) => {
+            const token: string = req.cookies.get("token")?.value ?? '';
+            if (token) {
+                let decoded = verifyToken(token);
+                if (decoded) {
+                    return return_400("Already logged in");
+                }
             }
-        }
 
-        const data = await req.json();
-        let name = data.name;
-        let login_id = data.login_id;
-        let pw = data.pw;
+            const data = await req.json();
+            let name = data.name;
+            let login_id = data.login_id;
+            let pw = data.pw;
 
-        if (!login_id || !name || !pw) {
-            return NextResponse.json({
-                success: false,
-                message: "Please fill out all fields",
-            }, {status: 400});
-        }
+            if (!login_id || !name || !pw) {
+                return NextResponse.json({
+                    success: false,
+                    message: "Please fill out all fields",
+                }, {status: 400});
+            }
 
-        name = name.toString().trim();
-        login_id = login_id.toString().trim();
-        pw = pw.toString().trim();
+            name = name.toString().trim();
+            login_id = login_id.toString().trim();
+            pw = pw.toString().trim();
 
-        // check length
-        if (pw.length < 8) {
-            return NextResponse.json({
-                success: false,
-                message: "Password must be at least 8 characters long",
-            }, {status: 400});
-        }
-        if (name.length > 5) {
-            return NextResponse.json({
-                success: false,
-                message: "Name must be less than 5 characters long",
-            }, {status: 400});
-        }
-        if (login_id.length > 20) {
-            return NextResponse.json({
-                success: false,
-                message: "Login ID must be less than 20 characters long",
-            }, {status: 400});
-        }
+            // check length
+            if (pw.length < 8) {
+                return NextResponse.json({
+                    success: false,
+                    message: "Password must be at least 8 characters long",
+                }, {status: 400});
+            }
+            if (name.length > 5) {
+                return NextResponse.json({
+                    success: false,
+                    message: "Name must be less than 5 characters long",
+                }, {status: 400});
+            }
+            if (login_id.length > 20) {
+                return NextResponse.json({
+                    success: false,
+                    message: "Login ID must be less than 20 characters long",
+                }, {status: 400});
+            }
 
-        let user = await db.transaction(async (tx) => {
             // @ts-ignore
             await tx.insert(schema.usersTable).values(
                 {
@@ -129,22 +129,20 @@ export async function POST(req: NextRequest) {
                 .from(schema.usersTable)
                 .where(eq(schema.usersTable.login_id, login_id));
 
-            return user;
+            let new_token = generateToken(user.uid, user.user_type);
+            let res = NextResponse.json({
+                success: true,
+                message: "Register successful"
+            })
+            res.cookies.set("token", new_token, {
+                path: '/',
+                httpOnly: true,
+                sameSite: 'strict',
+                maxAge: 3 * 60 * 60,
+                secure: true
+            });
+            return res;
         });
-
-        let new_token = generateToken(user.uid, user.user_type);
-        let res = NextResponse.json({
-            success: true,
-            message: "Register successful"
-        })
-        res.cookies.set("token", new_token, {
-            path: '/',
-            httpOnly: true,
-            sameSite: 'strict',
-            maxAge: 3 * 60 * 60,
-            secure: true
-        });
-        return res;
     } catch (e: any) {
         if (e.code == 'ER_DUP_ENTRY') {
             return return_400("User id already exists");

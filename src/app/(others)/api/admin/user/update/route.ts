@@ -3,7 +3,7 @@ import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
 import { eq } from 'drizzle-orm';
-import {return_400, UserType} from "@/app/(others)/api/(tools)/tools";
+import {db_log, return_400, UserType} from "@/app/(others)/api/(tools)/tools";
 import {verifyToken} from "@/app/(others)/api/(tools)/auth";
 
 /**
@@ -76,82 +76,86 @@ import {verifyToken} from "@/app/(others)/api/(tools)/auth";
  */
 export async function POST(req: NextRequest) {
     try {
-        const token: string = req.cookies.get("token")?.value ?? '';
-        if (token) {
-            let decoded = verifyToken(token);
-            if (!decoded) { // invalid token
+        return db.transaction(async (tx) => {
+            const token: string = req.cookies.get("token")?.value ?? '';
+            if (token) {
+                let decoded = verifyToken(token);
+                if (!decoded) { // invalid token
+                    return NextResponse.redirect(new URL('/', req.url));
+                }
+                if (decoded.user_type < UserType.ADMIN) { // not admin
+                    return return_400('Permission denied');
+                }
+            } else { // not logged in
                 return NextResponse.redirect(new URL('/', req.url));
             }
-            if (decoded.user_type < UserType.ADMIN) { // not admin
-                return return_400('Permission denied');
+
+            const data = await req.json();
+            if (!data.user_id) {
+                return return_400('user_id is required');
             }
-        } else { // not logged in
-            return NextResponse.redirect(new URL('/', req.url));
-        }
 
-        const data = await req.json();
-        if (!data.user_id) {
-            return return_400('user_id is required');
-        }
+            const user_id = data.user_id;
 
-        const user_id = data.user_id;
+            let [user] =
+                await tx.select()
+                    .from(schema.usersTable)
+                    .where(
+                        eq(schema.usersTable.uid, user_id)
+                    );
 
-        let [user] =
-            await db.select()
-                .from(schema.usersTable)
-                .where(
-                    eq(schema.usersTable.uid, user_id)
-                );
+            if (!user) {
+                return return_400('User not found');
+            }
+            if (user.user_type == 0) {
+                return return_400('User is not accepted');
+            }
+            if (user.user_type == 3) {
+                return return_400('Cannot update admin user');
+            }
 
-        if (!user) {
-            return return_400('User not found');
-        }
-        if (user.user_type == 0) {
-            return return_400('User is not accepted');
-        }
-        if (user.user_type == 3) {
-            return return_400('Cannot update admin user');
-        }
+            const user_type: number = data.user_type ?? 0;
+            const name: string = data.name ?? '';
+            const first_year: number = data.first_year ?? 0;
+            const school: string = data.school ?? '';
+            const joined_term: string = data.joined_term ?? '';
 
-        const user_type: number = data.user_type ?? 0;
-        const name: string = data.name ?? '';
-        const first_year: number = data.first_year ?? 0;
-        const school: string = data.school ?? '';
-        const joined_term: string = data.joined_term ?? '';
+            if (!user_type && !name && !first_year && !school && !joined_term) {
+                return return_400('No data to update');
+            }
+            if (user_type < 0 || user_type > 3) {
+                return return_400('Invalid user_type');
+            }
+            if (name && name.length > 5) {
+                return return_400('Name is too long');
+            }
+            if (first_year && (first_year < 1901 || first_year > 2100)) {
+                return return_400('Invalid first_year');
+            }
+            if (school && school.length > 255) {
+                return return_400('School is too long');
+            }
+            if (joined_term && joined_term.length > 20) {
+                return return_400('Joined_term is too long');
+            }
 
-        if (!user_type && !name && !first_year && !school && !joined_term) {
-            return return_400('No data to update');
-        }
-        if (user_type < 0 || user_type > 3) {
-            return return_400('Invalid user_type');
-        }
-        if (name && name.length > 5) {
-            return return_400('Name is too long');
-        }
-        if (first_year && (first_year < 1901 || first_year > 2100)) {
-            return return_400('Invalid first_year');
-        }
-        if (school && school.length > 255) {
-            return return_400('School is too long');
-        }
-        if (joined_term && joined_term.length > 20) {
-            return return_400('Joined_term is too long');
-        }
+            let update_data: any = {};
+            if (user_type) update_data['user_type'] = user_type;
+            if (name) update_data['name'] = name;
+            if (first_year) update_data['first_year'] = first_year;
+            if (school) update_data['school'] = school;
+            if (joined_term) update_data['joined_term'] = joined_term;
 
-        let update_data: any = {};
-        if (user_type) update_data['user_type'] = user_type;
-        if (name) update_data['name'] = name;
-        if (first_year) update_data['first_year'] = first_year;
-        if (school) update_data['school'] = school;
-        if (joined_term) update_data['joined_term'] = joined_term;
+            await tx.update(schema.usersTable)
+                .set(update_data)
+                .where(eq(schema.usersTable.uid, user_id));
 
-        await db.update(schema.usersTable)
-            .set(update_data)
-            .where(eq(schema.usersTable.uid, user_id));
+            await db_log(tx, user_id, `User ${user_id} updated to ${JSON.stringify(update_data)}`);
 
-        return NextResponse.json({
-            success: true,
-            message: "User updated"
+            return NextResponse.json({
+                success: true,
+                message: "User updated"
+            });
         });
     } catch (e) {
         console.error(e);
