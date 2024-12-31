@@ -6,3 +6,16 @@ import {twMerge} from "tailwind-merge";
 export const cn = (...inputs: ClassValue[]) => {
     return twMerge(clsx(inputs));
 };
+
+export async function post(url, body) {
+    await fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(body),
+    }).then(
+        (res) => res.json()
+    ).then(
+        (res) => {
+            return res
+        }
+    )
+}
