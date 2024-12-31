@@ -5,7 +5,7 @@ import crypto from 'crypto'
 import {NextResponse} from "next/server";
 import {eq} from "drizzle-orm";
 import {generateToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
-import {return_400} from "@/app/(others)/api/(tools)/tools";
+import {return_400, return_500} from "@/app/(others)/api/(tools)/tools";
 
 /**
  * @swagger
@@ -148,9 +148,6 @@ export async function POST(req: NextRequest) {
             return return_400("User id already exists");
         }
         console.error(e);
-        return NextResponse.json({
-            success: false,
-            message: "Internal Server Error"
-        }, {status: 500});
+        return return_500();
     }
 }

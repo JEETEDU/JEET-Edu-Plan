@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import {return_400, return_not_logged_in} from "@/app/(others)/api/(tools)/tools";
+import {return_400, return_500, return_not_logged_in} from "@/app/(others)/api/(tools)/tools";
 
 export async function GET(req: NextRequest) {
     return POST(req);
@@ -58,9 +58,6 @@ export async function POST(req: NextRequest) {
         }
     } catch (e: any) {
         console.error(e);
-        return NextResponse.json({
-            success: false,
-            message: "internal server error"
-        }, {status: 500});
+        return return_500();
     }
 }

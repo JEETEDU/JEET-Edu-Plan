@@ -3,7 +3,13 @@ import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
 import {asc, desc, eq, like} from 'drizzle-orm';
-import {return_400, return_not_logged_in, return_permission_denied, UserType} from "@/app/(others)/api/(tools)/tools";
+import {
+    return_400,
+    return_500,
+    return_not_logged_in,
+    return_permission_denied,
+    UserType
+} from "@/app/(others)/api/(tools)/tools";
 import {verifyToken} from "@/app/(others)/api/(tools)/auth";
 import {QueryBuilder} from "drizzle-orm/mysql-core";
 
@@ -244,9 +250,6 @@ export async function GET(req: NextRequest) {
         }, { status: 200 });
     } catch (e) {
         console.error(e);
-        return NextResponse.json({
-            success: false,
-            message: "Internal server error"
-        });
+        return return_500();
     }
 }

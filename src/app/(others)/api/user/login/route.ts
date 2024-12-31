@@ -4,7 +4,7 @@ import * as schema from '@/database/schema'
 import crypto from 'crypto'
 import {NextResponse} from "next/server";
 import {and, eq} from "drizzle-orm";
-import {return_400} from "@/app/(others)/api/(tools)/tools";
+import {return_400, return_500} from "@/app/(others)/api/(tools)/tools";
 import {generateToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
 
 /**
@@ -118,9 +118,6 @@ export async function POST(req: NextRequest) {
 
     } catch (e) {
         console.error(e);
-        return NextResponse.json({
-            success: false,
-            message: "Internal Server Error"
-        }, {status: 500});
+        return return_500();
     }
 }
