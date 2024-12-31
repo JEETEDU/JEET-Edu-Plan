@@ -3,7 +3,13 @@ import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
 import { eq } from 'drizzle-orm';
-import {db_log, return_400, UserType} from "@/app/(others)/api/(tools)/tools";
+import {
+    db_log,
+    return_400,
+    return_not_logged_in,
+    return_permission_denied,
+    UserType
+} from "@/app/(others)/api/(tools)/tools";
 import {verifyToken} from "@/app/(others)/api/(tools)/auth";
 import crypto from 'crypto'
 
@@ -54,7 +60,33 @@ import crypto from 'crypto'
 *                              message:
 *                                  type: string
 *                                  example: "error message"
-*/
+ *          "401":
+ *              description: Not logged in
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              success:
+ *                                  type: boolean
+ *                                  example: false
+ *                              message:
+ *                                  type: string
+ *                                  example: "error message"
+ *          "403":
+ *              description: Permission denied
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              success:
+ *                                  type: boolean
+ *                                  example: false
+ *                              message:
+ *                                  type: string
+ *                                  example: "error message"
+ */
 export async function POST(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
@@ -62,13 +94,14 @@ export async function POST(req: NextRequest) {
             if (token) {
                 let decoded = verifyToken(token);
                 if (!decoded) { // invalid token
-                    return NextResponse.redirect(new URL('/', req.url));
+                    return return_not_logged_in();
                 }
                 if (decoded.user_type < UserType.ADMIN) { // not admin
-                    return return_400('Permission denied');
+                    return return_permission_denied();
                 }
-            } else { // not logged in
-                return NextResponse.redirect(new URL('/', req.url));
+            }
+            else { // not logged in
+                return return_not_logged_in();
             }
 
             const data = await req.json();
