@@ -84,7 +84,7 @@ export const homeworkTable = mysqlTable('homework', {
 
 // Sleep table
 export const sleepTable = mysqlTable('sleep', {
-    date: date().notNull(),
+    date: date().notNull().default(sql`CURDATE()`),
     user_id: int().notNull().references(() => usersTable.uid),
     wakeup: datetime(),
     sleep: datetime(),
