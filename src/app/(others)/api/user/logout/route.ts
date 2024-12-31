@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import {return_400} from "@/app/(others)/api/(tools)/tools";
+import {return_400, return_not_logged_in} from "@/app/(others)/api/(tools)/tools";
 
 export async function GET(req: NextRequest) {
     return POST(req);
@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
  *                  Set-Cookie:
  *                      schema:
  *                          type: string
- *          "400":
+ *          "401":
  *              description: Not logged in
  *              content:
  *                  application/json:
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
                 message: "Logout successful"
             }, {status: 200, headers: {"Set-Cookie": "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;"}});
         } else {
-            return return_400("Not logged in");
+            return return_not_logged_in();
         }
     } catch (e: any) {
         console.error(e);

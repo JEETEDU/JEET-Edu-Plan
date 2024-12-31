@@ -1,10 +1,25 @@
 import {NextResponse} from "next/server";
+import * as schema from "@/database/schema";
 
 export function return_400(message: string): NextResponse {
     return NextResponse.json({
                 success: false,
                 message: message,
             }, {status: 400});
+}
+
+export function return_not_logged_in(): NextResponse {
+    return NextResponse.json({
+                success: false,
+                message: "Not logged in"
+            }, {status: 401});
+}
+
+export function return_permission_denied(): NextResponse {
+    return NextResponse.json({
+                success: false,
+                message: "Permission denied"
+            }, {status: 403});
 }
 
 export enum UserType {
