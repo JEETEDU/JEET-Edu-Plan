@@ -1,4 +1,5 @@
 import {NextResponse} from "next/server";
+import * as schema from "@/database/schema";
 
 export function return_400(message: string): NextResponse {
     return NextResponse.json({
