@@ -31,7 +31,7 @@ export function return_500(message: string = "Internal server error"): NextRespo
 
 export enum UserType {
     NONE = 0,
-    USER = 1,
+    STUDENT = 1,
     TEACHER = 2,
     ADMIN = 3
 }
