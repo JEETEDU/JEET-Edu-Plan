@@ -4,8 +4,8 @@ import * as schema from '@/database/schema'
 import crypto from 'crypto'
 import {NextResponse} from "next/server";
 import {eq} from "drizzle-orm";
-import {generateToken, verifyToken} from "@/app/(others)/api/auth";
-import {return_400} from "@/app/(others)/api/tools";
+import {generateToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
+import {return_400} from "@/app/(others)/api/(tools)/tools";
 
 /**
  * @swagger

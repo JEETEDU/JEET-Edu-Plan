@@ -3,8 +3,8 @@ import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
 import { eq } from 'drizzle-orm';
-import {return_400, UserType} from "@/app/(others)/api/tools";
-import {verifyToken} from "@/app/(others)/api/auth";
+import {return_400, UserType} from "@/app/(others)/api/(tools)/tools";
+import {verifyToken} from "@/app/(others)/api/(tools)/auth";
 
 /**
  * @swagger

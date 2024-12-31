@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import {return_400} from "@/app/(others)/api/tools";
+import {return_400} from "@/app/(others)/api/(tools)/tools";
 
 export async function GET(req: NextRequest) {
     return POST(req);

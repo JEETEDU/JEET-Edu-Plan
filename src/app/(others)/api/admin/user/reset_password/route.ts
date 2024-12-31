@@ -3,8 +3,8 @@ import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
 import { eq } from 'drizzle-orm';
-import {return_400, UserType} from "@/app/(others)/api/tools";
-import {verifyToken} from "@/app/(others)/api/auth";
+import {return_400, UserType} from "@/app/(others)/api/(tools)/tools";
+import {verifyToken} from "@/app/(others)/api/(tools)/auth";
 import crypto from 'crypto'
 
 /**
@@ -93,7 +93,10 @@ export async function POST(req: NextRequest) {
 
         const new_random_password = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
         await db.update(schema.usersTable)
-            .set({pw: crypto.createHash('sha256').update(new_random_password).digest()})
+            .set({
+                //@ts-ignore
+                pw: crypto.createHash('sha256').update(new_random_password).digest()
+            })
             .where(eq(schema.usersTable.uid, user_id));
 
         return NextResponse.json({
