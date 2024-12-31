@@ -22,6 +22,13 @@ export function return_permission_denied(): NextResponse {
             }, {status: 403});
 }
 
+export function return_500(message: string = "Internal server error"): NextResponse {
+    return NextResponse.json({
+                success: false,
+                message: message
+            }, {status: 500});
+}
+
 export enum UserType {
     NONE = 0,
     USER = 1,

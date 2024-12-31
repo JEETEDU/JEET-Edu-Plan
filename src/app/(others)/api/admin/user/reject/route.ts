@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 import { eq } from 'drizzle-orm';
 import {
     db_log,
-    return_400,
+    return_400, return_500,
     return_not_logged_in,
     return_permission_denied,
     UserType
@@ -135,9 +135,6 @@ export async function POST(req: NextRequest) {
         });
     } catch (e) {
         console.error(e);
-        return NextResponse.json({
-            success: false,
-            message: "Internal server error"
-        }, {status: 500});
+        return return_500();
     }
 }
