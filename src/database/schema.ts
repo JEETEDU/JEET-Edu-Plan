@@ -14,6 +14,7 @@ import {
     mysqlEnum,
     primaryKey
 } from "drizzle-orm/mysql-core";
+import {sql} from "drizzle-orm";
 
 // User table
 export const usersTable = mysqlTable('user', {
@@ -48,8 +49,8 @@ export const boardTable = mysqlTable('board', {
     user_id: int().notNull().references(() => usersTable.uid),
     title: varchar({ length: 255 }).notNull(),
     content: longtext(),
-    create_time: datetime().notNull(),
-    update_time: datetime().notNull(),
+    create_time: datetime().notNull().default(sql`CURRENT_TIMESTAMP()`),
+    update_time: datetime().notNull().default(sql`CURRENT_TIMESTAMP()`).$onUpdate(() => sql`CURRENT_TIMESTAMP()`),
     attach_files: json(),
     category: tinyint(),
     notice: tinyint(),
@@ -161,5 +162,5 @@ export const logTable = mysqlTable('log', {
     id: int().autoincrement().primaryKey(),
     user_id: int().notNull().references(() => usersTable.uid),
     detail: longtext().notNull(),
-    time: datetime().notNull(),
+    time: datetime().notNull().default(sql`CURRENT_TIMESTAMP()`),
 });

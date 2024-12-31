@@ -13,3 +13,12 @@ export enum UserType {
     TEACHER = 2,
     ADMIN = 3
 }
+
+export async function db_log(tx: any, user_id: number, detail: string) {
+    // @ts-ignore
+    await tx.insert(schema.logTable).values(
+        {
+            user_id: user_id,
+            detail: detail,
+        });
+}
