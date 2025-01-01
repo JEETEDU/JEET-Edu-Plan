@@ -15,7 +15,7 @@ import {verifyToken} from "@/app/(others)/api/(tools)/auth";
 /**
  * @swagger
  * /api/admin/user/update:
- *  post:
+ *  put:
  *      tags:
  *          - Admin/User
  *      description: Update a user
@@ -106,7 +106,7 @@ import {verifyToken} from "@/app/(others)/api/(tools)/auth";
  *                                  type: string
  *                                  example: "error message"
  */
-export async function POST(req: NextRequest) {
+export async function PUT(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
             const token: string = req.cookies.get("token")?.value ?? '';

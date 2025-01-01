@@ -9,7 +9,7 @@ export function generateToken(user_id: number, user_type: number) {
     }, secret, { expiresIn: '3h' });
 }
 
-export function verifyToken(token: string) {
+export function verifyToken(token: string): DecodedToken | false {
     try {
         let decoded: any = jwt.verify(token, secret);
         return {
@@ -19,6 +19,11 @@ export function verifyToken(token: string) {
     } catch (e) {
         return false;
     }
+}
+
+export type DecodedToken = {
+    user_id: number,
+    user_type: number
 }
 
 // 귀찮으니 refresh token은 안 쓸거임 ㅇㅇ
