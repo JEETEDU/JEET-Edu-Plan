@@ -10,7 +10,7 @@ import {
     return_permission_denied,
     UserType
 } from "@/app/(others)/api/(tools)/tools";
-import {verifyToken} from "@/app/(others)/api/(tools)/auth";
+import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
 import crypto from 'crypto'
 
 /**
@@ -91,8 +91,9 @@ export async function POST(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
             const token: string = req.cookies.get("token")?.value ?? '';
+            let decoded: DecodedToken | false;
             if (token) {
-                let decoded = verifyToken(token);
+                decoded = verifyToken(token);
                 if (!decoded) { // invalid token
                     return return_not_logged_in();
                 }
@@ -133,7 +134,7 @@ export async function POST(req: NextRequest) {
                 })
                 .where(eq(schema.usersTable.uid, user_id));
 
-            await db_log(tx, user_id, `Password reset for user ${user_id} to ${new_random_password}`);
+            await db_log(tx, decoded.user_id, `Password reset for user ${user_id} to ${new_random_password}`);
 
             return NextResponse.json({
                 success: true,
