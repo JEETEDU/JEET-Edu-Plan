@@ -217,8 +217,6 @@ export async function GET(req: NextRequest) {
         }
         else query = query.where(eq(schema.sleepTable.date, sql`CURDATE()`));
 
-
-        console.log(query.toSQL().sql);
         if (search_by && search_string) {
             if (search_by == 'user_id') {
                 query = query.where(eq(schema.usersTable.uid, parseInt(search_string)));

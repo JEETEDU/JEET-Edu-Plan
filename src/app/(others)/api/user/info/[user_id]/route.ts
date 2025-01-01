@@ -8,7 +8,7 @@ import {
     return_not_logged_in,
     UserType
 } from "@/app/(others)/api/(tools)/tools";
-import {verifyToken} from "@/app/(others)/api/(tools)/auth";
+import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
 
 /**
  * @swagger
@@ -90,7 +90,7 @@ import {verifyToken} from "@/app/(others)/api/(tools)/auth";
 export async function GET(req: NextRequest, { params }: { params: { user_id: number } }) {
     try {
         const token: string = req.cookies.get("token")?.value ?? '';
-        let decoded: any;
+        let decoded: DecodedToken | false;
         if (token) {
             decoded = verifyToken(token);
             if (!decoded) {
