@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server';
 import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
-import { eq } from 'drizzle-orm';
+import {and, eq} from 'drizzle-orm';
 import {
     db_log,
     return_400, return_500,
@@ -11,14 +11,15 @@ import {
     UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
+import {studentClasses} from "@/database/schema";
 
 /**
  * @swagger
- * /api/admin/user/delete:
- *  delete:
+ * /api/admin/class/join/student:
+ *  post:
  *      tags:
- *          - Admin/User
- *      description: Delete a user
+ *          - Admin/Class
+ *      summary: Join student to the class
  *      requestBody:
  *          required: true
  *          content:
@@ -26,15 +27,20 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *                  schema:
  *                      type: object
  *                      properties:
+ *                          class_id:
+ *                              type: number
+ *                              description: Class ID
+ *                              example: 1
  *                          user_id:
  *                              type: number
- *                              description: User's ID
+ *                              description: User ID
  *                              example: 1
  *                      required:
+ *                          - class_id
  *                          - user_id
  *      responses:
  *          "200":
- *              description: User deleted
+ *              description: User joined class
  *              content:
  *                  application/json:
  *                      schema:
@@ -45,7 +51,7 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *                                  example: true
  *                              message:
  *                                  type: string
- *                                  example: "User deleted"
+ *                                  example: "User joined class"
  *          "400":
  *              description: Bad request
  *              content:
@@ -58,7 +64,6 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *                                  example: false
  *                              message:
  *                                  type: string
- *                                  example: "error message"
  *          "401":
  *              description: Not logged in
  *              content:
@@ -86,7 +91,7 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *                                  type: string
  *                                  example: "error message"
  */
-export async function DELETE(req: NextRequest) {
+export async function POST(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
             const token: string = req.cookies.get("token")?.value ?? '';
@@ -105,30 +110,57 @@ export async function DELETE(req: NextRequest) {
             }
 
             const data = await req.json();
+            if (!data.class_id) {
+                return return_400('class_id is required');
+            }
             if (!data.user_id) {
                 return return_400('user_id is required');
             }
-            const user_id = data.user_id;
-            const [user] =
+
+            let [user] =
                 await tx.select()
                     .from(schema.users)
                     .where(
-                        eq(schema.users.uid, user_id)
+                        eq(schema.users.uid, data.user_id)
                     );
             if (!user) {
                 return return_400('User not found');
             }
-            if (user.user_type == UserType.ADMIN) {
-                return return_400('Cannot delete admin');
+            if (user.user_type !== UserType.STUDENT) {
+                return return_400('User is not a student');
             }
-            await tx.delete(schema.users)
-                .where(eq(schema.users.uid, user_id));
 
-            await db_log(tx, decoded.user_id, `User ${user.uid} deleted`);
+            let [class_] =
+                await tx.select()
+                    .from(schema.classes)
+                    .leftJoin(
+                        schema.studentClasses,
+                        and(
+                            eq(schema.studentClasses.user_id, data.user_id),
+                            eq(schema.studentClasses.class_id, data.class_id)
+                        )
+                    )
+                    .where(
+                        eq(schema.classes.id, data.class_id)
+                    );
+            if (!class_) {
+                return return_400('Class not found');
+            }
+            if (class_.student_class) {
+                return return_400('User already joined class');
+            }
+
+            await tx.insert(schema.studentClasses)
+                .values({
+                    user_id: data.user_id,
+                    class_id: data.class_id
+                });
+
+            await db_log(tx, decoded.user_id, `User ${user.uid} joined class ${class_.class_info.name}`);
 
             return NextResponse.json({
                 success: true,
-                message: 'User deleted',
+                message: 'User joined class'
             });
         });
     } catch (e) {

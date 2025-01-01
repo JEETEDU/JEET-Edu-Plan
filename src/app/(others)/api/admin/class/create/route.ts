@@ -11,14 +11,15 @@ import {
     UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
+import {classes} from "@/database/schema";
 
 /**
  * @swagger
- * /api/admin/user/delete:
- *  delete:
+ * /api/admin/class/create:
+ *  post:
  *      tags:
- *          - Admin/User
- *      description: Delete a user
+ *          - Admin/Class
+ *      description: Create a class
  *      requestBody:
  *          required: true
  *          content:
@@ -26,15 +27,19 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *                  schema:
  *                      type: object
  *                      properties:
- *                          user_id:
- *                              type: number
- *                              description: User's ID
- *                              example: 1
+ *                          class_name:
+ *                              type: string
+ *                              description: Class name
+ *                              example: "G3 K"
+ *                          display:
+ *                              type: boolean
+ *                              description: Display the class
+ *                              example: true
  *                      required:
- *                          - user_id
+ *                          - class_name
  *      responses:
  *          "200":
- *              description: User deleted
+ *              description: Class created
  *              content:
  *                  application/json:
  *                      schema:
@@ -45,7 +50,7 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *                                  example: true
  *                              message:
  *                                  type: string
- *                                  example: "User deleted"
+ *                                  example: "Class created"
  *          "400":
  *              description: Bad request
  *              content:
@@ -86,7 +91,7 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *                                  type: string
  *                                  example: "error message"
  */
-export async function DELETE(req: NextRequest) {
+export async function POST(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
             const token: string = req.cookies.get("token")?.value ?? '';
@@ -105,30 +110,31 @@ export async function DELETE(req: NextRequest) {
             }
 
             const data = await req.json();
-            if (!data.user_id) {
-                return return_400('user_id is required');
+            let name = data.class_name;
+            const display = data.display ?? false;
+            if (!name) {
+                return return_400('class_name is required');
             }
-            const user_id = data.user_id;
-            const [user] =
-                await tx.select()
-                    .from(schema.users)
-                    .where(
-                        eq(schema.users.uid, user_id)
-                    );
-            if (!user) {
-                return return_400('User not found');
+            name = name.toString();
+            if (name.length > 255) {
+                return return_400('class_name is too long');
             }
-            if (user.user_type == UserType.ADMIN) {
-                return return_400('Cannot delete admin');
+            if (typeof display !== 'boolean') {
+                return return_400('display must be a boolean');
             }
-            await tx.delete(schema.users)
-                .where(eq(schema.users.uid, user_id));
 
-            await db_log(tx, decoded.user_id, `User ${user.uid} deleted`);
+            const class_id =
+                await tx.insert(schema.classes)
+                .values({
+                    name: name.toString(),
+                    display: display ? 1 : 0
+                }).$returningId();
+
+            await db_log(tx, decoded.user_id, `Class ${class_id}(name: ${name}) created`);
 
             return NextResponse.json({
                 success: true,
-                message: 'User deleted',
+                message: "Class created"
             });
         });
     } catch (e) {

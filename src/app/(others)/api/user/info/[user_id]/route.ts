@@ -109,29 +109,29 @@ export async function GET(req: NextRequest, { params }: { params: { user_id: num
 
         // set select_columns based on user_type
         let select_columns: any = {
-            uid: schema.usersTable.uid,
-            user_type: schema.usersTable.user_type,
-            name: schema.usersTable.name
+            uid: schema.users.uid,
+            user_type: schema.users.user_type,
+            name: schema.users.name
         }
         if (decoded.user_type >= UserType.TEACHER) {
             select_columns = {
                 ...select_columns,
-                first_year: schema.usersTable.first_year,
-                school: schema.usersTable.school,
-                joined_term: schema.usersTable.joined_term
+                first_year: schema.users.first_year,
+                school: schema.users.school,
+                joined_term: schema.users.joined_term
             }
             if (decoded.user_type == UserType.ADMIN) {
                 select_columns = {
                     ...select_columns,
-                    login_id: schema.usersTable.login_id
+                    login_id: schema.users.login_id
                 }
             }
         }
 
         let [user] =
             await db.select(select_columns)
-                .from(schema.usersTable)
-                .where(eq(schema.usersTable.uid, user_id));
+                .from(schema.users)
+                .where(eq(schema.users.uid, user_id));
 
         if (!user) {
             return return_400('user not found');

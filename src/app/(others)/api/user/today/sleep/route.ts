@@ -115,20 +115,20 @@ export async function POST(req: NextRequest) {
                 await db.select({
                     count: count()
                 })
-                .from(schema.sleepTable)
+                .from(schema.sleeps)
                 .where(and(
-                    eq(schema.sleepTable.user_id, user_id),
-                    eq(schema.sleepTable.date, sql`CURDATE()`)
+                    eq(schema.sleeps.user_id, user_id),
+                    eq(schema.sleeps.date, sql`CURDATE()`)
                 ));
             if (sleep_info.count != 0) {
-                await tx.update(schema.sleepTable)
+                await tx.update(schema.sleeps)
                     .set({
                         sleep: sleep_datetime,
                         wakeup: wake_datetime
                     })
                     .where(and(
-                        eq(schema.sleepTable.user_id, user_id),
-                        eq(schema.sleepTable.date, sql`CURDATE()`)
+                        eq(schema.sleeps.user_id, user_id),
+                        eq(schema.sleeps.date, sql`CURDATE()`)
                     ));
                 return NextResponse.json({
                     success: true,
@@ -137,7 +137,7 @@ export async function POST(req: NextRequest) {
             }
 
 
-            await tx.insert(schema.sleepTable)
+            await tx.insert(schema.sleeps)
                 .values({
                     user_id: user_id,
                     sleep: sleep_datetime,
@@ -232,10 +232,10 @@ export async function GET(req: NextRequest) {
         let queryBuilder = new QueryBuilder();
         let query =
             queryBuilder.select({
-                    sleep: schema.sleepTable.sleep,
-                    wakeup: schema.sleepTable.wakeup
+                    sleep: schema.sleeps.sleep,
+                    wakeup: schema.sleeps.wakeup
                 })
-                .from(schema.sleepTable).$dynamic();
+                .from(schema.sleeps).$dynamic();
         const datePattern = /^\d{4}-\d{2}-\d{2}$/;
         if (date) {
             if (!datePattern.test(date)) {
@@ -243,13 +243,13 @@ export async function GET(req: NextRequest) {
             }
             query = query.where(and(
                 // @ts-ignore
-                eq(schema.sleepTable.date, date),
-                eq(schema.sleepTable.user_id, user_id)
+                eq(schema.sleeps.date, date),
+                eq(schema.sleeps.user_id, user_id)
             ));
         }
         else query = query.where(and(
-            eq(schema.sleepTable.user_id, user_id),
-            eq(schema.sleepTable.date, sql`CURDATE()`)
+            eq(schema.sleeps.user_id, user_id),
+            eq(schema.sleeps.date, sql`CURDATE()`)
         ));
 
         let [sleep_info] = await db.execute(query);

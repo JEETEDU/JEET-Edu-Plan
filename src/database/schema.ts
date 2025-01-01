@@ -14,10 +14,10 @@ import {
     mysqlEnum,
     primaryKey
 } from "drizzle-orm/mysql-core";
-import {sql} from "drizzle-orm";
+import {relations, sql} from "drizzle-orm";
 
 // User table
-export const usersTable = mysqlTable('user', {
+export const users = mysqlTable('user', {
     uid: int().autoincrement().primaryKey(),
     login_id: char({ length: 20 }).notNull().unique(),
     pw: binary({ length: 32 }).notNull(),
@@ -28,25 +28,53 @@ export const usersTable = mysqlTable('user', {
     joined_term: varchar({ length: 20 }),
 });
 
+// User Relation
+export const userRelations = relations(
+    users,
+    ({ many }) => ({
+            alerts: many(alerts),
+            boards: many(boards),
+            studentClasses: many(studentClasses),
+            teacherClasses: many(teacherClasses),
+            homeworks: many(homeworks),
+            sleeps: many(sleeps),
+            todayAnswers: many(todayAnswers),
+            todos: many(todoes),
+            logs: many(logs)
+        })
+);
+
 // Class Info table
-export const classInfoTable = mysqlTable('class_info', {
+export const classes = mysqlTable('class_info', {
     id: int().autoincrement().primaryKey(),
     name: varchar({ length: 255 }).notNull(),
     display: tinyint().notNull().default(1),
 });
 
-// Teacher Class table
-export const teacherClassTable = mysqlTable('teacher_class', {
-    user_id: int().notNull().references(() => usersTable.uid),
-    class_id: int().notNull().references(() => classInfoTable.id),
-    subjec_id: int().notNull().references(() => subjectTable.id),
+export const classInfoRelations = relations(
+    classes,
+    ({ many }) => ({
+        boards: many(boards),
+        studentClasses: many(studentClasses),
+        teacherClasses: many(teacherClasses),
+        timetables: many(timetables),
+        homeworks: many(homeworks),
+        subjects: many(subjects),
+    })
+);
+
+// Relation table between teacher and class
+export const teacherClasses = mysqlTable('teacher_class', {
+    user_id: int().notNull().references(() => users.uid, { onDelete: 'cascade' }),
+    class_id: int().notNull().references(() => classes.id, { onDelete: 'cascade' }),
+    subject_id: int().notNull().references(() => subjects.id, { onDelete: 'cascade' }),
 });
 
 // Board table
-export const boardTable = mysqlTable('board', {
+export const boards = mysqlTable('board', {
     id: int().autoincrement().primaryKey(),
-    class_id: int().notNull().references(() => classInfoTable.id),
-    user_id: int().notNull().references(() => usersTable.uid),
+    class_id: int().notNull().references(() => classes.id),
+    user_id: int().notNull().references(() => users.uid),
     title: varchar({ length: 255 }).notNull(),
     content: longtext(),
     create_time: datetime().notNull().default(sql`CURRENT_TIMESTAMP()`),
@@ -55,27 +83,27 @@ export const boardTable = mysqlTable('board', {
     category: tinyint(),
     notice: tinyint(),
     due_date: date(),
-    tag_user_id: int().references(() => usersTable.uid),
+    tag_user_id: int().references(() => users.uid),
     view_count: int().notNull(),
     comment_count: int().notNull(),
-    subject_id: int().notNull().references(() => subjectTable.id),
+    subject_id: int().notNull().references(() => subjects.id),
 });
 
-// Student Class table
-export const studentClassTable = mysqlTable('student_class', {
-    user_id: int().notNull().references(() => usersTable.uid),
-    class_id: int().notNull().references(() => classInfoTable.id),
+// Relation table between user and class
+export const studentClasses = mysqlTable('student_class', {
+    user_id: int().notNull().references(() => users.uid, { onDelete: 'cascade' }),
+    class_id: int().notNull().references(() => classes.id, { onDelete: 'cascade' }),
 });
 
 // Homework table
-export const homeworkTable = mysqlTable('homework', {
-    article_id: int().notNull().references(() => boardTable.id),
-    user_id: int().notNull().references(() => usersTable.uid),
+export const homeworks = mysqlTable('homework', {
+    article_id: int().notNull().references(() => boards.id, { onDelete: 'cascade' }),
+    user_id: int().notNull().references(() => users.uid, { onDelete: 'cascade' }),
     due_date: date(),
     done: tinyint(),
-    cid: int().notNull().references(() => classInfoTable.id),
+    cid: int().notNull().references(() => classes.id, { onDelete: 'cascade' }),
     title: varchar({ length: 255 }).notNull(),
-    subject_id: int().notNull().references(() => subjectTable.id),
+    subject_id: int().notNull().references(() => subjects.id, { onDelete: 'cascade' }),
 }, (table) => {
     return {
         pk: primaryKey(table.article_id, table.user_id)
@@ -83,9 +111,9 @@ export const homeworkTable = mysqlTable('homework', {
 });
 
 // Sleep table
-export const sleepTable = mysqlTable('sleep', {
+export const sleeps = mysqlTable('sleep', {
     date: date().notNull().default(sql`CURDATE()`),
-    user_id: int().notNull().references(() => usersTable.uid),
+    user_id: int().notNull().references(() => users.uid, { onDelete: 'cascade' }),
     wakeup: datetime(),
     sleep: datetime(),
 }, (table) => {
@@ -95,15 +123,15 @@ export const sleepTable = mysqlTable('sleep', {
 });
 
 // Today Question table
-export const todayQuestionTable = mysqlTable('today_question', {
+export const todayQuestions = mysqlTable('today_question', {
     date: date().notNull().primaryKey(),
     question: longtext().notNull(),
 });
 
 // Today Answer table
-export const todayAnswerTable = mysqlTable('today_answer', {
-    date: date().notNull().references(() => todayQuestionTable.date),
-    user_id: int().notNull().references(() => usersTable.uid),
+export const todayAnswers = mysqlTable('today_answer', {
+    date: date().notNull().references(() => todayQuestions.date, { onDelete: 'cascade' }),
+    user_id: int().notNull().references(() => users.uid, { onDelete: 'cascade' }),
     answer: longtext().notNull(),
 }, (table) => {
     return {
@@ -112,55 +140,70 @@ export const todayAnswerTable = mysqlTable('today_answer', {
 });
 
 // To_do table
-export const todoTable = mysqlTable('todo', {
+export const todoes = mysqlTable('todo', {
     id: int().autoincrement().primaryKey(),
-    user_id: int().notNull().references(() => usersTable.uid),
+    user_id: int().notNull().references(() => users.uid, { onDelete: 'cascade' }),
     date: date().notNull(),
     content: varchar({ length: 255 }).notNull(),
     done: tinyint(),
-    article_id: int().references(() => homeworkTable.article_id),
+    article_id: int().references(() => homeworks.article_id, { onDelete: 'cascade' }),
 });
 
 // Timetable table
-export const timetableTable = mysqlTable('timetable', {
+export const timetables = mysqlTable('timetable', {
     id: int().autoincrement().primaryKey(),
-    class_id: int().notNull().references(() => classInfoTable.id),
-    subject_id: int().notNull().references(() => subjectTable.id),
+    class_id: int().notNull().references(() => classes.id, { onDelete: 'cascade' }),
+    subject_id: int().notNull().references(() => subjects.id, { onDelete: 'cascade' }),
     day: mysqlEnum(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']).notNull(),
     start: time().notNull(),
     end: time().notNull(),
 });
 
 // Subject table
-export const subjectTable = mysqlTable('subject', {
+export const subjects = mysqlTable('subject', {
     id: int().autoincrement().primaryKey(),
     name: varchar({ length: 255 }).notNull(),
-    user_id: int().notNull().references(() => usersTable.uid),
+    class_id: int().notNull().references(() => classes.id, { onDelete: 'cascade' }),
 });
 
 // Comment table
-export const commentTable = mysqlTable('comment', {
+export const comments = mysqlTable('comment', {
     id: int().autoincrement().primaryKey(),
-    id2: int().notNull().references(() => boardTable.id),
-    id3: int().notNull().references(() => usersTable.uid),
+    id2: int().notNull().references(() => boards.id, { onDelete: 'cascade' }),
+    id3: int().notNull().references(() => users.uid),
     content: longtext().notNull(),
     attach_files: json(),
 });
 
 // Alert table
-export const alertTable = mysqlTable('alert', {
+export const alerts = mysqlTable('alert', {
     id: int().autoincrement().primaryKey(),
-    user_id: int().notNull().references(() => usersTable.uid),
+    user_id: int().notNull().references(() => users.uid, { onDelete: 'cascade' }),
     read: tinyint(),
     alert_type: tinyint(),
-    article_id: int().references(() => boardTable.id),
+    article_id: int().references(() => boards.id, { onDelete: 'cascade' }),
     message: varchar({ length: 255 }).notNull(),
 });
 
 // Log table
-export const logTable = mysqlTable('log', {
+export const logs = mysqlTable('log', {
     id: int().autoincrement().primaryKey(),
-    user_id: int().notNull().references(() => usersTable.uid),
+    user_id: int().notNull().references(() => users.uid),
     detail: longtext().notNull(),
     time: datetime().notNull().default(sql`CURRENT_TIMESTAMP()`),
 });
+
+// Relation table between student and class
+export const studentClassesRelations = relations(
+    studentClasses,
+    ({ one }) => ({
+        user: one(users, {
+            fields: [studentClasses.user_id],
+            references: [users.uid]
+        }),
+        classInfo: one(classes, {
+            fields: [studentClasses.class_id],
+            references: [classes.id]
+        })
+    })
+);
