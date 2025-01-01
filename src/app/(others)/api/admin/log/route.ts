@@ -151,20 +151,20 @@ export async function GET(req: NextRequest) {
         let queryBuilder = new QueryBuilder();
         let query =
             queryBuilder.select({
-                'log_id': schema.logTable.id,
-                'user_id': schema.logTable.user_id,
-                'detail': schema.logTable.detail,
-                'time': schema.logTable.time
+                'log_id': schema.logs.id,
+                'user_id': schema.logs.user_id,
+                'detail': schema.logs.detail,
+                'time': schema.logs.time
             })
-                .from(schema.logTable)
+                .from(schema.logs)
                 .$dynamic();
         if (parseInt(user_id)) {
-            query = query.where(eq(schema.logTable.user_id, parseInt(user_id)));
+            query = query.where(eq(schema.logs.user_id, parseInt(user_id)));
         }
         if (search_string) {
-            query = query.where(like(schema.logTable.detail, `%${search_string}%`));
+            query = query.where(like(schema.logs.detail, `%${search_string}%`));
         }
-        query = query.orderBy(desc(schema.logTable.time));
+        query = query.orderBy(desc(schema.logs.time));
         query = query.limit(parseInt(limit));
         query = query.offset((parseInt(page) - 1) * parseInt(limit));
 

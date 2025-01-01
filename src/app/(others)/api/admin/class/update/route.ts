@@ -11,14 +11,15 @@ import {
     UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
+import {classes} from "@/database/schema";
 
 /**
  * @swagger
- * /api/admin/user/delete:
- *  delete:
+ * /api/admin/class/update:
+ *  put:
  *      tags:
- *          - Admin/User
- *      description: Delete a user
+ *          - Admin/Class
+ *      description: Update a class info
  *      requestBody:
  *          required: true
  *          content:
@@ -26,15 +27,24 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *                  schema:
  *                      type: object
  *                      properties:
- *                          user_id:
+ *                          class_id:
  *                              type: number
- *                              description: User's ID
+ *                              description: Class's ID
  *                              example: 1
+ *                          class_name:
+ *                              type: string
+ *                              description: Class name
+ *                              example: "G3 K"
+ *                          display:
+ *                              type: boolean
+ *                              description: Display the class
+ *                              example: true
  *                      required:
- *                          - user_id
+ *                          - class_id
+ *                          - class_name
  *      responses:
  *          "200":
- *              description: User deleted
+ *              description: Class updated
  *              content:
  *                  application/json:
  *                      schema:
@@ -45,7 +55,7 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *                                  example: true
  *                              message:
  *                                  type: string
- *                                  example: "User deleted"
+ *                                  example: "Class updated"
  *          "400":
  *              description: Bad request
  *              content:
@@ -58,35 +68,8 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *                                  example: false
  *                              message:
  *                                  type: string
- *                                  example: "error message"
- *          "401":
- *              description: Not logged in
- *              content:
- *                  application/json:
- *                      schema:
- *                          type: object
- *                          properties:
- *                              success:
- *                                  type: boolean
- *                                  example: false
- *                              message:
- *                                  type: string
- *                                  example: "error message"
- *          "403":
- *              description: Permission denied
- *              content:
- *                  application/json:
- *                      schema:
- *                          type: object
- *                          properties:
- *                              success:
- *                                  type: boolean
- *                                  example: false
- *                              message:
- *                                  type: string
- *                                  example: "error message"
  */
-export async function DELETE(req: NextRequest) {
+export async function PUT(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
             const token: string = req.cookies.get("token")?.value ?? '';
@@ -105,30 +88,45 @@ export async function DELETE(req: NextRequest) {
             }
 
             const data = await req.json();
-            if (!data.user_id) {
-                return return_400('user_id is required');
+            const class_id = data.class_id;
+            let name = data.class_name;
+            const display = data.display ?? false;
+            if (!class_id) {
+                return return_400('class_id is required');
             }
-            const user_id = data.user_id;
-            const [user] =
-                await tx.select()
-                    .from(schema.users)
-                    .where(
-                        eq(schema.users.uid, user_id)
-                    );
-            if (!user) {
-                return return_400('User not found');
+            if (!name) {
+                return return_400('class_name is required');
             }
-            if (user.user_type == UserType.ADMIN) {
-                return return_400('Cannot delete admin');
+            name = name.toString();
+            if (name.length > 255) {
+                return return_400('class_name is too long');
             }
-            await tx.delete(schema.users)
-                .where(eq(schema.users.uid, user_id));
+            if (typeof display !== 'boolean') {
+                return return_400('display must be a boolean');
+            }
 
-            await db_log(tx, decoded.user_id, `User ${user.uid} deleted`);
+            let [classInfo] =
+                await tx.select()
+                    .from(schema.classes)
+                    .where(
+                        eq(schema.classes.id, class_id)
+                    );
+            if (!classInfo) {
+                return return_400('Class not found');
+            }
+
+            await tx.update(schema.classes)
+                .set({
+                    name: name.toString(),
+                    display: display ? 1 : 0
+                })
+                .where(eq(schema.classes.id, class_id));
+
+            await db_log(tx, decoded.user_id, `Updated class ${class_id} to ${name}/${display ? 'display' : 'hidden'}`);
 
             return NextResponse.json({
                 success: true,
-                message: 'User deleted',
+                message: 'Class updated'
             });
         });
     } catch (e) {

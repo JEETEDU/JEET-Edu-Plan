@@ -179,34 +179,34 @@ export async function GET(req: NextRequest) {
         let queryBuilder = new QueryBuilder();
         let query =
             queryBuilder.select({
-                    uid: schema.usersTable.uid,
-                    login_id: schema.usersTable.login_id,
-                    user_type: schema.usersTable.user_type,
-                    name: schema.usersTable.name,
-                    first_year: schema.usersTable.first_year,
-                    school: schema.usersTable.school,
-                    joined_term: schema.usersTable.joined_term
+                    uid: schema.users.uid,
+                    login_id: schema.users.login_id,
+                    user_type: schema.users.user_type,
+                    name: schema.users.name,
+                    first_year: schema.users.first_year,
+                    school: schema.users.school,
+                    joined_term: schema.users.joined_term
                 })
-                .from(schema.usersTable)
+                .from(schema.users)
                 .$dynamic();
         if (search_by && search_string) {
             if (search_by == 'user_id') {
-                query = query.where(eq(schema.usersTable.uid, parseInt(search_string)));
+                query = query.where(eq(schema.users.uid, parseInt(search_string)));
             }
             else if (search_by == 'user_type') {
-                query = query.where(eq(schema.usersTable.user_type, parseInt(search_string)));
+                query = query.where(eq(schema.users.user_type, parseInt(search_string)));
             }
             else if (search_by == 'name') {
-                query = query.where(like(schema.usersTable.name, `%${search_string}%`));
+                query = query.where(like(schema.users.name, `%${search_string}%`));
             }
             else if (search_by == 'first_year') {
-                query = query.where(eq(schema.usersTable.first_year, parseInt(search_string)));
+                query = query.where(eq(schema.users.first_year, parseInt(search_string)));
             }
             else if (search_by == 'school') {
-                query = query.where(like(schema.usersTable.school, `%${search_string}%`));
+                query = query.where(like(schema.users.school, `%${search_string}%`));
             }
             else if (search_by == 'joined_term') {
-                query = query.where(like(schema.usersTable.joined_term, `%${search_string}%`));
+                query = query.where(like(schema.users.joined_term, `%${search_string}%`));
             }
             else {
                 return return_400('Invalid search_by');
@@ -225,19 +225,19 @@ export async function GET(req: NextRequest) {
             }
 
             if (order_by == 'user_type') {
-                query = query.orderBy(order_func(schema.usersTable.user_type));
+                query = query.orderBy(order_func(schema.users.user_type));
             }
             else if (order_by == 'name') {
-                query = query.orderBy(order_func(schema.usersTable.name));
+                query = query.orderBy(order_func(schema.users.name));
             }
             else if (order_by == 'first_year') {
-                query = query.orderBy(order_func(schema.usersTable.first_year));
+                query = query.orderBy(order_func(schema.users.first_year));
             }
             else if (order_by == 'school') {
-                query = query.orderBy(order_func(schema.usersTable.school));
+                query = query.orderBy(order_func(schema.users.school));
             }
             else if (order_by == 'joined_term') {
-                query = query.orderBy(order_func(schema.usersTable.joined_term));
+                query = query.orderBy(order_func(schema.users.joined_term));
             }
             else {
                 return return_400('Invalid order_by');

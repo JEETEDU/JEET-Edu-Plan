@@ -111,9 +111,9 @@ export async function POST(req: NextRequest) {
 
             let [user] =
                 await tx.select()
-                    .from(schema.usersTable)
+                    .from(schema.users)
                     .where(
-                        eq(schema.usersTable.uid, data.user_id)
+                        eq(schema.users.uid, data.user_id)
                     );
             if (!user) {
                 return return_400('User not found');
@@ -122,9 +122,9 @@ export async function POST(req: NextRequest) {
                 return return_400('User has already been approved');
             }
 
-            await tx.delete(schema.usersTable)
+            await tx.delete(schema.users)
                 .where(
-                    eq(schema.usersTable.uid, data.user_id)
+                    eq(schema.users.uid, data.user_id)
                 );
 
             await db_log(tx, decoded.user_id, `User ${user.uid} rejected`);

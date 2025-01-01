@@ -82,16 +82,16 @@ export async function GET(req: NextRequest) {
 
         let [user] =
             await db.select({
-                    uid: schema.usersTable.uid,
-                    login_id: schema.usersTable.login_id,
-                    user_type: schema.usersTable.user_type,
-                    name: schema.usersTable.name,
-                    first_year: schema.usersTable.first_year,
-                    school: schema.usersTable.school,
-                    joined_term: schema.usersTable.joined_term
+                    uid: schema.users.uid,
+                    login_id: schema.users.login_id,
+                    user_type: schema.users.user_type,
+                    name: schema.users.name,
+                    first_year: schema.users.first_year,
+                    school: schema.users.school,
+                    joined_term: schema.users.joined_term
                 })
-                .from(schema.usersTable)
-                .where(eq(schema.usersTable.uid, decoded.user_id))
+                .from(schema.users)
+                .where(eq(schema.users.uid, decoded.user_id))
 
         return NextResponse.json({
             success: true,

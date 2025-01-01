@@ -116,7 +116,7 @@ export async function POST(req: NextRequest) {
             }
 
             // @ts-ignore
-            await tx.insert(schema.usersTable).values(
+            await tx.insert(schema.users).values(
                 {
                     login_id: login_id,
                     pw: crypto.createHash('sha256').update(pw).digest(),
@@ -126,8 +126,8 @@ export async function POST(req: NextRequest) {
 
             // set token
             let [user] = await tx.select()
-                .from(schema.usersTable)
-                .where(eq(schema.usersTable.login_id, login_id));
+                .from(schema.users)
+                .where(eq(schema.users.login_id, login_id));
 
             let new_token = generateToken(user.uid, user.user_type);
             let res = NextResponse.json({

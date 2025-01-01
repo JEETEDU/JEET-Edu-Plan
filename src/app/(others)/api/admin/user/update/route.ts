@@ -15,7 +15,7 @@ import {verifyToken} from "@/app/(others)/api/(tools)/auth";
 /**
  * @swagger
  * /api/admin/user/update:
- *  put:
+ *  patch:
  *      tags:
  *          - Admin/User
  *      description: Update a user
@@ -106,7 +106,7 @@ import {verifyToken} from "@/app/(others)/api/(tools)/auth";
  *                                  type: string
  *                                  example: "error message"
  */
-export async function PUT(req: NextRequest) {
+export async function PATCH(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
             const token: string = req.cookies.get("token")?.value ?? '';
@@ -132,9 +132,9 @@ export async function PUT(req: NextRequest) {
 
             let [user] =
                 await tx.select()
-                    .from(schema.usersTable)
+                    .from(schema.users)
                     .where(
-                        eq(schema.usersTable.uid, user_id)
+                        eq(schema.users.uid, user_id)
                     );
 
             if (!user) {
@@ -179,9 +179,9 @@ export async function PUT(req: NextRequest) {
             if (school) update_data['school'] = school;
             if (joined_term) update_data['joined_term'] = joined_term;
 
-            await tx.update(schema.usersTable)
+            await tx.update(schema.users)
                 .set(update_data)
-                .where(eq(schema.usersTable.uid, user_id));
+                .where(eq(schema.users.uid, user_id));
 
             await db_log(tx, user_id, `User ${user_id} updated to ${JSON.stringify(update_data)}`);
 

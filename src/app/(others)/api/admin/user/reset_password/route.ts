@@ -114,9 +114,9 @@ export async function POST(req: NextRequest) {
 
             let [user] =
                 await tx.select()
-                    .from(schema.usersTable)
+                    .from(schema.users)
                     .where(
-                        eq(schema.usersTable.uid, user_id)
+                        eq(schema.users.uid, user_id)
                     );
 
             if (!user) {
@@ -127,12 +127,12 @@ export async function POST(req: NextRequest) {
             }
 
             const new_random_password = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-            await tx.update(schema.usersTable)
+            await tx.update(schema.users)
                 .set({
                     //@ts-ignore
                     pw: crypto.createHash('sha256').update(new_random_password).digest()
                 })
-                .where(eq(schema.usersTable.uid, user_id));
+                .where(eq(schema.users.uid, user_id));
 
             await db_log(tx, decoded.user_id, `Password reset for user ${user_id} to ${new_random_password}`);
 

@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import {UserType} from "@/app/(others)/api/(tools)/tools";
 
 const secret: string = process.env.JWT_SECRET ?? '';
 
@@ -12,6 +13,7 @@ export function generateToken(user_id: number, user_type: number) {
 export function verifyToken(token: string): DecodedToken | false {
     try {
         let decoded: any = jwt.verify(token, secret);
+        if (decoded.user_type == UserType.NONE) return false;
         return {
             user_id: decoded.user_id,
             user_type: decoded.user_type

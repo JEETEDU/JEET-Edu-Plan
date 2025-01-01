@@ -90,12 +90,12 @@ export async function POST(req: NextRequest) {
 
         let [user] =
             await db.select()
-                .from(schema.usersTable)
+                .from(schema.users)
                 .where(
                     and(
-                        eq(schema.usersTable.login_id, login_id),
+                        eq(schema.users.login_id, login_id),
                         // @ts-ignore
-                        eq(schema.usersTable.pw, pw_hash)
+                        eq(schema.users.pw, pw_hash)
                     )
                 );
         if(!user) {
