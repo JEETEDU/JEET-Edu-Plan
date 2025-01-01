@@ -10,28 +10,26 @@ export async function middleware(req: NextRequest) {
         return NextResponse.next();
     }
 
-    const res = NextResponse.next();
+    const {cookies} = req;
+    cookies.set("isMobile", isMobile);
+    const hasToken = cookies.has('token');
+
+    // const res = NextResponse.next();
+    // res.cookies.set("isMobile", isMobile);
+
+    // return res;
+
+    let res = NextResponse.next();
+
+    if (!hasToken && req.nextUrl.pathname !== '/') {
+        res = NextResponse.redirect(new URL('/', req.nextUrl.origin));
+    } else if (hasToken && req.nextUrl.pathname === '/') {
+        res = NextResponse.redirect(new URL('/home', req.nextUrl.origin));
+    }
+
     res.cookies.set("isMobile", isMobile);
-    // res.cookies.set("user", false);
 
     return res;
-
-    // const _url = req.url.split('/');
-    // _url.pop();
-    // const parentUrl = _url.join("/");
-    //
-    // if (isMobile) {
-    //     if (url.pathname.endsWith('/mobile')) {
-    //         return NextResponse.next();
-    //     }
-    //     return NextResponse.redirect(new URL('/mobile', parentUrl));
-    // } else {
-    //     if (url.pathname.endsWith('/desktop')) {
-    //         return NextResponse.next();
-    //     }
-    //     return NextResponse.redirect(new URL('/desktop', parentUrl));
-    // }
-
 }
 
 export const config = {

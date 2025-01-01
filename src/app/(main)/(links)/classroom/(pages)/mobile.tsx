@@ -21,14 +21,13 @@ export default function Mobile() {
         {title: "반별 제목 예시", header: "마지막 대회 예시", time: "3분 전"},
         {title: "반별 제목 예시", header: "마지막 대회 예시", time: "3분 전"},
         {title: "반별 제목 예시", header: "마지막 대회 예시", time: "3분 전"},
-
     ];
 
     return (
         <div className="flex flex-col h-full">
             <div className="flex-grow overflow-hidden">
                 <div className="flex flex-col h-full">
-                    <div className="flex-grow overflow-y-auto p-4 bg-gray-50">
+                    <div className="flex-grow overflow-y-auto p-4 bg-gray-100">
                         {chatInfos.map((chat, index) => (
                             <Link
                                 href={`/classroom/${index}`}
