@@ -60,7 +60,7 @@ export default function Desktop() {
                                 </div>
                             </div>
                         </div>
-                        <div className="overflow-y-auto p-4 bg-gray-50">
+                        <div className="overflow-y-auto p-4 bg-gray-100">
                             {notifications.map((notification, index) => (
                                 <div
                                     key={index}
@@ -79,7 +79,7 @@ export default function Desktop() {
                     </div>
                 ) : (
                     <div className="flex-1 grid grid-cols-2 overflow-hidden">
-                        <div className="overflow-hidden bg-gray-50 flex flex-col px-4 pt-4">
+                        <div className="overflow-hidden bg-gray-100 flex flex-col px-4 pt-4">
                             <div className="text-center text-2xl mb-4">
                                 숙제 목록
                             </div>
@@ -100,7 +100,7 @@ export default function Desktop() {
                                 ))}
                             </div>
                         </div>
-                        <div className="overflow-hidden pt-4 px-4 bg-gray-50 flex flex-col">
+                        <div className="overflow-hidden pt-4 px-4 bg-gray-100 flex flex-col">
                             <div className="text-center text-2xl mb-4">
                                 내 할일 목록
                             </div>
@@ -123,7 +123,7 @@ export default function Desktop() {
                         </div>
                     </div>
                 )}
-                <div className="bg-gray-50 p-4 grid grid-cols-3 w-full items-center">
+                <div className="bg-gray-100 p-4 grid grid-cols-3 w-full items-center">
                     <div className="flex justify-start">
                         <button
                             className="bg-white hover:bg-gray-200 transition duration-200 h-fit rounded-lg text-center py-2 px-5"

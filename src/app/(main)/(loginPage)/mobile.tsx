@@ -1,10 +1,9 @@
 "use client";
 
-import Link from "next/link";
+// import Link from "next/link";
 import React, {useState} from "react";
 import {cn, post} from "@/app/(main)/components/functions";
 import {useRouter} from "next/navigation";
-import {awaitExpression} from "@babel/types";
 
 export default function Mobile() {
     const [showPassword, setShowPassword] = useState(false);
@@ -17,7 +16,6 @@ export default function Mobile() {
             login_id: document.getElementById("id").value,
             pw: document.getElementById("password").value
         })
-        console.log(res);
         if (res.success) {
             router.push('/home');
         } else {
@@ -31,7 +29,6 @@ export default function Mobile() {
             login_id: document.getElementById("id").value,
             pw: document.getElementById("password").value
         })
-        console.log(res);
         if (res.success) {
             router.push('/home');
         } else {

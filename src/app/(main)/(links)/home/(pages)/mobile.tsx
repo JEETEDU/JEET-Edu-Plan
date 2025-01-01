@@ -58,6 +58,10 @@ export default function Mobile() {
         ? todo
         : todo.filter(task => !task.completed);  // 완료된 할 일을 숨기면 완료되지 않은 할 일만 필터링
 
+    const headNotification = {
+        content: "1월 10일에 겨울학기가 시작합니다.",
+    };
+
     return (
         <div className="flex flex-col h-full">
             <div className="h-fit">
@@ -83,10 +87,16 @@ export default function Mobile() {
                 </div>
             </div>
 
+            <div className={cn(
+                "text-center text-xl font-bold py-2 bg-gray-100 border-red-600 border-8 h-fit"
+            )}>
+                {headNotification.content}
+            </div>
+
             <div className="flex-grow overflow-hidden">
                 {isInfo ? (
                     <div className="flex flex-col h-full">
-                        <div className="flex-grow overflow-y-auto p-4 bg-gray-50">
+                        <div className="flex-grow overflow-y-auto p-4 bg-gray-100">
                             {notifications.map((notification, index) => (
                                 <Link
                                     href={`/notifications/${index}`}
@@ -136,7 +146,7 @@ export default function Mobile() {
                             </div>
                         </div>
 
-                        <div className="flex-grow overflow-y-auto p-4 bg-gray-50">
+                        <div className="flex-grow overflow-y-auto p-4 bg-gray-100">
                             {filteredTasks.map((task, index) => (
                                 <Link
                                     href={`/homeworks/${index}`}

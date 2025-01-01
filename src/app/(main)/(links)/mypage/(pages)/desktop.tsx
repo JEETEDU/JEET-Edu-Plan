@@ -1,58 +1,65 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import React from "react";
-// import {useCookies} from "next-client-cookies";
+import {getUserInfo, post} from "@/app/(main)/components/functions";
+import React, {useEffect, useState} from "react";
+import {useRouter} from "next/navigation";
 
-export default function Desktop() {
-    // const cookies = useCookies();
-    // if (cookies.get('user') === 'false') {
-    //     cookies.set('user', 'true');
-    // }
-    // console.log(`page: ${cookies.get('user')}`)
+export default function Mobile() {
+    const [error, setError] = useState("");
+    const router = useRouter();
 
-    return (<>
-        <div className="custom-container min-h-screen flex flex-col items-center py-10">
-            <div className={`custom-container`}>
-                <form
-                    // onSubmit={handleSubmit}
-                    className="custom-form"
-                >
-                    <div>
-                        <label htmlFor="name">Name:</label>
-                        <input
-                            type="text"
-                            id="name"
-                            // value={name}
-                            // onChange={(e) => setName(e.target.value)}
-                            className="custom-input"
-                            placeholder='input name'
-                            required
-                        />
-                    </div>
+    const [name, setName] = useState("Loading...");
 
-                    <div>
-                        <label htmlFor="password">Password:</label>
-                        <input
-                            type="password"
-                            id="pw"
-                            // value={pw}
-                            // onChange={(e) => setPw(e.target.value)}
-                            className="custom-input"
-                            placeholder='input password'
-                            required
-                        />
-                    </div>
-                    <div className='flex-row align-left'>
-                        <Link
-                            className="custom-btn"
-                            href={'/'}
-                        >
-                            Login
-                        </Link>
-                    </div>
-                </form>
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            const userName = await getUserInfo("name");
+            if (userName) {
+                setName(userName);
+            }
+        };
+
+        fetchUserInfo().then(r => console.log(r));
+    }, []);
+
+    const logout = async () => {
+        const res = await post("/api/user/logout", {})
+        if (res.success) {
+            router.push('/');
+        } else {
+            setError(res.message);
+        }
+    }
+
+    return (
+        <>
+            <div className='text-red-600 font-bold'>
+                {error}
             </div>
-        </div>
-    </>)
+
+            <div className="w-full h-full flex flex-col items-center bg-gray-100">
+                <div className="w-full flex flex-row justify-between items-center py-3 px-6">
+                    <div className="text-4xl font-bold text-gray-800">
+                        {name}
+                    </div>
+                    <div className="w-fit flex flex-col items-end">
+                        <div className="text-left text-xl font-bold text-gray-800">
+                            {/*{user.grade}*/}
+                            {/*{user !== null && user.first_year}*/}
+                        </div>
+                        <div className="text-left text-l font-bold text-gray-600">
+                            {/*{user.school}*/}
+                            {/*{user !== null && user.school}*/}
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    className="mt-6 px-4 py-2 bg-red-500 text-white font-bold rounded hover:bg-red-600"
+                    onClick={logout}
+                >
+                    로그아웃
+                </div>
+            </div>
+        </>
+    )
 }
