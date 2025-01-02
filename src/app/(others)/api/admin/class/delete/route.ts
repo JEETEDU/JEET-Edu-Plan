@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server';
 import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
-import { eq } from 'drizzle-orm';
+import {and, eq} from 'drizzle-orm';
 import {
     db_log,
     return_400, return_500,
@@ -11,17 +11,18 @@ import {
     UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
+import {studentClasses} from "@/database/schema";
 
 /**
  * @swagger
- * /api/admin/user/accept:
- *  post:
+ * /api/admin/class/delete:
+ *  delete:
  *      tags:
- *          - Admin/User
- *      description: <b>Admin</b><br>Accept a user
+ *          - Admin/Class
+ *      summary: Delete a class
+ *      description: <b>Admin</b><br>Delete a class
  *      security:
  *          - cookieAuth: []
- *      summary: Accept a user
  *      requestBody:
  *          required: true
  *          content:
@@ -29,15 +30,15 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *                  schema:
  *                      type: object
  *                      properties:
- *                          user_id:
+ *                          class_id:
  *                              type: number
- *                              description: User's ID
+ *                              description: Class ID
  *                              example: 1
  *                      required:
- *                          - user_id
+ *                          - class_id
  *      responses:
  *          "200":
- *              description: User accepted
+ *              description: Class deleted
  *              content:
  *                  application/json:
  *                      schema:
@@ -48,20 +49,13 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *                                  example: true
  *                              message:
  *                                  type: string
- *                                  example: "User accepted"
+ *                                  example: "Class deleted"
  *          "400":
  *              description: Bad request
  *              content:
  *                  application/json:
  *                      schema:
  *                          type: object
- *                          properties:
- *                              success:
- *                                  type: boolean
- *                                  example: false
- *                              message:
- *                                  type: string
- *                                  example: "error message"
  *          "401":
  *              description: Not logged in
  *              content:
@@ -89,7 +83,7 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *                                  type: string
  *                                  example: "error message"
  */
-export async function POST(req: NextRequest) {
+export async function DELETE(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
             const token: string = req.cookies.get("token")?.value ?? '';
@@ -102,38 +96,35 @@ export async function POST(req: NextRequest) {
                 if (decoded.user_type < UserType.ADMIN) { // not admin
                     return return_permission_denied();
                 }
-            }
-            else { // not logged in
+            } else { // not logged in
                 return return_not_logged_in();
             }
 
             const data = await req.json();
-            if (!data.user_id) {
-                return return_400('user_id is required');
+            if (!data.class_id) {
+                return return_400('class_id is required');
             }
 
-            let [user] =
-                await tx.select()
-                    .from(schema.users)
-                    .where(
-                        eq(schema.users.uid, data.user_id)
-                    );
-            if(!user) {
-                return return_400('User not found');
-            }
-            if (user.user_type != 0) {
-                return return_400('User has already been approved');
+            let [class_] = await tx.select()
+                .from(schema.classes)
+                .where(
+                    eq(schema.classes.id, data.class_id)
+                );
+
+            if (!class_) {
+                return return_400('Class not found');
             }
 
-            await tx.update(schema.users)
-                .set({user_type: 1})
-                .where(eq(schema.users.uid, data.user_id));
+            await tx.delete(schema.classes)
+                .where(
+                    eq(schema.classes.id, data.class_id)
+                );
 
-            await db_log(tx, decoded.user_id, `User ${user.uid} approved`);
+            await db_log(tx, decoded.user_id, `Class ${data.class_id} deleted`);
 
             return NextResponse.json({
                 success: true,
-                message: 'User approved'
+                message: "Class deleted"
             });
         });
     } catch (e) {

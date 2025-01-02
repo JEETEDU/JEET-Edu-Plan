@@ -136,6 +136,19 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
  *                 message:
  *                   type: string
  *                   example: "Not logged in"
+ *       403:
+ *         description: Permission denied.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Permission denied"
  *       500:
  *         description: Server error.
  *         content:
@@ -205,6 +218,13 @@ export async function GET(req: NextRequest, {params}: {params: {class_id: number
             .where(
                 eq(schema.studentClasses.class_id, class_id)
             );
+
+        // if the user is a student, they should only see their own information
+        if (decoded.user_type == UserType.STUDENT) {
+            if (students.filter((student: any) => student.uid == decoded.user_id).length == 0) {
+                return return_permission_denied();
+            }
+        }
 
         let teachers = await db.select({
             ...user_select_columns,

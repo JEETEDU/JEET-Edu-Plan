@@ -19,7 +19,10 @@ import {classes} from "@/database/schema";
  *  post:
  *      tags:
  *          - Admin/Class
- *      description: Create a class
+ *      security:
+ *          - cookieAuth: []
+ *      summary: Create a class
+ *      description: <b>Admin</b><br>Create a class
  *      requestBody:
  *          required: true
  *          content:
@@ -123,14 +126,14 @@ export async function POST(req: NextRequest) {
                 return return_400('display must be a boolean');
             }
 
-            const class_id =
+            const [class_id] =
                 await tx.insert(schema.classes)
                 .values({
                     name: name.toString(),
                     display: display ? 1 : 0
                 }).$returningId();
 
-            await db_log(tx, decoded.user_id, `Class ${class_id}(name: ${name}) created`);
+            await db_log(tx, decoded.user_id, `Class ${class_id.id}(name: ${name}) created`);
 
             return NextResponse.json({
                 success: true,

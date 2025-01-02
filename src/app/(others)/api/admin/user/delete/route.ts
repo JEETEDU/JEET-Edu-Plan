@@ -18,7 +18,10 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *  delete:
  *      tags:
  *          - Admin/User
- *      description: Delete a user
+ *      description: <b>Admin</b><br>Delete a user
+ *      security:
+ *          - cookieAuth: []
+ *      summary: Delete a user
  *      requestBody:
  *          required: true
  *          content:

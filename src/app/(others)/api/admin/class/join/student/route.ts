@@ -19,7 +19,10 @@ import {studentClasses} from "@/database/schema";
  *  post:
  *      tags:
  *          - Admin/Class
+ *      security:
+ *          - cookieAuth: []
  *      summary: Join student to the class
+ *      description: <b>Admin</b><br>Join student to the class
  *      requestBody:
  *          required: true
  *          content:

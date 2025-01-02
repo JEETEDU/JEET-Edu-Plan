@@ -17,7 +17,10 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
  * @swagger
  * /api/admin/today/response:
  *   get:
+ *     security:
+ *       - cookieAuth: []
  *     summary: Retrieve today's user responses
+ *     description: <b>Admin</b><br>Retrieve today's user responses
  *     tags: [Admin]
  *     parameters:
  *       - in: query
