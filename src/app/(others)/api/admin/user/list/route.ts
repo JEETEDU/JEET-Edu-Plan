@@ -19,7 +19,10 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
  *  get:
  *      tags:
  *          - Admin/User
- *      description: List users
+ *      description: <b>Admin</b><br>List users
+ *      security:
+ *          - cookieAuth: []
+ *      summary: List users
  *      parameters:
  *          - in: query
  *            name: page

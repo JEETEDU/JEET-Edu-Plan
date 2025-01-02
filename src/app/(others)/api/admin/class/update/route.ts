@@ -19,7 +19,10 @@ import {classes} from "@/database/schema";
  *  put:
  *      tags:
  *          - Admin/Class
- *      description: Update a class info
+ *      security:
+ *          - cookieAuth: []
+ *      summary: Update a class info
+ *      description: <b>Admin</b><br>Update a class info
  *      requestBody:
  *          required: true
  *          content:

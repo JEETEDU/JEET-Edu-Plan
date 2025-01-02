@@ -18,7 +18,10 @@ import {verifyToken} from "@/app/(others)/api/(tools)/auth";
  *  patch:
  *      tags:
  *          - Admin/User
- *      description: Update a user
+ *      description: <b>Admin</b><br>Update a user
+ *      security:
+ *          - cookieAuth: []
+ *      summary: Update a user
  *      requestBody:
  *          required: true
  *          content:
