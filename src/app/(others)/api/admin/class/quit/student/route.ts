@@ -18,7 +18,8 @@ import {studentClasses} from "@/database/schema";
  * /api/admin/class/quit/student:
  *  post:
  *      tags:
- *          - Admin/Class
+ *          - Admin
+ *          - Class
  *      security:
  *          - cookieAuth: []
  *      summary: Quit student from the class
