@@ -125,14 +125,21 @@ export const sleeps = mysqlTable('sleep', {
 // Today Question table
 export const todayQuestions = mysqlTable('today_question', {
     date: date().notNull().primaryKey(),
-    question: longtext().notNull(),
+    question_1: longtext(),
+    question_2: longtext(),
+    question_3: longtext()
 });
 
 // Today Answer table
 export const todayAnswers = mysqlTable('today_answer', {
-    date: date().notNull().references(() => todayQuestions.date, { onDelete: 'cascade' }),
+    date: date().notNull(),
     user_id: int().notNull().references(() => users.uid, { onDelete: 'cascade' }),
-    answer: longtext().notNull(),
+    answer_1: longtext(),
+    answer_2: longtext(),
+    answer_3: longtext(),
+    answer_lastday: longtext(),
+    answer_school: longtext(),
+    answer_academy: longtext()
 }, (table) => {
     return {
         pk: primaryKey(table.date, table.user_id)
