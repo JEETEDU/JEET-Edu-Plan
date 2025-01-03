@@ -11,7 +11,7 @@ export function TodayQuestion({device}: {device}) {
 
     return (<>
         {!answered && (
-            <div className="fixed inset-0 flex items-end justify-end z-5 pointer-events-none">
+            <div className="fixed inset-0 flex items-end justify-end z-50 pointer-events-none">
                 <div
                     className={cn(
                         "p-3 rounded-2xl bg-blue-400 shadow-2xl hover:bg-blue-500 border border-blueGray pointer-events-auto",
@@ -27,7 +27,7 @@ export function TodayQuestion({device}: {device}) {
         )}
         {showQuestion && (
             <div
-                className="fixed inset-0 bg-black/50 flex items-center justify-center z-10"
+                className="fixed inset-0 bg-black/50 flex items-center justify-center z-60"
                 onClick={() => setShowQuestion(!showQuestion)} // 모달 바깥 클릭 시 닫힘
             >
                 <div

@@ -61,7 +61,10 @@ export default function Desktop() {
                             "bg-white pointer-events-none": isLogin,
                             "bg-gray-300 hover:bg-gray-200 transition duration-200": !isLogin
                         }, "h-fit rounded-l-lg text-center p-2")}
-                        onClick={() => setIsLogin(!isLogin)}
+                        onClick={() => {
+                            setIsLogin(true);
+                            setError("")
+                        }}
                     >
                         로그인
                     </button>
@@ -70,7 +73,10 @@ export default function Desktop() {
                             "bg-white pointer-events-none": !isLogin,
                             "bg-gray-300 hover:bg-gray-200 transition duration-200": isLogin
                         }, "h-fit rounded-r-lg text-center p-2")}
-                        onClick={() => setIsLogin(!isLogin)}
+                        onClick={() => {
+                            setIsLogin(false);
+                            setError("")
+                        }}
                     >
                         회원가입
                     </button>
@@ -142,7 +148,19 @@ export default function Desktop() {
                             </div>
                             <div
                                 className="component-button"
-                                onClick={isLogin ? login : register}
+                                onClick={
+                                    isLogin ? (
+                                        () => {
+                                            setError("로그인 하는중...");
+                                            login()
+                                        }
+                                    ) : (
+                                        () => {
+                                            setError("회원 가입 하는중...");
+                                            register()
+                                        }
+                                    )
+                                }
                             >
                                 {isLogin ? "로그인" : "회원가입"}
                             </div>
