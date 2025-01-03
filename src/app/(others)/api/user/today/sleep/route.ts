@@ -9,7 +9,7 @@ import {
     return_400,
     return_500,
     return_not_logged_in,
-    return_permission_denied,
+    return_permission_denied, to_time_string,
     UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {QueryBuilder} from "drizzle-orm/mysql-core";
@@ -17,9 +17,11 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
 /**
  * @swagger
  * /api/user/today/sleep:
- *  post:
+ *  put:
  *      tags:
  *          - User
+ *          - Today
+ *      summary: Register today's sleep time of the logged in user
  *      description: Register today's sleep time if not registered yet and update if already registered
  *      requestBody:
  *          required: true
@@ -73,7 +75,7 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
  *                      schema:
  *                          type: object
  */
-export async function POST(req: NextRequest) {
+export async function PUT(req: NextRequest) {
     try {
         return await db.transaction(async (tx) => {
             const token: string = req.cookies.get("token")?.value ?? '';
@@ -161,6 +163,8 @@ export async function POST(req: NextRequest) {
  *  get:
  *      tags:
  *          - User
+ *          - Today
+ *      summary: Get today's sleep time of the logged in user
  *      description: Get today's sleep time. If date is not provided, it will return today's sleep time.
  *      parameters:
  *          - name: date
@@ -254,26 +258,18 @@ export async function GET(req: NextRequest) {
 
         let [sleep_info] = await db.execute(query);
 
-        if (!sleep_info) {
+        // @ts-ignore
+        if (sleep_info.lenght == 0) {
             return return_400("No data found");
         }
-
-        console.debug(query.toSQL().sql, query.toSQL().params);
-        console.debug(sleep_info);
 
         return NextResponse.json({
             success: true,
             // @ts-ignore
             sleep_info: sleep_info.map((info: any) => {
-                // Convert UTC to KST
-                let sleep = new Date(info.sleep);
-                sleep.setHours(sleep.getHours() + 9);
-                let wakeup = new Date(info.wakeup);
-                wakeup.setHours(wakeup.getHours() + 9);
-
                 return {
-                    sleep: `${sleep.getHours().toString().padStart(2, '0')}:${sleep.getMinutes().toString().padStart(2, '0')}`,
-                    wakeup: `${wakeup.getHours().toString().padStart(2, '0')}:${wakeup.getMinutes().toString().padStart(2, '0')}`
+                    sleep: to_time_string(new Date(info.sleep)),
+                    wakeup: to_time_string(new Date(info.wakeup))
                 };
             })
         }, {status: 200});

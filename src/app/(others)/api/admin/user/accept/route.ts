@@ -18,7 +18,10 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *  post:
  *      tags:
  *          - Admin/User
- *      description: Accept a user
+ *      description: <b>Admin</b><br>Accept a user
+ *      security:
+ *          - cookieAuth: []
+ *      summary: Accept a user
  *      requestBody:
  *          required: true
  *          content:

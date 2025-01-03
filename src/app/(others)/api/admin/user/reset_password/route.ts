@@ -19,7 +19,10 @@ import crypto from 'crypto'
 *  post:
 *      tags:
 *          - Admin/User
-*      description: Reset password of a user
+*      description: <b>Admin</b><br>Reset password of a user to a random password
+*      security:
+*          - cookieAuth: []
+*      summary: Reset password of a user to a random password
 *      requestBody:
 *          required: true
 *          content:

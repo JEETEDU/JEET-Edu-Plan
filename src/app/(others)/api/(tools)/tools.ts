@@ -44,3 +44,12 @@ export async function db_log(tx: any, user_id: number, detail: string) {
             detail: detail,
         });
 }
+
+export function to_date_string(date: Date): string {
+    return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+}
+
+export function to_time_string(date: Date): string {
+    date.setHours(date.getHours() + 9);
+    return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+}
