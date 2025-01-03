@@ -2,12 +2,12 @@ import type { NextRequest } from 'next/server';
 import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
-import {asc, desc, eq, like, sql} from 'drizzle-orm';
+import {and, asc, desc, eq, like, SQL, sql} from 'drizzle-orm';
 import {
     return_400,
     return_500,
     return_not_logged_in,
-    return_permission_denied,
+    return_permission_denied, to_date_string, to_time_string,
     UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {verifyToken} from "@/app/(others)/api/(tools)/auth";
@@ -17,8 +17,11 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
  * @swagger
  * /api/admin/today/response:
  *   get:
- *     summary: Retrieve today's user responses
- *     tags: [Admin]
+ *     security:
+ *       - cookieAuth: []
+ *     summary: Get today's user responses
+ *     description: <b>Admin</b><br>Get user responses of one day. If date is not provided, it will get today's responses.
+ *     tags: [Admin, Today]
  *     parameters:
  *       - in: query
  *         name: page
@@ -120,6 +123,18 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
  *                           wakeup:
  *                             type: string
  *                             example: "06:00"
+ *                 questions:
+ *                   type: object
+ *                   properties:
+ *                     question_1:
+ *                       type: string
+ *                       example: "How was your day?"
+ *                     question_2:
+ *                       type: string
+ *                       example: "What did you do today?"
+ *                     question_3:
+ *                       type: string
+ *                       example: "What are you planning to do tomorrow?"
  *       400:
  *         description: Bad request
  *         content:
@@ -178,7 +193,7 @@ export async function GET(req: NextRequest) {
         const data = req.nextUrl.searchParams;
         const page = data.get('page') ?? '1';
         const limit = data.get('limit') ?? '10';
-        const date = data.get('date') ?? '';
+        let date: string | SQL = data.get('date') ?? '';
         const search_by = data.get('search_by') ?? '';
         const search_string = data.get('search_string') ?? '';
         const order_by = data.get('order_by') ?? 'name';
@@ -191,31 +206,29 @@ export async function GET(req: NextRequest) {
             return return_400('Invalid limit');
         }
 
-        let queryBuilder = new QueryBuilder();
-        let query =
-            queryBuilder.select({
-                uid: schema.users.uid,
-                login_id: schema.users.login_id,
-                name: schema.users.name,
-                first_year: schema.users.first_year,
-                school: schema.users.school,
-                joined_term: schema.users.joined_term,
-                sleep: schema.sleeps.sleep,
-                wakeup: schema.sleeps.wakeup
-            })
-                .from(schema.users)
-                .leftJoin(schema.sleeps, eq(schema.users.uid, schema.sleeps.user_id))
-                .$dynamic();
-
         const datePattern = /^\d{4}-\d{2}-\d{2}$/;
         if (date) {
             if (!datePattern.test(date)) {
                 return return_400('Invalid date format');
             }
-            // @ts-ignore
-            query = query.where(eq(schema.sleeps.date, date));
         }
-        else query = query.where(eq(schema.sleeps.date, sql`CURDATE()`));
+        else date = sql`CURDATE()`;
+
+        let queryBuilder = new QueryBuilder();
+        let query =
+            queryBuilder.select({
+                user: schema.users,
+                sleep: schema.sleeps,
+                answers: schema.todayAnswers
+            })
+                .from(schema.users)
+                .leftJoin(schema.sleeps, and(
+                    eq(schema.users.uid, schema.sleeps.user_id),
+                    // @ts-ignore
+                    eq(schema.sleeps.date, date))
+                )
+                .leftJoin(schema.todayAnswers, eq(schema.users.uid, schema.todayAnswers.user_id))
+                .$dynamic();
 
         if (search_by && search_string) {
             if (search_by == 'user_id') {
@@ -263,7 +276,16 @@ export async function GET(req: NextRequest) {
 
         let [result] = await db.execute(query);
 
-        console.log(result);
+        console.debug(query.toSQL());
+
+        let [question] =
+            await db.select()
+                .from(schema.todayQuestions)
+                .where(
+                    // @ts-ignore
+                    eq(schema.todayQuestions.date, date ? date : sql`CURDATE()`)
+                );
+
         return NextResponse.json({
             success: true,
             // @ts-ignore
@@ -278,11 +300,24 @@ export async function GET(req: NextRequest) {
                         joined_term: user.joined_term
                     },
                     sleep: {
-                        sleep: user.sleep,
-                        wakeup: user.wakeup
+                        sleep: (user.sleep ? to_time_string(new Date(user.sleep)) : null),
+                        wakeup: (user.wakeup ? to_time_string(new Date(user.wakeup)) : null)
+                    },
+                    answers: {
+                        answer_1: user.answer_1,
+                        answer_2: user.answer_2,
+                        answer_3: user.answer_3,
+                        answer_lastday: user.answer_lastday,
+                        answer_schoool: user.answer_schoool,
+                        answer_academy: user.answer_academy
                     }
                 }
-            })
+            }),
+            questions: {
+                question_1: question?.question_1,
+                question_2: question?.question_2,
+                question_3: question?.question_3
+            }
         }, {status: 200});
     } catch (e) {
         console.error(e);
