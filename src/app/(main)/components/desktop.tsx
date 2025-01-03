@@ -44,11 +44,7 @@ export default function Navigation() {
                         </span>
                     </Link>
                     <div className="ml-2">
-                        {(path !== '/') ? (
-                            <div onClick={toggleModal} className="i-system-uicons-bell"/>
-                        ) : (
-                            <div className="i-system-uicons-bell invisible"/>
-                        )}
+                        <div onClick={toggleModal} className={cn("i-system-uicons-bell", {"invisible": (path === '/')})}/>
                         {/* If there exist unread notice, "i-system-uicons-bell-ringing"   */}
                     </div>
                 </div>

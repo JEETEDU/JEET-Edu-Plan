@@ -9,13 +9,14 @@ export default function Mobile() {
     const router = useRouter();
 
     const [name, setName] = useState("Loading...");
+    const [grade, setGrade] = useState("Loading...");
+    const [school, setSchool] = useState("Loading...");
 
     useEffect(() => {
         const fetchUserInfo = async () => {
-            const userName = await getUserInfo("name");
-            if (userName) {
-                setName(userName);
-            }
+            setName(await getUserInfo("name"));
+            setGrade(await getUserInfo("first_year"));
+            setSchool(await getUserInfo("school"));
         };
 
         fetchUserInfo().then(r => console.log(r));
@@ -43,12 +44,10 @@ export default function Mobile() {
                     </div>
                     <div className="w-fit flex flex-col items-end">
                         <div className="text-left text-xl font-bold text-gray-800">
-                            {/*{user.grade}*/}
-                            {/*{user !== null && user.first_year}*/}
+                            {grade}
                         </div>
                         <div className="text-left text-l font-bold text-gray-600">
-                            {/*{user.school}*/}
-                            {/*{user !== null && user.school}*/}
+                            {school}
                         </div>
                     </div>
                 </div>

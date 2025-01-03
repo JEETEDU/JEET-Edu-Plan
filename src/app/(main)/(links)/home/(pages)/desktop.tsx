@@ -125,12 +125,13 @@ export default function Desktop() {
                 )}
                 <div className="bg-gray-100 p-4 grid grid-cols-3 w-full items-center">
                     <div className="flex justify-start">
-                        <button
+                        <Link
                             className="bg-white hover:bg-gray-200 transition duration-200 h-fit rounded-lg text-center py-2 px-5"
-                            onClick={() => setIsTeacher(!isTeacher)}
+                            // onClick={() => setIsTeacher(!isTeacher)}
+                            href={'/home/new'}
                         >
                             공지 추가하기
-                        </button>
+                        </Link>
                     </div>
 
                     <div className="flex justify-center">
