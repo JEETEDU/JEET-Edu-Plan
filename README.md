@@ -1,5 +1,5 @@
 # MIRACLE-MORNING!!!!!!!!!!!!!!!
-
+<div><img src="https://wakapi.hegelty.me/api/badge/hegelty/interval:any/project:miracle-morning"/></div>
 ## File Setting (editting...)
 
 ```bash
