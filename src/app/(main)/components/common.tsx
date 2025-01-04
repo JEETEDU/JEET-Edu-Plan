@@ -79,8 +79,6 @@ export function TodayQuestion({device}: { device }) {
         "sleep_time": "23:00"
     });
 
-    const router = useRouter();
-
     useEffect(() => {
         (async () => {
             const userInfo = (await getStoreData('/api/user/info', 'user-info')).response.user;
@@ -88,11 +86,10 @@ export function TodayQuestion({device}: { device }) {
 
             if (userInfo.user_type === 1) {
                 const today = new Date();
-                const param = `date=${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`
 
-                let questions = await getStoreData(`/api/user/today/question?${param}`, 'question-list')
+                let questions = await getStoreData(`/api/user/today/question`, 'question-list')
                 if (new Date(questions.last_update).getDate() !== today.getDate()) {
-                    questions = await getStoreData(`/api/user/today/question?${param}`, 'question-list', true)
+                    questions = await getStoreData(`/api/user/today/question`, 'question-list', true)
                 }
 
                 setQList(questions.response.answers[0].questions);

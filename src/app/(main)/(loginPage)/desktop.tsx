@@ -7,7 +7,7 @@ import {useRouter} from "next/navigation";
 export default function Desktop() {
     const [showPassword, setShowPassword] = useState(false);
     const [isLogin, setIsLogin] = useState(true);
-    const [error, setError] = useState("");
+    const [error, setError] = useState({message: "", color: ""});
     const router = useRouter();
 
     const login = async () => {
@@ -18,7 +18,7 @@ export default function Desktop() {
         if (res.success) {
             router.push('/home');
         } else {
-            setError(res.message);
+            setError({message: res.message, color: "text-red-600"});
         }
     }
 
@@ -29,9 +29,10 @@ export default function Desktop() {
             pw: document.getElementById("password").value
         })
         if (res.success) {
-            router.push('/home');
+            router.refresh();
+            setError({message: "아직 선생님이 승인하지 않았습니다.", color: "text-green-600"});
         } else {
-            setError(res.message);
+            setError({message: res.message, color: "text-red-600"});
         }
     }
 
@@ -46,7 +47,7 @@ export default function Desktop() {
                         }, "h-fit rounded-l-lg text-center p-2")}
                         onClick={() => {
                             setIsLogin(true);
-                            setError("")
+                            setError({message: "", color: ""})
                         }}
                     >
                         로그인
@@ -58,7 +59,7 @@ export default function Desktop() {
                         }, "h-fit rounded-r-lg text-center p-2")}
                         onClick={() => {
                             setIsLogin(false);
-                            setError("")
+                            setError({message: "", color: ""})
                         }}
                     >
                         회원가입
@@ -66,7 +67,7 @@ export default function Desktop() {
                 </div>
                 <div className="component-form">
                     <h2 className="title-1">{isLogin ? "로그인" : "회원가입"}</h2>
-                    <form className="space-y-6" onChange={() => setError("")}>
+                    <form className="space-y-6" onChange={() => setError({message: "", color: ""})}>
                         {!isLogin &&
                             <div>
                                 <label htmlFor="name" className="component-button-info">
@@ -108,10 +109,10 @@ export default function Desktop() {
                                     onKeyDown={(e) => {
                                         if (e.key === "Enter") {
                                             if (isLogin) {
-                                                setError("로그인 하는중...");
+                                                setError({message: "로그인 하는중...", color: "text-red-600"});
                                                 login();
                                             } else {
-                                                setError("회원 가입 하는중...");
+                                                setError({message: "회원 가입 하는중...", color: "text-red-600"});
                                                 register();
                                             }
                                         }
@@ -137,20 +138,20 @@ export default function Desktop() {
                         {/*</div>*/}
 
                         <div className="flex flex-col items-center space-y-1">
-                            <div className='text-red-600 font-bold'>
-                                {error}
+                            <div className={cn('font-bold', error.color)}>
+                                {error.message}
                             </div>
                             <div
                                 className="component-button"
                                 onClick={
                                     isLogin ? (
                                         () => {
-                                            setError("로그인 하는중...");
+                                            setError({message: "로그인 하는중...", color: "text-red-600"});
                                             login()
                                         }
                                     ) : (
                                         () => {
-                                            setError("회원 가입 하는중...");
+                                            setError({message: "로그인 하는중...", color: "text-red-600"});
                                             register()
                                         }
                                     )
