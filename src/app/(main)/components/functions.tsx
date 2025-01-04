@@ -32,7 +32,27 @@ export async function get(url) {
     )
 }
 
-async function setUserInfo() {
+export async function put(url, body) {
+    return await fetch(url, {
+        method: 'PUT',
+        body: JSON.stringify(body)
+    }).then(
+        (res) => res.json()
+    ).then(
+        (res) => {
+            return res;
+        }
+    )
+}
+
+
+/**
+ * @constructor
+ * @param url api url for get datas
+ * @param storeName session storage key
+ * @param forceUpdate force update stored date (default: false)
+ */
+export async function getStoreData(url, storeName, forceUpdate = false) {
     if (typeof window === 'undefined') {
         console.warn("sessionStorage is unavailable on the server.");
         return false;
@@ -40,38 +60,26 @@ async function setUserInfo() {
 
     const storage = sessionStorage;
 
-    const res = await get('/api/user/info')
-    if (res.success) {
-        storage.setItem('uid', res.user.uid)
-        storage.setItem('login_id', res.user.login_id)
-        storage.setItem('user_type', res.user.user_type)
-        storage.setItem('name', res.user.name)
-        storage.setItem('first_year', res.user.first_year)
-        storage.setItem('school', res.user.school)
-        storage.setItem('joined_term', res.user.joined_term)
-
-        return true;
-    } else {
-        return false;
-    }
-}
-
-export async function getUserInfo(data) {
-    if (typeof window === 'undefined') {
-        console.warn("sessionStorage is unavailable on the server.");
-        return null;
-    }
-
-    const value = sessionStorage.getItem(data);
-
-    if (value) {
-        return value;
-    } else {
-        const success = await setUserInfo();
-        if (success) {
-            return sessionStorage.getItem(data);
+    async function store() {
+        const res = await get(url)
+        if (res.success) {
+            storage.setItem(storeName, JSON.stringify({
+                last_update: new Date(),
+                response: res
+            }));
+            return true;
         } else {
-            return null;
+            return false;
         }
+    }
+
+    const value = storage.getItem(storeName);
+
+    if (value && !forceUpdate) {
+        return JSON.parse(value);
+    } else if (await store()) {
+        return JSON.parse(storage.getItem(storeName));
+    } else {
+        return null;
     }
 }

@@ -27,7 +27,7 @@ export default defineConfig({
         "component-button":
             cn("bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-200 dark:bg-blue-700 dark:hover:bg-blue-800 mt-4 w-full text-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-lg transition duration-200 focus:(outline-none ring-2 ring-blue-400)"),
         "component-button-info":
-            cn("block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1"),
+            cn("block text-sm font-medium text-black dark:text-gray-300 mb-1"),
         "component-container":
             cn("flex items-center justify-center bg-gray-200 dark:bg-gray-900 text-black dark:text-white min-h-screen flex flex-col items-center justify-center py-10 bg-gray-100 dark:bg-gray-900"),
         "component-form":

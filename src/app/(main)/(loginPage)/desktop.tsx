@@ -1,7 +1,7 @@
 "use client";
 
 import React, {useState} from "react";
-import {cn} from "@/app/(main)/components/functions";
+import {cn, post} from "@/app/(main)/components/functions";
 import {useRouter} from "next/navigation";
 
 export default function Desktop() {
@@ -10,46 +10,29 @@ export default function Desktop() {
     const [error, setError] = useState("");
     const router = useRouter();
 
-    const login = () => {
-        fetch('/api/user/login', {
-            method: 'POST',
-            body: JSON.stringify({
-                login_id: document.getElementById("id").value,
-                pw: document.getElementById("password").value
-            }),
-        }).then(
-            (res) => res.json()
-        ).then(
-            (res) => {
-                if (res.success) {
-                    router.push("/home")
-                } else {
-                    setError(res.message)
-                }
-            }
-        )
+    const login = async () => {
+        const res = await post('/api/user/login', {
+            login_id: document.getElementById("id").value,
+            pw: document.getElementById("password").value
+        })
+        if (res.success) {
+            router.push('/home');
+        } else {
+            setError(res.message);
+        }
     }
 
-    const register = () => {
-        fetch('/api/user/register', {
-            method: 'POST',
-            body: JSON.stringify({
-                name: document.getElementById("name").value,
-                login_id: document.getElementById("id").value,
-                pw: document.getElementById("password").value
-            }),
-        }).then(
-            (res) => res.json()
-        ).then(
-            (res) => {
-                console.log(res);
-                if (res.success) {
-                    router.push('/home');
-                } else {
-                    setError(res.message);
-                }
-            }
-        )
+    const register = async () => {
+        const res = await post('/api/user/register', {
+            name: document.getElementById("name").value,
+            login_id: document.getElementById("id").value,
+            pw: document.getElementById("password").value
+        })
+        if (res.success) {
+            router.push('/home');
+        } else {
+            setError(res.message);
+        }
     }
 
     return (
@@ -122,6 +105,17 @@ export default function Desktop() {
                                     id="password"
                                     className="component-input"
                                     placeholder="비밀번호를 입력해주세요"
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                            if (isLogin) {
+                                                setError("로그인 하는중...");
+                                                login();
+                                            } else {
+                                                setError("회원 가입 하는중...");
+                                                register();
+                                            }
+                                        }
+                                    }}
                                     required
                                 />
                                 <button
