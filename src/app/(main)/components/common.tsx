@@ -2,62 +2,83 @@
 
 import {cn, getStoreData, put} from "@/app/(main)/components/functions";
 import React, {useEffect, useState} from "react";
-import {usePathname, useRouter} from "next/navigation";
+import {usePathname} from "next/navigation";
 import TextareaAutosize from "react-textarea-autosize";
+import Select from "react-select";
 
-function TimeInput({setState, state, stateKey, className}) {
-    const [timeInput, setTimeInput] = useState({
+export function TimeInput(
+    {
+        setState, state, stateKey, className,
+        onChange = (() => null),
+        selectorPointerEventsNone = false,
+        defaultValue = {hour: null, minute: null}
+    }
+) {
+    const timeInput = {
         hour: "--",
         minute: "--",
-    });
-
-    useEffect(() => {
-        state[stateKey] = `${timeInput.hour}:${timeInput.minute}`
-        setState(state)
-    }, [timeInput]);
+    };
 
     return (
         <div className={className}>
             <div className="flex justify-around items-center h-full w-full">
-                <select
-                    // value={timeInput.hour}
-                    defaultValue={timeInput.hour}
-                    onChange={(e) =>
-                        setTimeInput((prev) => ({
-                            ...prev,
-                            hour: e.target.value,
-                        }))
-                    }
-                    className="border rounded p-1 text-xl"
-                >
-                    <option value={""} className="pointer-events-none">--</option>
-                    {Array.from({length: 24}, (_, i) => (
-                        <option key={i + 1} value={String(i + 1).padStart(2, "0")}>
-                            {String(i + 1).padStart(2, "0")}
-                        </option>
+                <Select
+                    className={cn(
+                        "text-xl font-bold px-2",
+                        {"pointer-events-none": selectorPointerEventsNone}
+                    )}
+                    placeholder="--"
+                    components={{
+                        IndicatorSeparator: () => null
+                    }}
+                    options={Array.from({length: 24}, (_, i) => (
+                        {
+                            value: String(i + 1).padStart(2, "0"),
+                            label: String(i + 1).padStart(2, "0"),
+                        }
                     ))}
-                </select>
+                    required
+                    onChange={(e) => {
+                        timeInput.hour = e.value;
+                        state[stateKey] = `${timeInput.hour}:${timeInput.minute}`;
+                        setState(state);
+                        onChange();
+                    }}
+                    defaultValue={{
+                        value: defaultValue.hour,
+                        label: defaultValue.hour
+                    }}
+                />
                 <div className="flex items-start justify-center text-xl">
                     시
                 </div>
-                <select
-                    // value={timeInput.minute}
-                    defaultValue={timeInput.minute}
-                    onChange={(e) =>
-                        setTimeInput((prev) => ({
-                            ...prev,
-                            minute: e.target.value,
-                        }))
-                    }
-                    className="border rounded p-1 text-xl"
-                >
-                    <option value={""} className="pointer-events-none" style={{pointerEvents: "none"}}>--</option>
-                    {Array.from({length: 12}, (_, i) => (
-                        <option key={i} value={String(i * 5).padStart(2, "0")}>
-                            {String(i * 5).padStart(2, "0")}
-                        </option>
+                <Select
+                    className={cn(
+                        "text-xl font-bold px-2",
+                        {"pointer-events-none": selectorPointerEventsNone}
+                    )}
+                    placeholder="--"
+                    components={{
+                        IndicatorSeparator: () => null
+                    }}
+                    options={Array.from({length: 12}, (_, i) => (
+                        {
+                            value: String(i * 5).padStart(2, "0"),
+                            label: String(i * 5).padStart(2, "0"),
+                        }
                     ))}
-                </select>
+                    required
+                    onChange={(e) => {
+                        timeInput.minute = e.value;
+                        state[stateKey] = `${timeInput.hour}:${timeInput.minute}`;
+                        setState(state);
+                        onChange();
+                    }}
+                    defaultValue={{
+                        value: defaultValue.minute,
+                        label: defaultValue.minute
+                    }}
+                />
                 <div className="flex items-start justify-center text-xl">
                     분
                 </div>
@@ -78,6 +99,8 @@ export function TodayQuestion({device}: { device }) {
         "wakeup_time": "07:00",
         "sleep_time": "23:00"
     });
+
+    const [error, setError] = useState("");
 
     useEffect(() => {
         (async () => {
@@ -100,6 +123,7 @@ export function TodayQuestion({device}: { device }) {
     }, [answered]);
 
     const register = async () => {
+        console.log(timeData)
         const body = {
             answer_lastday: document.getElementById('y').value,
             answer_school: document.getElementById('s').value,
@@ -113,7 +137,8 @@ export function TodayQuestion({device}: { device }) {
         const r1 = await put('/api/user/today/sleep', timeData)
         console.log(r1)
         if (!r1.success) {
-            alert("error occurred while put sleep / wakeup time")
+            // alert("error occurred while put sleep / wakeup time");
+            return false
         }
 
         const r2 = await put('/api/user/today/question', body)
@@ -125,11 +150,13 @@ export function TodayQuestion({device}: { device }) {
 
             window.location.reload();
         } else {
-            alert('error occurred while put answer for daily questions');
+            // alert('error occurred while put answer for daily questions');
+            return false;
         }
 
         if (r1 && r2) {
             alert('제출되었습니다!');
+            return true;
         }
     }
 
@@ -139,6 +166,7 @@ export function TodayQuestion({device}: { device }) {
         }}>
             Clear Session Stored Date
         </button>
+        {/*   */}
         {(!answered && userType === 1) && (
             <div className="fixed inset-0 flex items-end justify-end z-50 pointer-events-none">
                 <div
@@ -181,6 +209,7 @@ export function TodayQuestion({device}: { device }) {
                                 setState={setTimeData}
                                 state={timeData}
                                 stateKey={"sleep_time"}
+                                onChange={() => setError("")}
                             />
                         </div>
 
@@ -197,6 +226,7 @@ export function TodayQuestion({device}: { device }) {
                                 setState={setTimeData}
                                 state={timeData}
                                 stateKey={"wakeup_time"}
+                                onChange={() => setError("")}
                             />
                         </div>
                     </div>
@@ -211,6 +241,7 @@ export function TodayQuestion({device}: { device }) {
                                 className="component-input resize-none"
                                 placeholder={"몰라요"}
                                 required
+                                onChange={() => setError("")}
                             />
                         </div>
 
@@ -220,9 +251,10 @@ export function TodayQuestion({device}: { device }) {
                             </label>
                             <TextareaAutosize
                                 id="s"
-                                className="component-input"
+                                className="component-input resize-none"
                                 placeholder={"몰라요"}
                                 required
+                                onChange={() => setError("")}
                             />
                         </div>
 
@@ -232,9 +264,10 @@ export function TodayQuestion({device}: { device }) {
                             </label>
                             <TextareaAutosize
                                 id="a"
-                                className="component-input"
+                                className="component-input resize-none"
                                 placeholder={"몰라요"}
                                 required
+                                onChange={() => setError("")}
                             />
                         </div>
 
@@ -247,21 +280,29 @@ export function TodayQuestion({device}: { device }) {
                                     </label>
                                     <TextareaAutosize
                                         id={key}
-                                        className="component-input"
+                                        className="component-input resize-none"
                                         placeholder={"몰라요"}
                                         required
+                                        onChange={() => setError("")}
                                     />
                                 </div>
                             );
                         })}
                     </div>
                     <div className="flex flex-col items-center space-y-4">
+                        <div className="text-red-600 font-bold">
+                            {error}
+                        </div>
                         <div
                             className="component-button"
                             onClick={() => {
-                                setAnswered(!answered);
-                                setShowQuestion(!showQuestion);
                                 register().then(r => {
+                                    if (r) {
+                                        setAnswered(!answered);
+                                        setShowQuestion(!showQuestion);
+                                    } else {
+                                        setError("정확한 정보를 입력해 주세요");
+                                    }
                                     console.log(r);
                                     console.log(answered)
                                 });
