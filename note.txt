@@ -1,0 +1,10 @@
+todo
+    - frontend
+        - student
+            - mypage 오늘의 질문 -> 날짜 선택 가능하게 하기 (with react-datepicker)
+            - timetable 한 주씩 보이게 만들기 (in desktop)
+    - backend
+        - 게시판
+        - 시간표
+        - 학생이 승인이 되었는지는 도대체 어케 아는건가요 아무리 봐도 모르겠음
+        - classes의 전체 list가 필요해요
