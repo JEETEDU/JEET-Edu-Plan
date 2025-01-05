@@ -1,58 +1,41 @@
 "use client";
 
-import Link from "next/link";
 import React from "react";
-// import {useCookies} from "next-client-cookies";
 
 export default function Desktop() {
-    // const cookies = useCookies();
-    // if (cookies.get('user') === 'false') {
-    //     cookies.set('user', 'true');
-    // }
-    // console.log(`page: ${cookies.get('user')}`)
+    const timetable = {
+        date: "2024년 12월 18일 수요일",
+        subjects: [
+            {text: "1교시", time: 1, color: "#cddafd"},
+            {text: "2교시", time: 2, color: "#f4e1d6"},
+            {text: "3교시", time: 3, color: "#f0efeb"},
+            {text: "4교시", time: 4, color: "#13d9de"},
+            {text: "5교시", time: 5, color: "#dfe7fd"},
+        ]
+    };
 
-    return (<>
-        <div className="custom-container min-h-screen flex flex-col items-center py-10">
-            <div className={`custom-container`}>
-                <form
-                    // onSubmit={handleSubmit}
-                    className="custom-form"
-                >
-                    <div>
-                        <label htmlFor="name">Name:</label>
-                        <input
-                            type="text"
-                            id="name"
-                            // value={name}
-                            // onChange={(e) => setName(e.target.value)}
-                            className="custom-input"
-                            placeholder='input name'
-                            required
-                        />
-                    </div>
+    return (
+        <div className="w-full h-full flex flex-col items-center bg-gray-100 px-4 pb-6">
+            {/* Header */}
+            <div className="text-center text-xl font-bold text-gray-800 mb-4">
+                {timetable.date}
+            </div>
 
-                    <div>
-                        <label htmlFor="password">Password:</label>
-                        <input
-                            type="password"
-                            id="pw"
-                            // value={pw}
-                            // onChange={(e) => setPw(e.target.value)}
-                            className="custom-input"
-                            placeholder='input password'
-                            required
-                        />
+            {/* Timetable Grid */}
+            <div className="grid gap-1 grid-rows-15 w-full h-full bg-white p-2 rounded-lg shadow-md">
+                {timetable.subjects.map((subject, index) => (
+                    <div
+                        className="flex items-center justify-center text-black text-lg font-semibold rounded-2"
+                        style={{
+                            gridRow: `span ${subject.time} / span ${subject.time}`,
+                            backgroundColor: subject.color
+                        }}
+                        key={index}
+                    >
+                        {subject.text}
                     </div>
-                    <div className='flex-row align-left'>
-                        <Link
-                            className="custom-btn"
-                            href={'/'}
-                        >
-                            Login
-                        </Link>
-                    </div>
-                </form>
+                ))}
             </div>
         </div>
-    </>)
+    );
 }
