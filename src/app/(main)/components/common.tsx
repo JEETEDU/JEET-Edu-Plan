@@ -14,10 +14,11 @@ export function TimeInput(
         defaultValue = {hour: null, minute: null}
     }
 ) {
-    const timeInput = {
-        hour: "--",
-        minute: "--",
-    };
+    const [hour, setHour] = useState("");
+    const [minute, setMinute] = useState({
+        value: defaultValue.minute,
+        label: defaultValue.minute
+    });
 
     return (
         <div className={className}>
@@ -39,14 +40,20 @@ export function TimeInput(
                     ))}
                     required
                     onChange={(e) => {
-                        timeInput.hour = e.value;
-                        state[stateKey] = `${timeInput.hour}:${timeInput.minute}`;
-                        setState(state);
+                        console.log(e)
+                        setHour(e.value);
+                        setState((prev) => {
+                            const obj = {...prev};
+                            obj[stateKey] = `${e.value}:${minute.value}`;
+                            // console.log(`obj: ${obj.wakeup}, ${obj.sleep}`)
+                            return obj;
+                        });
+                        console.log(state)
                         onChange();
                     }}
-                    defaultValue={{
-                        value: defaultValue.hour,
-                        label: defaultValue.hour
+                    value={{
+                        value: hour,
+                        label: hour
                     }}
                 />
                 <div className="flex items-start justify-center text-xl">
@@ -69,15 +76,18 @@ export function TimeInput(
                     ))}
                     required
                     onChange={(e) => {
-                        timeInput.minute = e.value;
-                        state[stateKey] = `${timeInput.hour}:${timeInput.minute}`;
-                        setState(state);
+                        setMinute({
+                            value: e.value,
+                            label: e.value
+                        });
+                        setState((prev) => {
+                            const obj = {...prev};
+                            obj[stateKey] = `${hour.value}:${minute.value}`;
+                            return obj;
+                        });
                         onChange();
                     }}
-                    defaultValue={{
-                        value: defaultValue.minute,
-                        label: defaultValue.minute
-                    }}
+                    value={minute}
                 />
                 <div className="flex items-start justify-center text-xl">
                     분
@@ -119,11 +129,11 @@ export function TodayQuestion({device}: { device }) {
                 setAnswered((questions.response.answers[0].answers.answer_1 !== null))
             }
 
-        })().then(r => console.log(r));
+        })()/*.then(r => console.log(r))*/;
     }, [answered]);
 
     const register = async () => {
-        console.log(timeData)
+        // console.log(timeData)
         const body = {
             answer_lastday: document.getElementById('y').value,
             answer_school: document.getElementById('s').value,
@@ -135,14 +145,14 @@ export function TodayQuestion({device}: { device }) {
         });
 
         const r1 = await put('/api/user/today/sleep', timeData)
-        console.log(r1)
+        // console.log(r1)
         if (!r1.success) {
             // alert("error occurred while put sleep / wakeup time");
             return false
         }
 
         const r2 = await put('/api/user/today/question', body)
-        console.log(r2)
+        // console.log(r2)
         if (r2.success) {
             const today = new Date();
             const param = `date=${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`
@@ -156,16 +166,12 @@ export function TodayQuestion({device}: { device }) {
 
         if (r1 && r2) {
             alert('제출되었습니다!');
+            sessionStorage.clear();
             return true;
         }
     }
 
     return (<>
-        <button onClick={() => {
-            sessionStorage.clear();
-        }}>
-            Clear Session Stored Date
-        </button>
         {/*   */}
         {(!answered && userType === 1) && (
             <div className="fixed inset-0 flex items-end justify-end z-50 pointer-events-none">
@@ -178,8 +184,8 @@ export function TodayQuestion({device}: { device }) {
                     )}
                     onClick={() => {
                         setShowQuestion(!showQuestion);
-                        console.log(userType)
-                        console.log(qList)
+                        // console.log(userType)
+                        // console.log(qList)
                     }}
                 >
                     오늘의 질문 답하기
@@ -303,8 +309,8 @@ export function TodayQuestion({device}: { device }) {
                                     } else {
                                         setError("정확한 정보를 입력해 주세요");
                                     }
-                                    console.log(r);
-                                    console.log(answered)
+                                    // console.log(r);
+                                    // console.log(answered)
                                 });
                             }}
                         >
