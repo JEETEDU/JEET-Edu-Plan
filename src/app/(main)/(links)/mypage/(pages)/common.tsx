@@ -5,19 +5,33 @@ import React, {useState} from "react";
 import {cn, getStoreData, put} from "@/app/(main)/components/functions";
 import {TimeInput} from "@/app/(main)/components/common";
 
-export function IsStudent({timeData, setTimeData, aList, setAList, qList, answered}) {
+export function IsStudent({timeData, setTimeData, aList, setAList, answered, date}) {
     const [editAnswer, setEditAnswer] = useState(false);
     const [error, setError] = useState("");
 
-    console.log(timeData);
+
+
+    const _a = [
+        "answer_1",
+        "answer_2",
+        "answer_3",
+        "answer_lastday",
+        "answer_school",
+        "answer_academy",
+    ]
+
+    const today = new Date();
+    const params = `date=${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+
+    // console.log(timeData);
 
     return (
         <div className="w-full p-6 space-y-4">
             <div className="flex items-center w-full justify-between">
-                <div className="text-2xl text-gray-800 font-semibold">
+                <div className="text-3xl text-gray-800 font-semibold">
                     오늘의 질문 목록
                 </div>
-                {answered && (
+                {(answered && today.getDate() === date.getDate()) && (
                     <div className="flex items-center gap-4">
                         <div className="font-bold text-red-600 items-center">
                             {error}
@@ -32,24 +46,36 @@ export function IsStudent({timeData, setTimeData, aList, setAList, qList, answer
                                 if (editAnswer) {
                                     setError("저장중...");
 
-                                    await put('/api/user/today/question', {
-                                        answer_1: aList.answer_1,
-                                        answer_2: aList.answer_2,
-                                        answer_3: aList.answer_3,
-                                        answer_lastday: aList.answer_lastday,
-                                        answer_school: aList.answer_school,
-                                        answer_academy: aList.answer_academy,
-                                    });
+                                    const body = Object.entries(aList).reduce((obj, val, idx) => {
+                                        obj[_a[idx]] = val[1];
+                                        return obj;
+                                    }, {});
+                                    // console.log(body)
 
-                                    const questions = await getStoreData(`/api/user/today/question`, 'question-list', true);
-                                    setAList(questions.response.answers[0].answers);
+                                    await put('/api/user/today/question', body);
+
+                                    const questions = await getStoreData(`/api/user/today/question?${params}`, `question-list-${params}`, true);
+
+                                    //---
+                                    const _q = Object.values(questions.response.answers[0].questions);
+                                    const qArr = _q.concat("오늘의 학원 과제는?", "어젯밤 공부한 내용은?", "오늘의 학교 과제는?");
+                                    const aArr = Object.values(questions.response.answers[0].answers);
+                                    const qaArr = qArr.map((q, i) => {
+                                        return [q, aArr[i]]
+                                    });
+                                    const qaObj = qaArr.reduce((map, value) => {
+                                        map[value[0].toString()] = value[1].toString();
+                                        return map;
+                                    }, {})
+                                    //---
+                                    setAList(qaObj);
 
                                     await put('/api/user/today/sleep', {
                                         sleep_time: timeData.sleep,
                                         wakeup_time: timeData.wakeup,
                                     }).then(r => {
-                                        console.log(r);
-                                        console.log(timeData);
+                                        // console.log(r);
+                                        // console.log(timeData);
                                     });
 
                                     const times = await getStoreData(`/api/user/today/sleep`, 'sleep-time', true);
@@ -102,16 +128,11 @@ export function IsStudent({timeData, setTimeData, aList, setAList, qList, answer
                 </div>
             </div>
             <div className="w-full space-y-4">
-                {Object.entries({
-                    "answer_lastday": "어젯밤 공부한 내용은?",
-                    "answer_school": "오늘의 학교 과제는?",
-                    "answer_academy": "오늘의 학원 과제는?"
-                }).map(([key, qString]) => {
-                    return (
-                        // eslint-disable-next-line react/jsx-key
-                        <div key={key}>
+                {Object.entries(aList).map(([q, a], i) => {
+                    return <div key={i}>
+                        <div key={i}>
                             <label htmlFor="name" className="component-button-info">
-                                {qString}
+                                {q}
                             </label>
                             <TextareaAutosize
                                 readOnly={!editAnswer}
@@ -119,34 +140,21 @@ export function IsStudent({timeData, setTimeData, aList, setAList, qList, answer
                                     "component-input resize-none",
                                     {'bg-white': editAnswer}
                                 )}
-                                defaultValue={aList[key] || "아직 답하지 않았습니다."}
+                                cacheMeasurements
+                                value={a as string}
                                 onChange={(e => {
-                                    aList[key] = e.target.value
+                                    // aList[q] = e.target.value;
+                                    setAList((prev) => {
+                                        const _obj = {
+                                            ...prev,
+                                        }
+                                        _obj[q] = e.target.value;
+                                        return _obj;
+                                    });
                                 })}
                             />
                         </div>
-                    );
-                })}
-                {Object.entries(qList).map(([key, value], index) => {
-                    return (
-                        // eslint-disable-next-line react/jsx-key
-                        <div key={key}>
-                            <label htmlFor="name" className="component-button-info">
-                                {value}
-                            </label>
-                            <TextareaAutosize
-                                readOnly={!editAnswer}
-                                className={cn(
-                                    "component-input resize-none",
-                                    {'bg-white': editAnswer}
-                                )}
-                                defaultValue={aList[`answer_${index + 1}`] || "아직 답하지 않았습니다."}
-                                onChange={(e => {
-                                    aList[key] = e.target.value
-                                })}
-                            />
-                        </div>
-                    );
+                    </div>
                 })}
             </div>
         </div>

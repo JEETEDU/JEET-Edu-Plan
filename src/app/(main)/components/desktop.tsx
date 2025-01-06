@@ -21,8 +21,17 @@ export default function Navigation() {
                         JEET Education
                     </div>
                 </div>
+                <button
+                    className="bg-red-600 p-2 rounded-xl text-white font-bold"
+                    onClick={() => {
+                        sessionStorage.clear();
+                        window.location.reload();
+                    }}
+                >
+                    강제 새로고침
+                </button>
                 {/* 네비게이션 링크 */}
-                <div className="flex w-1/3 min-w-fit justify-around items-center min-w-fit">
+                <div className="flex w-1/3 justify-around items-center min-w-fit">
                     <Link href={"/home"} className="nav-item">
                         <span className={cn("_nav-item", {"bg-white": path === '/home'})}>
                             공지사항

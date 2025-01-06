@@ -36,7 +36,7 @@ const load = (setState) => {
 }
 
 const upload = (content) => {
-    console.log(content);
+    // console.log(content);
     alert("게시물이 업로드되었습니다!");
 };
 
