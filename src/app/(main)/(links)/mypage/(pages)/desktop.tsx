@@ -24,10 +24,19 @@ export default function Desktop() {
     const [timeData, setTimeData] = useState({wakeup: "", sleep: ""});
     const [userList, setUserList] = useState([]);
 
-    const [calendarValue, setCalendarValue] = useState(new Date());
+    const [calendarValue, setCalendarValue] = useState(() => {
+        const date = sessionStorage.getItem('calendar-value');
+        if (date) {
+            return new Date(date);
+        } else {
+            return new Date
+        }
+    });
 
     useEffect(() => {
         (async () => {
+            sessionStorage.setItem('calendar-value', calendarValue.toLocaleDateString());
+
             const params = `date=${calendarValue.getFullYear()}-${String(calendarValue.getMonth() + 1).padStart(2, '0')}-${String(calendarValue.getDate()).padStart(2, '0')}`
             // console.log(params)
 
@@ -50,7 +59,7 @@ export default function Desktop() {
                 //----------------------------------------------questions.response.answers[0].answers
                 const _q = Object.values(questions.response.answers[0].questions);
                 const qArr = _q.concat("오늘의 학원 과제는?", "어젯밤 공부한 내용은?", "오늘의 학교 과제는?");
-                const aArr= Object.values(questions.response.answers[0].answers);
+                const aArr = Object.values(questions.response.answers[0].answers);
                 const qaArr = qArr.map((q, i) => {
                     return [q, aArr[i] || "아직 답하지 않았습니다."]
                 });
@@ -74,9 +83,9 @@ export default function Desktop() {
             } else if (userInfo.user_type >= 2) {
                 const today = new Date();
 
-                let questions = await getStoreData(`/api/admin/today/question`, 'question-list')
+                let questions = await getStoreData(`/api/admin/today/question?${params}`, `question-list-${params}`)
                 if (new Date(questions.last_update).getDate() !== today.getDate()) {
-                    questions = await getStoreData(`/api/admin/today/question`, 'question-list', true)
+                    questions = await getStoreData(`/api/admin/today/question?${params}`, `question-list-${params}`, true)
                 }
 
                 setQList(questions.response.today_questions);
@@ -98,6 +107,8 @@ export default function Desktop() {
             setError(res.message);
         }
     }
+
+    const [showCalandar, setShowCalandar] = useState(true);
 
     return (
         <>
@@ -124,6 +135,12 @@ export default function Desktop() {
                             }
                         </div>
                     </div>
+                    <div
+                        className="p-1 rounded-xl text-lg font-bold bg-gray text-white hover:bg-gray-500"
+                        onClick={() => setShowCalandar((prev) => !prev)}
+                    >
+                        {showCalandar ? "달력 숨기기" : "달력 보이기"}
+                    </div>
                     {(userType === 1) && (
                         <div className="w-fit flex flex-col items-end">
                             <div className="text-left text-xl font-bold text-gray-800">
@@ -135,17 +152,26 @@ export default function Desktop() {
                         </div>
                     )}
                 </div>
-                <div className="flex w-full p-6 h-full gap-6">
-                    <div className="w-fit flex flex-col">
-                        <div>
-                            {calendarValue.toLocaleDateString()}
+                <div className="flex lg:flex-row flex-col w-full p-6 h-full gap-6">
+                    {showCalandar && (
+                        <div className="flex flex-row lg:flex-col gap-2">
+                            <div className="grow border-2 border-gray-500 text-center p-2 flex items-center justify-center">
+                                여기도 뭔가 넣어싶어요<br/><br/>
+                                오늘의 전반적인 요약 같은걸 넣으면 어떨까
+                            </div>
+                            <Calendar
+                                locale="ko"
+                                value={calendarValue}
+                                onChange={setCalendarValue}
+                                formatDay={(locale, date): string => {
+                                    const day = date.getDate();
+                                    return day.toString().padStart(2, '0');
+                                }}
+                                maxDate={new Date()}
+                                minDetail="year"
+                            />
                         </div>
-                        <Calendar
-                            locale="ko"
-                            value={calendarValue}
-                            onChange={setCalendarValue}
-                        />
-                    </div>
+                    )}
                     <Scrollbars
                         className="w-full h-full"
                         universal
@@ -167,6 +193,7 @@ export default function Desktop() {
                                     qList={qList}
                                     setQList={setQList}
                                     userList={userList}
+                                    date={calendarValue}
                                 />
                             )}
                             <div
