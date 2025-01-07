@@ -2,7 +2,7 @@
 
 import {cn, getStoreData, put} from "@/app/(main)/components/functions";
 import React, {useEffect, useState} from "react";
-import {usePathname} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 import TextareaAutosize from "react-textarea-autosize";
 import Select from "react-select";
 
@@ -11,15 +11,8 @@ export function TimeInput(
         setState, state, stateKey, className,
         onChange = (() => null),
         selectorPointerEventsNone = false,
-        defaultValue = {hour: null, minute: null}
     }
 ) {
-    const [hour, setHour] = useState("");
-    const [minute, setMinute] = useState({
-        value: defaultValue.minute,
-        label: defaultValue.minute
-    });
-
     return (
         <div className={className}>
             <div className="flex justify-around items-center h-full w-full">
@@ -40,20 +33,17 @@ export function TimeInput(
                     ))}
                     required
                     onChange={(e) => {
-                        console.log(e)
-                        setHour(e.value);
+                        // setHour(() => e.value);
                         setState((prev) => {
                             const obj = {...prev};
-                            obj[stateKey] = `${e.value}:${minute.value}`;
-                            // console.log(`obj: ${obj.wakeup}, ${obj.sleep}`)
+                            obj[stateKey] = `${e.value}:${prev[stateKey].split(':')[1]}`;
                             return obj;
                         });
-                        console.log(state)
                         onChange();
                     }}
                     value={{
-                        value: hour,
-                        label: hour
+                        value: state[stateKey].split(':')[0],
+                        label: state[stateKey].split(':')[0]
                     }}
                 />
                 <div className="flex items-start justify-center text-xl">
@@ -76,18 +66,17 @@ export function TimeInput(
                     ))}
                     required
                     onChange={(e) => {
-                        setMinute({
-                            value: e.value,
-                            label: e.value
-                        });
                         setState((prev) => {
                             const obj = {...prev};
-                            obj[stateKey] = `${hour.value}:${minute.value}`;
+                            obj[stateKey] = `${prev[stateKey].split(':')[0]}:${e.value}`;
                             return obj;
                         });
                         onChange();
                     }}
-                    value={minute}
+                    value={{
+                        value: state[stateKey].split(':')[1],
+                        label: state[stateKey].split(':')[1]
+                    }}
                 />
                 <div className="flex items-start justify-center text-xl">
                     분
@@ -172,8 +161,8 @@ export function TodayQuestion({device}: { device }) {
     }
 
     return (<>
-        {/*   */}
-        {(!answered && userType === 1) && (
+        {/* !answered &&  */}
+        {(userType === 1) && (
             <div className="fixed inset-0 flex items-end justify-end z-50 pointer-events-none">
                 <div
                     className={cn(
