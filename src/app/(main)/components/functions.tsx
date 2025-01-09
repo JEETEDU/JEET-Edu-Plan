@@ -83,3 +83,25 @@ export async function getStoreData(url, storeName, forceUpdate = false) {
         return null;
     }
 }
+
+export function getSessionItem(name) {
+    return typeof window !== 'undefined' ? sessionStorage.getItem(name) : null;
+}
+
+export function setSessionItem(name, value) {
+    if (typeof window === 'undefined') {
+        return false;
+    } else {
+        sessionStorage.setItem(name, value);
+        return true;
+    }
+}
+
+export function clearSessionStorage() {
+    if (typeof window === 'undefined') {
+        return false;
+    } else {
+        sessionStorage.clear();
+        return true;
+    }
+}

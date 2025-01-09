@@ -5,7 +5,7 @@ import React, {useState} from "react";
 import {cn, getStoreData, put} from "@/app/(main)/components/functions";
 import {TimeInput} from "@/app/(main)/components/common";
 
-export function IsStudent({timeData, setTimeData, aList, setAList, answered, date}) {
+export function IsStudent({timeData, setTimeData, aList, setAList, answered, date, isMobile}) {
     const [editAnswer, setEditAnswer] = useState(false);
     const [error, setError] = useState("");
 
@@ -68,10 +68,16 @@ export function IsStudent({timeData, setTimeData, aList, setAList, answered, dat
     }
 
     return (
-        <div className="w-full p-6 space-y-4">
+        <div className={cn(
+            "w-full space-y-4",
+            {"p-6": !isMobile}
+        )}>
             <div className="flex items-center w-full justify-between">
-                <div className="text-3xl text-gray-800 font-semibold">
-                    오늘의 질문 목록 ({date.toLocaleDateString()})
+                <div className={cn(
+                    "text-gray-800 font-semibold",
+                    isMobile ? "text-2xl" : "text-3xl"
+                )}>
+                    오늘의 질문 목록 {!isMobile && `(${date.toLocaleDateString()})`}
                 </div>
                 {(answered && today.getDate() === date.getDate()) && (
                     <div className="flex items-center gap-4">
@@ -80,9 +86,10 @@ export function IsStudent({timeData, setTimeData, aList, setAList, answered, dat
                         </div>
                         <div
                             className={cn(
-                                "text-lg text-white rounded-lg font-semibold p-1",
+                                "text-white rounded-lg font-semibold p-1",
                                 {"bg-blue hover:bg-blue-700": !editAnswer},
-                                {"bg-blue-700 hover:bg-blue": editAnswer}
+                                {"bg-blue-700 hover:bg-blue": editAnswer},
+                                {"text-lg": !isMobile}
                             )}
                             onClick={update}
                         >
@@ -91,8 +98,14 @@ export function IsStudent({timeData, setTimeData, aList, setAList, answered, dat
                     </div>
                 )}
             </div>
-            <div className="grid grid-cols-2 w-full gap-4">
-                <div className="items-center justify-center flex flex-col">
+            <div className={cn(
+                "grid w-full gap-4",
+                isMobile ? "grid-rows-2" : "grid-cols-2"
+            )}>
+                <div className={cn(
+                    "items-center justify-center flex",
+                    {"flex-col": !isMobile}
+                )}>
                     <div className="text-xl font-semibold">
                         취침 시간
                     </div>
@@ -105,7 +118,10 @@ export function IsStudent({timeData, setTimeData, aList, setAList, answered, dat
                         selectorPointerEventsNone={!editAnswer}
                     />
                 </div>
-                <div className="items-center justify-center flex flex-col">
+                <div className={cn(
+                    "items-center justify-center flex",
+                    {"flex-col": !isMobile}
+                )}>
                     <div className="text-xl font-semibold">
                         기상 시간
                     </div>
