@@ -7,8 +7,6 @@ import {IsAdmin, IsStudent} from "@/app/(main)/(links)/mypage/(pages)/common";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import Scrollbars from "react-custom-scrollbars-2";
-import TextareaAutosize from "react-textarea-autosize";
-import {TimeInput} from "@/app/(main)/components/common";
 
 export default function Page({isMobile}) {
     const [error, setError] = useState("");
@@ -111,7 +109,13 @@ export default function Page({isMobile}) {
         }
     }
 
-    const [showCalandar, setShowCalandar] = useState(true);
+    const [showCalandar, setShowCalandar] = useState(!isMobile);
+
+    const [tab, setTab] = useState(0);
+    const tabList = [
+        "오늘의 질문",
+        "학생 목록"
+    ];
 
     return (
         <>
@@ -142,24 +146,26 @@ export default function Page({isMobile}) {
                             }
                         </div>
                     </div>
-                    {!isMobile && (
-                        <div
-                            className="p-1 rounded-xl text-lg font-bold bg-gray text-white hover:bg-gray-500"
-                            onClick={() => setShowCalandar((prev) => !prev)}
-                        >
-                            {showCalandar ? "달력 숨기기" : "달력 보이기"}
-                        </div>
-                    )}
-                    {(userType === 1) && (
-                        <div className="w-fit flex flex-col items-end">
-                            <div className="text-left text-xl font-bold text-gray-800">
-                                {grade}
+                    <div className="flex flex-row gap-8 items-center">
+                        {(userType === 1) && (
+                            <div className="w-fit flex flex-col items-end">
+                                <div className="text-left text-xl font-bold text-gray-800">
+                                    {grade}
+                                </div>
+                                <div className="text-left text-l font-bold text-gray-600">
+                                    {school}
+                                </div>
                             </div>
-                            <div className="text-left text-l font-bold text-gray-600">
-                                {school}
+                        )}
+                        {!isMobile && (
+                            <div
+                                className="px-3 py-1 bg-red-500 text-white text-lg font-bold rounded hover:bg-red-600 w-fit"
+                                onClick={logout}
+                            >
+                                로그아웃
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
                 {isMobile && (
                     <div className="w-full grid grid-cols-2 justify-center gap-4 px-4 font-bold">
@@ -228,39 +234,75 @@ export default function Page({isMobile}) {
                             />
                         </div>
                     )}
-                    <Scrollbars
-                        className="w-full h-full"
-                        universal
-                        autoHide
-                    >
-                        <div className="flex flex-col w-full h-full items-center p-1">
-                            {(userType === 1) && (
-                                <IsStudent
-                                    aList={aList}
-                                    timeData={timeData}
-                                    date={calendarValue}
-                                    setAList={setAList}
-                                    setTimeData={setTimeData}
-                                    answered={answered}
-                                    isMobile={isMobile}
-                                />
+                    <div className="w-full h-full flex flex-col">
+                        <div className="flex flex-row gap-2">
+                            {!isMobile && (
+                                <div
+                                    className="px-3 py-1 rounded text-lg font-bold bg-gray text-white hover:bg-gray-500"
+                                    onClick={() => setShowCalandar((prev) => !prev)}
+                                >
+                                    {showCalandar ? "달력 숨기기" : "달력 보이기"}
+                                </div>
                             )}
                             {(userType >= 2) && (
-                                <IsAdmin
-                                    qList={qList}
-                                    setQList={setQList}
-                                    userList={userList}
-                                    date={calendarValue}
-                                />
+                                <div className={cn(
+                                    "grid text-xl font-bold gap-2 items-center flex-grow",
+                                    `grid-cols-${tabList.length}`
+                                )}>
+                                    {tabList.map((t, i) => {
+                                        return (
+                                            <div
+                                                key={i}
+                                                className={cn(
+                                                    "flex justify-center hover:bg-gray-300 p-1 rounded",
+                                                    {"border-2 border-gray": (i === tab)}
+                                                )}
+                                                onClick={() => setTab(i)}
+                                            >
+                                                {t}
+                                            </div>
+                                        )
+                                    })}
+                                </div>
                             )}
-                            <div
-                                className="m-6 px-4 py-2 bg-red-500 text-white font-bold rounded hover:bg-red-600 w-fit"
-                                onClick={logout}
-                            >
-                                로그아웃
-                            </div>
                         </div>
-                    </Scrollbars>
+                        <Scrollbars
+                            className="w-full h-full"
+                            universal
+                            autoHide
+                        >
+                            <div className="flex flex-col w-full h-full items-center p-1">
+                                {(userType === 1) && (
+                                    <IsStudent
+                                        aList={aList}
+                                        timeData={timeData}
+                                        date={calendarValue}
+                                        setAList={setAList}
+                                        setTimeData={setTimeData}
+                                        answered={answered}
+                                        isMobile={isMobile}
+                                    />
+                                )}
+                                {(userType >= 2) && (
+                                    <IsAdmin
+                                        qList={qList}
+                                        setQList={setQList}
+                                        userList={userList}
+                                        date={calendarValue}
+                                        tab={tab}
+                                    />
+                                )}
+                                {isMobile && (
+                                    <div
+                                        className="m-6 px-4 py-2 bg-red-500 text-white font-bold rounded hover:bg-red-600 w-fit"
+                                        onClick={logout}
+                                    >
+                                        로그아웃
+                                    </div>
+                                )}
+                            </div>
+                        </Scrollbars>
+                    </div>
                 </div>
             </div>
         </>

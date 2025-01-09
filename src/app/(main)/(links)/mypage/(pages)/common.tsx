@@ -166,99 +166,110 @@ export function IsStudent({timeData, setTimeData, aList, setAList, answered, dat
     );
 }
 
-export function IsAdmin({qList, setQList, userList, date}) {
+export function IsAdmin({qList, setQList, userList, date, tab}) {
     const [editQuestion, setEditQuestion] = useState(false);
-
     const today = new Date();
+    const params = `date=${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+
+    const update = async () => {
+        if (editQuestion) {
+
+            await put('/api/admin/today/question', {
+                question_1: qList.question_1,
+                question_2: qList.question_2,
+                question_3: qList.question_3
+            });
+
+            const questions = await getStoreData(`/api/admin/today/question?${params}`, `question-list-${params}`, true);
+            setQList(questions.response.today_questions);
+        }
+        setEditQuestion(!editQuestion)
+    }
 
     return (
         <div className="w-full p-6 space-y-8">
-            <div className="flex items-center w-full justify-between">
-                <div className="text-3xl text-gray-800 font-semibold">
-                    오늘의 질문 목록 ({date.toLocaleDateString()})
-                </div>
-                {(today.getDate() === date.getDate()) && (
-                    <div
-                        className={cn(
-                            "text-lg text-white rounded-lg font-semibold p-1",
-                            {"bg-blue hover:bg-blue-700": !editQuestion},
-                            {"bg-blue-700 hover:bg-blue": editQuestion}
-                        )}
-                        onClick={async () => {
-                            if (editQuestion) {
-                                await put('/api/admin/today/question', {
-                                    question_1: qList.question_1,
-                                    question_2: qList.question_2,
-                                    question_3: qList.question_3
-                                });
-
-                                const questions = await getStoreData(`/api/admin/today/question`, 'question-list', true);
-                                setQList(questions.response.today_questions);
-                            }
-                            setEditQuestion(!editQuestion)
-                        }}
-                    >
-                        {(editQuestion) ? "저장하기" : "수정하기"}
-                    </div>
-                )}
-            </div>
-            <div className="w-full space-y-4">
-                {Object.entries({
-                    "answer_lastday": "어젯밤 공부한 내용은?",
-                    "answer_school": "오늘의 학교 과제는?",
-                    "answer_academy": "오늘의 학원 과제는?"
-                }).map(([key, qString]) => {
-                    return (
-                        // eslint-disable-next-line react/jsx-key
-                        <TextareaAutosize
-                            key={key}
-                            readOnly
-                            className={cn(
-                                "component-input resize-none",
-                                // {'bg-white': editQuestion}
-                            )}
-                            value={qString.toString()}
-                        />
-                    );
-                })}
-                {Object.entries(qList).map(([key, q]) => {
-                    if (key !== "date") {
-                        return (
-                            <TextareaAutosize
-                                key={key}
-                                readOnly={!editQuestion}
-                                className={cn(
-                                    "component-input resize-none",
-                                    {'bg-white': editQuestion}
-                                )}
-                                value={q as string}
-                                onChange={(e) => {
-                                    setQList((prev) => {
-                                        const obj = {...prev};
-                                        obj[key] = e.target.value;
-                                        return obj;
-                                    });
-                                }}
-                            />
-                        );
-                    } else {
-                    }
-                })}
-            </div>
-            <div className="flex items-center w-full justify-between">
-                <div className="text-2xl text-gray-800 font-semibold">
-                    학생 목록
-                </div>
-            </div>
-            <div className="w-full space-y-4">
-                {userList.map((u) => {
-                    return (
-                        <div key={u.uid}>
-                            {JSON.stringify(u)}
+            {(tab === 0) && (
+                <>
+                    <div className="flex items-center w-full justify-between">
+                        <div className="text-3xl text-gray-800 font-semibold">
+                            오늘의 질문 목록 ({date.toLocaleDateString()})
                         </div>
-                    )
-                })}
-            </div>
+                        {(today.getDate() === date.getDate()) && (
+                            <div
+                                className={cn(
+                                    "text-lg text-white rounded-lg font-semibold p-1",
+                                    {"bg-blue hover:bg-blue-700": !editQuestion},
+                                    {"bg-blue-700 hover:bg-blue": editQuestion}
+                                )}
+                                onClick={update}
+                            >
+                                {(editQuestion) ? "저장하기" : "수정하기"}
+                            </div>
+                        )}
+                    </div>
+                    <div className="w-full space-y-4">
+                        {Object.entries({
+                            "answer_lastday": "어젯밤 공부한 내용은?",
+                            "answer_school": "오늘의 학교 과제는?",
+                            "answer_academy": "오늘의 학원 과제는?"
+                        }).map(([key, qString]) => {
+                            return (
+                                // eslint-disable-next-line react/jsx-key
+                                <TextareaAutosize
+                                    key={key}
+                                    readOnly
+                                    className={cn(
+                                        "component-input resize-none",
+                                        // {'bg-white': editQuestion}
+                                    )}
+                                    value={qString.toString()}
+                                />
+                            );
+                        })}
+                        {Object.entries(qList).map(([key, q]) => {
+                            if (key !== "date") {
+                                return (
+                                    <TextareaAutosize
+                                        key={key}
+                                        readOnly={!editQuestion}
+                                        className={cn(
+                                            "component-input resize-none",
+                                            {'bg-white': editQuestion}
+                                        )}
+                                        value={q as string}
+                                        onChange={(e) => {
+                                            setQList((prev) => {
+                                                const obj = {...prev};
+                                                obj[key] = e.target.value;
+                                                return obj;
+                                            });
+                                        }}
+                                    />
+                                );
+                            } else {
+                            }
+                        })}
+                    </div>
+                </>
+            )}
+            {(tab === 1) && (
+                <>
+                    <div className="flex items-center w-full justify-between">
+                        <div className="text-3xl text-gray-800 font-semibold">
+                            학생 목록
+                        </div>
+                    </div>
+                    <div className="w-full space-y-4">
+                        {userList.map((u) => {
+                            return (
+                                <div key={u.uid}>
+                                    {JSON.stringify(u)}
+                                </div>
+                            )
+                        })}
+                    </div>
+                </>
+            )}
         </div>
     );
 }
