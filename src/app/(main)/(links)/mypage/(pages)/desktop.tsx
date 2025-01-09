@@ -168,6 +168,7 @@ export default function Desktop() {
                                     return day.toString().padStart(2, '0');
                                 }}
                                 maxDate={new Date()}
+                                minDate={new Date('2025-01-04')} // for test
                                 minDetail="year"
                             />
                         </div>
