@@ -54,8 +54,7 @@
  ┃ ┃ ┃ ┗ 📜page.tsx
  ┃ ┣ 📂mypage
  ┃ ┃ ┗ 📂(pages)
- ┃ ┃ ┃ ┣ 📜desktop.tsx
- ┃ ┃ ┃ ┣ 📜mobile.tsx
+ ┃ ┃ ┃ ┣ 📜_page.tsx
  ┃ ┃ ┃ ┗ 📜page.tsx
  ┃ ┣ 📂notifications
  ┃ ┃ ┣ 📂(pages)

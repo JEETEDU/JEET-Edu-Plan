@@ -161,8 +161,8 @@ export function TodayQuestion({device}: { device }) {
     }
 
     return (<>
-        {/* !answered &&  */}
-        {(userType === 1) && (
+        {/*  */}
+        {(!answered && userType === 1) && (
             <div className="fixed inset-0 flex items-end justify-end z-50 pointer-events-none">
                 <div
                     className={cn(

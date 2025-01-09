@@ -1,14 +1,16 @@
 'use client';
 
-import {cn, getStoreData, post} from "@/app/(main)/components/functions";
+import {clearSessionStorage, cn, getSessionItem, getStoreData, post, setSessionItem} from "@/app/(main)/components/functions";
 import React, {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
 import {IsAdmin, IsStudent} from "@/app/(main)/(links)/mypage/(pages)/common";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import Scrollbars from "react-custom-scrollbars-2";
+import TextareaAutosize from "react-textarea-autosize";
+import {TimeInput} from "@/app/(main)/components/common";
 
-export default function Desktop() {
+export default function Page({isMobile}) {
     const [error, setError] = useState("");
     const router = useRouter();
 
@@ -25,7 +27,7 @@ export default function Desktop() {
     const [userList, setUserList] = useState([]);
 
     const [calendarValue, setCalendarValue] = useState(() => {
-        const date = sessionStorage.getItem('calendar-value');
+        const date = getSessionItem('calendar-value');
         if (date) {
             return new Date(date);
         } else {
@@ -35,7 +37,8 @@ export default function Desktop() {
 
     useEffect(() => {
         (async () => {
-            sessionStorage.setItem('calendar-value', calendarValue.toLocaleDateString());
+            setSessionItem('calendar-value', calendarValue.toLocaleDateString());
+            // sessionStorage.setItem('calendar-value', calendarValue.toLocaleDateString());
 
             const params = `date=${calendarValue.getFullYear()}-${String(calendarValue.getMonth() + 1).padStart(2, '0')}-${String(calendarValue.getDate()).padStart(2, '0')}`
             // console.log(params)
@@ -99,7 +102,7 @@ export default function Desktop() {
     }, [calendarValue]);
 
     const logout = async () => {
-        sessionStorage.clear();
+        clearSessionStorage();
         const res = await post("/api/user/logout", {})
         if (res.success) {
             router.push('/');
@@ -119,11 +122,15 @@ export default function Desktop() {
             <div className="w-full h-full flex flex-col items-center bg-gray-100">
                 <div className="w-full flex flex-row justify-between items-center py-3 px-6">
                     <div className="flex items-center gap-4">
-                        <div className="text-4xl font-bold text-gray-800">
+                        <div className={cn(
+                            "font-bold text-gray-800",
+                            isMobile ? "text-3xl" : "text-4xl"
+                        )}>
                             {name}
                         </div>
                         <div className={cn(
-                            "text-2xl font-bold p-2 rounded-xl",
+                            "font-bold p-2 rounded-xl",
+                            isMobile ? "text-xl" : "text-2xl",
                             {
                                 "bg-green": (userType === 1),
                                 "text-white bg-blue": (userType === 2),
@@ -135,12 +142,14 @@ export default function Desktop() {
                             }
                         </div>
                     </div>
-                    <div
-                        className="p-1 rounded-xl text-lg font-bold bg-gray text-white hover:bg-gray-500"
-                        onClick={() => setShowCalandar((prev) => !prev)}
-                    >
-                        {showCalandar ? "달력 숨기기" : "달력 보이기"}
-                    </div>
+                    {!isMobile && (
+                        <div
+                            className="p-1 rounded-xl text-lg font-bold bg-gray text-white hover:bg-gray-500"
+                            onClick={() => setShowCalandar((prev) => !prev)}
+                        >
+                            {showCalandar ? "달력 숨기기" : "달력 보이기"}
+                        </div>
+                    )}
                     {(userType === 1) && (
                         <div className="w-fit flex flex-col items-end">
                             <div className="text-left text-xl font-bold text-gray-800">
@@ -152,8 +161,54 @@ export default function Desktop() {
                         </div>
                     )}
                 </div>
+                {isMobile && (
+                    <div className="w-full grid grid-cols-2 justify-center gap-4 px-4 font-bold">
+                        <div className="flex justify-center">
+                            날짜 선택
+                        </div>
+                        <div
+                            className="flex justify-center border-2 bg-white rounded-lg"
+                            onClick={() => setShowCalandar((prev) => !prev)}
+                        >
+                            {calendarValue.toLocaleDateString()}
+                        </div>
+                    </div>
+                )}
+                {(isMobile && showCalandar) && (
+                    <div
+                        className="fixed inset-0 bg-black/50 flex items-center justify-center z-60"
+                        onClick={() => setShowCalandar((prev) => !prev)} // 모달 바깥 클릭 시 닫힘
+                    >
+                        <div
+                            className="bg-white rounded-lg shadow-lg p-6 space-y-4 overflow-y-auto w-9/10 h-fit flex flex-col justify-between"
+                            onClick={(e) => e.stopPropagation()} // 모달 내부 클릭 시 닫히지 않도록 방지
+                        >
+                            <Calendar
+                                locale="ko"
+                                value={calendarValue}
+                                onChange={setCalendarValue}
+                                formatDay={(locale, date): string => {
+                                    const day = date.getDate();
+                                    return day.toString().padStart(2, '0');
+                                }}
+                                maxDate={new Date()}
+                                minDate={new Date('2025-01-04')} // for test
+                                minDetail="year"
+                            />
+
+                            <div className="flex flex-col items-center space-y-4">
+                                <div
+                                    className="component-button bg-green-600"
+                                    onClick={() => setShowCalandar((prev) => !prev)}
+                                >
+                                    저장하기
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
                 <div className="flex lg:flex-row flex-col w-full p-6 h-full gap-6">
-                    {showCalandar && (
+                    {(!isMobile && showCalandar) && (
                         <div className="flex flex-row lg:flex-col gap-2">
                             <div className="grow border-2 border-gray-500 text-center p-2 flex items-center justify-center">
                                 여기도 뭔가 넣어싶어요<br/><br/>
@@ -187,6 +242,7 @@ export default function Desktop() {
                                     setAList={setAList}
                                     setTimeData={setTimeData}
                                     answered={answered}
+                                    isMobile={isMobile}
                                 />
                             )}
                             {(userType >= 2) && (
