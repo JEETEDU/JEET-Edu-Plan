@@ -3,6 +3,7 @@
 import React, {useState} from "react";
 import {cn} from "@/app/(main)/components/functions";
 import Link from "next/link";
+import Scrollbars from "react-custom-scrollbars-2";
 
 export default function Desktop() {
     const [isInfo, setIsInfo] = useState(true);
@@ -49,8 +50,8 @@ export default function Desktop() {
                     {headNotification.content}
                 </div>
                 {isInfo ? (
-                    <div className="flex-1 grid grid-cols-3 overflow-hidden"> {/* hear */}
-                        <div className="col-span-2">
+                    <div className="flex-1 grid grid-cols-3 overflow-hidden bg-gray-100"> {/* hear */}
+                        <div className="col-span-2 bg-white mt-2 mx-4 rounded-lg border">
                             <div className="flex flex-col gap-5 h-full w-full items-center justify-center">
                                 <div className="text-center text-4xl">
                                     {notifications[head]}
@@ -60,30 +61,40 @@ export default function Desktop() {
                                 </div>
                             </div>
                         </div>
-                        <div className="overflow-y-auto p-4 bg-gray-100">
-                            {notifications.map((notification, index) => (
-                                <div
-                                    key={index}
-                                    className="block w-full"
-                                    onClick={() => setHead(index)}
-                                >
-                                    <div className={cn(
-                                        "p-3 mb-2 hover:bg-gray-100 rounded-lg shadow-lg border border-gray-200 w-full",
-                                        (index === head) ? "bg-gray-200" : "bg-white"
-                                    )}>
-                                        {notification}
+                        <Scrollbars
+                            className="w-full h-full" // bg-gray-100
+                            universal
+                            autoHide
+                        >
+                            <div className="p-2 space-y-2">
+                                {notifications.map((notification, index) => (
+                                    <div
+                                        key={index}
+                                        className="block w-full"
+                                        onClick={() => setHead(index)}
+                                    >
+                                        <div className={cn(
+                                            "p-3 hover:bg-gray-100 rounded-lg border border-gray-200 w-full",
+                                            (index === head) ? "bg-gray-200" : "bg-white"
+                                        )}>
+                                            {notification}
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
-                        </div>
+                                ))}
+                            </div>
+                        </Scrollbars>
                     </div>
-                ) : (
+                    ) : (
                     <div className="flex-1 grid grid-cols-2 overflow-hidden">
                         <div className="overflow-hidden bg-gray-100 flex flex-col px-4 pt-4">
                             <div className="text-center text-2xl mb-4">
                                 숙제 목록
                             </div>
-                            <div className='overflow-y-auto'>
+                            <Scrollbars
+                                className="w-full h-full"
+                                universal
+                                autoHide
+                            >
                                 {notifications.map((notification, index) => (
                                     <Link
                                         key={index}
@@ -98,13 +109,17 @@ export default function Desktop() {
                                         </div>
                                     </Link>
                                 ))}
-                            </div>
+                            </Scrollbars>
                         </div>
                         <div className="overflow-hidden pt-4 px-4 bg-gray-100 flex flex-col">
                             <div className="text-center text-2xl mb-4">
                                 내 할일 목록
                             </div>
-                            <div className='overflow-y-auto'>
+                            <Scrollbars
+                                className="w-full h-full"
+                                universal
+                                autoHide
+                            >
                                 {notifications.map((notification, index) => (
                                     <Link
                                         key={index}
@@ -119,7 +134,7 @@ export default function Desktop() {
                                         </div>
                                     </Link>
                                 ))}
-                            </div>
+                            </Scrollbars>
                         </div>
                     </div>
                 )}
