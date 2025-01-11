@@ -3,6 +3,7 @@
 import TextareaAutosize from "react-textarea-autosize";
 import {useState} from "react";
 import {cn} from "@/app/(main)/components/functions";
+import Scrollbars from "react-custom-scrollbars-2";
 
 // eslint-disable-next-line @next/next/no-async-client-component
 export default function Chatting({id}: { id: number }) {
@@ -30,7 +31,7 @@ export default function Chatting({id}: { id: number }) {
     const [screen, setScreen] = useState(1);
 
     return (
-        <div className="bg-gray-100 px-4 flex flex-col h-full gap-4">
+        <div className="bg-gray-100 px-4 flex flex-col gap-4 h-full">
             {/* Chat Header */}
             <div className={cn(
                 "bg-white flex flex-col shadow rounded-lg w-full p-4",
@@ -74,14 +75,15 @@ export default function Chatting({id}: { id: number }) {
                 <>
                     <div className="flex-1 w-full overflow-hidden flex flex-col">
                         {/*<h3 className="text-lg font-semibold text-gray-800 mb-4">댓글</h3>*/}
-                        <div
-                            className="space-y-4 overflow-y-auto"
-                            // style={{ maxHeight: "400px" }} // Adjust height for scrollable area
+                        <Scrollbars
+                            className="w-full h-full"
+                            universal
+                            autoHide
                         >
                             {comments.map((comment, index) => (
                                 <div
                                     key={index}
-                                    className="p-4 bg-white border rounded-lg shadow-sm flex items-start gap-4"
+                                    className="p-4 bg-white border rounded-lg flex items-start gap-4 my-2"
                                 >
                                     {/*<div className="flex-shrink-0 bg-blue-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold">*/}
                                     {/*    {comment.name.charAt(0)}*/}
@@ -102,7 +104,7 @@ export default function Chatting({id}: { id: number }) {
                                     </div>
                                 </div>
                             ))}
-                        </div>
+                        </Scrollbars>
                     </div>
 
                     <div className="bg-white shadow rounded-lg w-full flex p-1 justify-between items-center">
