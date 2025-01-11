@@ -6,74 +6,121 @@
 ```bash
 📦src
  ┣ 📂app
- ┃ ┣ 📂(pages)
- ┃ ┃ ┣ 📜desktop.tsx
- ┃ ┃ ┣ 📜mobile.tsx
- ┃ ┃ ┗ 📜page.tsx
- ┃ ┣ 📂api
- ┃ ┃ ┣ 📂delete
- ┃ ┃ ┃ ┗ 📜route.tsx
- ┃ ┃ ┣ 📂docs
- ┃ ┃ ┃ ┣ 📜page.tsx
- ┃ ┃ ┃ ┗ 📜react-swagger.tsx
- ┃ ┃ ┣ 📂getUserList
- ┃ ┃ ┃ ┗ 📜route.tsx
- ┃ ┃ ┗ 📂insert
- ┃ ┃ ┃ ┗ 📜route.tsx
- ┃ ┣ 📂classroom
- ┃ ┃ ┣ 📂(pages)
+ ┃ ┣ 📂(main)
+ ┃ ┃ ┣ 📂(links)
+ ┃ ┃ ┃ ┣ 📂classroom
+ ┃ ┃ ┃ ┃ ┣ 📂(pages)
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜desktop.tsx
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜mobile.tsx
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜page.tsx
+ ┃ ┃ ┃ ┃ ┗ 📂[id]
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜desktop.tsx
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜mobile.tsx
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜page.tsx
+ ┃ ┃ ┃ ┣ 📂home
+ ┃ ┃ ┃ ┃ ┣ 📂(pages)
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜desktop.tsx
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜mobile.tsx
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜page.tsx
+ ┃ ┃ ┃ ┃ ┗ 📂new
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜desktop.tsx
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜mobile.tsx
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜page.tsx
+ ┃ ┃ ┃ ┣ 📂homeworks
+ ┃ ┃ ┃ ┃ ┣ 📂(pages)
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜desktop.tsx
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜mobile.tsx
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜page.tsx
+ ┃ ┃ ┃ ┃ ┗ 📂[id]
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜desktop.tsx
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜mobile.tsx
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜page.tsx
+ ┃ ┃ ┃ ┣ 📂mypage
+ ┃ ┃ ┃ ┃ ┗ 📂(pages)
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜common.tsx
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜page.tsx
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜_page.tsx
+ ┃ ┃ ┃ ┣ 📂notifications
+ ┃ ┃ ┃ ┃ ┣ 📂(pages)
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜desktop.tsx
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜mobile.tsx
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜page.tsx
+ ┃ ┃ ┃ ┃ ┗ 📂[id]
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜desktop.tsx
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜mobile.tsx
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜page.tsx
+ ┃ ┃ ┃ ┗ 📂timeTable
+ ┃ ┃ ┃ ┃ ┗ 📂(pages)
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜desktop.tsx
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜mobile.tsx
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜page.tsx
+ ┃ ┃ ┣ 📂(loginPage)
+ ┃ ┃ ┃ ┣ 📂new
+ ┃ ┃ ┃ ┃ ┗ 📜page.tsx
  ┃ ┃ ┃ ┣ 📜desktop.tsx
  ┃ ┃ ┃ ┣ 📜mobile.tsx
  ┃ ┃ ┃ ┗ 📜page.tsx
- ┃ ┃ ┗ 📂[id]
- ┃ ┃ ┃ ┣ 📂(pages)
+ ┃ ┃ ┣ 📂components
+ ┃ ┃ ┃ ┣ 📜common.tsx
  ┃ ┃ ┃ ┣ 📜desktop.tsx
- ┃ ┃ ┃ ┣ 📜mobile.tsx
- ┃ ┃ ┃ ┗ 📜page.tsx
- ┃ ┣ 📂components
- ┃ ┃ ┣ 📂desktop
+ ┃ ┃ ┃ ┣ 📜functions.tsx
  ┃ ┃ ┃ ┗ 📜mobile.tsx
- ┃ ┃ ┣ 📂mobile
- ┃ ┃ ┃ ┗ 📜mobile.tsx
- ┃ ┃ ┣ 📜alert.tsx
- ┃ ┃ ┗ 📜functions.tsx
- ┃ ┣ 📂home
- ┃ ┃ ┗ 📂(pages)
- ┃ ┃ ┃ ┣ 📜desktop.tsx
- ┃ ┃ ┃ ┣ 📜mobile.tsx
- ┃ ┃ ┃ ┗ 📜page.tsx
- ┃ ┣ 📂homeworks
- ┃ ┃ ┣ 📂(pages)
- ┃ ┃ ┃ ┣ 📜desktop.tsx
- ┃ ┃ ┃ ┣ 📜mobile.tsx
- ┃ ┃ ┃ ┗ 📜page.tsx
- ┃ ┃ ┗ 📂[id]
- ┃ ┃ ┃ ┣ 📂(pages)
- ┃ ┃ ┃ ┣ 📜desktop.tsx
- ┃ ┃ ┃ ┣ 📜mobile.tsx
- ┃ ┃ ┃ ┗ 📜page.tsx
- ┃ ┣ 📂mypage
- ┃ ┃ ┗ 📂(pages)
- ┃ ┃ ┃ ┣ 📜_page.tsx
- ┃ ┃ ┃ ┗ 📜page.tsx
- ┃ ┣ 📂notifications
- ┃ ┃ ┣ 📂(pages)
- ┃ ┃ ┃ ┣ 📜desktop.tsx
- ┃ ┃ ┃ ┣ 📜mobile.tsx
- ┃ ┃ ┃ ┗ 📜page.tsx
- ┃ ┃ ┗ 📂[id]
- ┃ ┃ ┃ ┣ 📂(pages)
- ┃ ┃ ┃ ┣ 📜desktop.tsx
- ┃ ┃ ┃ ┣ 📜mobile.tsx
- ┃ ┃ ┃ ┗ 📜page.tsx
- ┃ ┣ 📂timeTable
- ┃ ┃ ┗ 📂(pages)
- ┃ ┃ ┃ ┣ 📜desktop.tsx
- ┃ ┃ ┃ ┣ 📜mobile.tsx
- ┃ ┃ ┃ ┗ 📜page.tsx
- ┃ ┣ 📜globals.css
- ┃ ┣ 📜layout.tsx
- ┃ ┗ 📜tempPage.tsx
+ ┃ ┃ ┣ 📜globals.css
+ ┃ ┃ ┗ 📜layout.tsx
+ ┃ ┗ 📂(others)
+ ┃ ┃ ┣ 📂api
+ ┃ ┃ ┃ ┣ 📂(tools)
+ ┃ ┃ ┃ ┃ ┣ 📜auth.ts
+ ┃ ┃ ┃ ┃ ┗ 📜tools.ts
+ ┃ ┃ ┃ ┣ 📂admin
+ ┃ ┃ ┃ ┃ ┣ 📂class
+ ┃ ┃ ┃ ┃ ┃ ┣ 📂join
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂student
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜route.ts
+ ┃ ┃ ┃ ┃ ┃ ┣ 📂quit
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂student
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜route.ts
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜route.ts
+ ┃ ┃ ┃ ┃ ┣ 📂log
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜route.ts
+ ┃ ┃ ┃ ┃ ┣ 📂today
+ ┃ ┃ ┃ ┃ ┃ ┣ 📂question
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜route.ts
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂response
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜route.ts
+ ┃ ┃ ┃ ┃ ┗ 📂user
+ ┃ ┃ ┃ ┃ ┃ ┣ 📂accept
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜route.ts
+ ┃ ┃ ┃ ┃ ┃ ┣ 📂list
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜route.ts
+ ┃ ┃ ┃ ┃ ┃ ┣ 📂reject
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜route.ts
+ ┃ ┃ ┃ ┃ ┃ ┣ 📂reset_password
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜route.ts
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜route.ts
+ ┃ ┃ ┃ ┣ 📂class
+ ┃ ┃ ┃ ┃ ┗ 📂[class_id]
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜route.ts
+ ┃ ┃ ┃ ┣ 📂docs
+ ┃ ┃ ┃ ┃ ┣ 📜page.tsx
+ ┃ ┃ ┃ ┃ ┗ 📜react-swagger.tsx
+ ┃ ┃ ┃ ┗ 📂user
+ ┃ ┃ ┃ ┃ ┣ 📂info
+ ┃ ┃ ┃ ┃ ┃ ┣ 📂[user_id]
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜route.ts
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜route.ts
+ ┃ ┃ ┃ ┃ ┣ 📂login
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜route.ts
+ ┃ ┃ ┃ ┃ ┣ 📂logout
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜route.ts
+ ┃ ┃ ┃ ┃ ┣ 📂register
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜route.ts
+ ┃ ┃ ┃ ┃ ┗ 📂today
+ ┃ ┃ ┃ ┃ ┃ ┣ 📂question
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜route.ts
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂sleep
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜route.ts
+ ┃ ┃ ┗ 📜layout.tsx
  ┣ 📂database
  ┃ ┣ 📜index.tsx
  ┃ ┗ 📜schema.ts
