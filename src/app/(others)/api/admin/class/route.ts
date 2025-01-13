@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server';
 import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
-import {and, eq} from 'drizzle-orm';
+import {and, eq, like} from 'drizzle-orm';
 import {
     db_log,
     return_400, return_500,
@@ -11,6 +11,120 @@ import {
     UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
+import {check_admin_permission} from "@/app/(others)/api/admin/(tools)/tools";
+import {QueryBuilder} from "drizzle-orm/mysql-core";
+
+
+/**
+ * @swagger
+ * /api/admin/class:
+ *  get:
+ *      tags:
+ *          - Admin
+ *          - Class
+ *      summary: Get classes
+ *      description: <b>Admin</b><br>Retrieve a list of classes filtered by name
+ *      security:
+ *          - cookieAuth: []
+ *      parameters:
+ *          - in: query
+ *            name: name
+ *            schema:
+ *              type: string
+ *            description: Filter classes by name (partial match)
+ *            required: false
+ *      responses:
+ *          "200":
+ *              description: Classes retrieved successfully
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              success:
+ *                                  type: boolean
+ *                                  example: true
+ *                              classes:
+ *                                  type: array
+ *                                  items:
+ *                                      type: object
+ *                                      properties:
+ *                                          id:
+ *                                              type: number
+ *                                              example: 1
+ *                                          name:
+ *                                              type: string
+ *                                              example: "G3 K"
+ *                                          display:
+ *                                              type: boolean
+ *                                              example: true
+ *          "400":
+ *              description: Bad request
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              success:
+ *                                  type: boolean
+ *                                  example: false
+ *                              message:
+ *                                  type: string
+ *                                  example: "Error message"
+ *          "401":
+ *              description: Not logged in
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              success:
+ *                                  type: boolean
+ *                                  example: false
+ *                              message:
+ *                                  type: string
+ *                                  example: "Not logged in"
+ *          "403":
+ *              description: Permission denied
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              success:
+ *                                  type: boolean
+ *                                  example: false
+ *                              message:
+ *                                  type: string
+ *                                  example: "Permission denied"
+ */
+export async function GET(req: NextRequest) {
+    try {
+        let token: DecodedToken | NextResponse = check_admin_permission(req.cookies.get("token")?.value ?? '');
+        if (token instanceof NextResponse) return token;
+
+        const data = req.nextUrl.searchParams;
+        const name = data.get('name') ?? '';
+
+        let classes = await db.select({
+            id: schema.classes.id,
+            name: schema.classes.name,
+            display: schema.classes.display
+        })
+            .from(schema.classes)
+            .where(
+                like(schema.classes.name, `%${name}%`)
+            );
+
+        return NextResponse.json({
+            success: true,
+            classes: classes
+        });
+    } catch (e) {
+        console.error(e);
+        return return_500();
+    }
+}
 
 /**
  * @swagger

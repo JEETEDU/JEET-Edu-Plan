@@ -92,7 +92,6 @@ export async function GET(req: NextRequest) {
                 })
                 .from(schema.users)
                 .where(eq(schema.users.uid, decoded.user_id))
-
         return NextResponse.json({
             success: true,
             user: user
