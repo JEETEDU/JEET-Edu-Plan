@@ -90,6 +90,7 @@ export function TodayQuestion({device}: { device }) {
     const path = usePathname();
     const [answered, setAnswered] = useState(false);
     const [showQuestion, setShowQuestion] = useState(false);
+    const [questionOK, setQuestionOK] = useState(false);
     const [userType, setUserType] = useState(0);
 
     const [qList, setQList] = useState({})
@@ -114,8 +115,13 @@ export function TodayQuestion({device}: { device }) {
                     questions = await getStoreData(`/api/user/today/question`, 'question-list', true)
                 }
 
-                setQList(questions.response.answers[0].questions);
-                setAnswered((questions.response.answers[0].answers.answer_1 !== null))
+                if (questions.response.success) {
+                    setQuestionOK(true);
+                    setQList(questions.response.answers[0].questions);
+                    setAnswered((questions.response.answers[0].answers.answer_1 !== null));
+                } else {
+                    setQuestionOK(false);
+                }
             }
 
         })()/*.then(r => console.log(r))*/;
@@ -162,7 +168,7 @@ export function TodayQuestion({device}: { device }) {
 
     return (<>
         {/*  */}
-        {(!answered && userType === 1) && (
+        {(!answered && userType === 1 && questionOK) && (
             <div className="fixed inset-0 flex items-end justify-end z-50 pointer-events-none">
                 <div
                     className={cn(
@@ -227,6 +233,37 @@ export function TodayQuestion({device}: { device }) {
                     </div>
 
                     <div className="space-y-4">
+                        {Object.entries(qList).map(([key, value]) => {
+                            return (
+                                // eslint-disable-next-line react/jsx-key
+                                <div key={key}>
+                                    <label htmlFor="name" className="component-button-info">
+                                        {value.toString()}
+                                    </label>
+                                    <TextareaAutosize
+                                        id={key}
+                                        className="component-input resize-none"
+                                        placeholder={"몰라요"}
+                                        required
+                                        onChange={() => setError("")}
+                                    />
+                                </div>
+                            );
+                        })}
+
+                        <div>
+                            <label htmlFor="name" className="component-button-info">
+                                오늘의 학원 과제는?
+                            </label>
+                            <TextareaAutosize
+                                id="a"
+                                className="component-input resize-none"
+                                placeholder={"몰라요"}
+                                required
+                                onChange={() => setError("")}
+                            />
+                        </div>
+
                         <div>
                             <label htmlFor="name" className="component-button-info">
                                 어젯밤 공부한 내용은?
@@ -252,37 +289,6 @@ export function TodayQuestion({device}: { device }) {
                                 onChange={() => setError("")}
                             />
                         </div>
-
-                        <div>
-                            <label htmlFor="name" className="component-button-info">
-                                오늘의 학원 과제는?
-                            </label>
-                            <TextareaAutosize
-                                id="a"
-                                className="component-input resize-none"
-                                placeholder={"몰라요"}
-                                required
-                                onChange={() => setError("")}
-                            />
-                        </div>
-
-                        {Object.entries(qList).map(([key, value]) => {
-                            return (
-                                // eslint-disable-next-line react/jsx-key
-                                <div key={key}>
-                                    <label htmlFor="name" className="component-button-info">
-                                        {value.toString()}
-                                    </label>
-                                    <TextareaAutosize
-                                        id={key}
-                                        className="component-input resize-none"
-                                        placeholder={"몰라요"}
-                                        required
-                                        onChange={() => setError("")}
-                                    />
-                                </div>
-                            );
-                        })}
                     </div>
                     <div className="flex flex-col items-center space-y-4">
                         <div className="text-red-600 font-bold">

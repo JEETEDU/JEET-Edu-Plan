@@ -27,6 +27,7 @@ export async function get(url) {
         (res) => res.json()
     ).then(
         (res) => {
+            console.log(res);
             return res;
         }
     )
@@ -60,27 +61,18 @@ export async function getStoreData(url, storeName, forceUpdate = false) {
 
     const storage = sessionStorage;
 
-    async function store() {
-        const res = await get(url)
-        if (res.success) {
-            storage.setItem(storeName, JSON.stringify({
-                last_update: new Date(),
-                response: res
-            }));
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     const value = storage.getItem(storeName);
 
     if (value && !forceUpdate) {
         return JSON.parse(value);
-    } else if (await store()) {
-        return JSON.parse(storage.getItem(storeName));
     } else {
-        return null;
+        const res = await get(url)
+        const body = {
+            last_update: new Date(),
+            response: res
+        }
+        storage.setItem(storeName, JSON.stringify(body));
+        return body;
     }
 }
 

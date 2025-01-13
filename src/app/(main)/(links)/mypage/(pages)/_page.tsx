@@ -19,8 +19,9 @@ export default function Page({isMobile}) {
 
     const [answered, setAnswered] = useState(false);
 
-    const [qList, setQList] = useState({})
+    const [qList, setQList] = useState({});
     const [aList, setAList] = useState({});
+    const [questionOK, setQuestionOK] = useState(false);
     const [timeData, setTimeData] = useState({wakeup: "", sleep: ""});
     const [userList, setUserList] = useState([]);
 
@@ -57,20 +58,25 @@ export default function Page({isMobile}) {
                     questions = await getStoreData(`/api/user/today/question?${params}`, `question-list-${params}`, true)
                 }
 
-                //----------------------------------------------questions.response.answers[0].answers
-                const _q = Object.values(questions.response.answers[0].questions);
-                const qArr = _q.concat("오늘의 학원 과제는?", "어젯밤 공부한 내용은?", "오늘의 학교 과제는?");
-                const aArr = Object.values(questions.response.answers[0].answers);
-                const qaArr = qArr.map((q, i) => {
-                    return [q, aArr[i] || "아직 답하지 않았습니다."]
-                });
-                const qaObj = qaArr.reduce((map, value) => {
-                    map[value[0].toString()] = value[1].toString();
-                    return map;
-                }, {})
-                //----------------------------------------------
-                setAList(qaObj);
-                setAnswered(Boolean(questions.response.answers[0].answers.answer_1 !== null))
+                if (questions.response.success) {
+                    setQuestionOK(true);
+                    //----------------------------------------------
+                    const _q = Object.values(questions.response.answers[0].questions);
+                    const qArr = _q.concat("오늘의 학원 과제는?", "어젯밤 공부한 내용은?", "오늘의 학교 과제는?");
+                    const aArr = Object.values(questions.response.answers[0].answers);
+                    const qaArr = qArr.map((q, i) => {
+                        return [q, aArr[i] || "아직 답하지 않았습니다."];
+                    });
+                    const qaObj = qaArr.reduce((map, value) => {
+                        map[value[0].toString()] = value[1].toString();
+                        return map;
+                    }, {})
+                    //----------------------------------------------
+                    setAList(qaObj);
+                    setAnswered(Boolean(questions.response.answers[0].answers.answer_1 !== null));
+                } else {
+                    setQuestionOK(false);
+                }
 
                 let times = await getStoreData(`/api/user/today/sleep?${params}`, `sleep-time-${params}`);
                 if (new Date(times.last_update).getDate() !== today.getDate()) {
@@ -89,7 +95,18 @@ export default function Page({isMobile}) {
                     questions = await getStoreData(`/api/admin/today/question?${params}`, `question-list-${params}`, true)
                 }
 
-                setQList(questions.response.today_questions);
+                if (questions.response.success) {
+                    setQuestionOK(true);
+                    setQList(questions.response.today_questions);
+                    console.log(questions.response.today_questions)
+                } else {
+                    setQuestionOK(false);
+                    setQList({
+                        question_1: "",
+                        question_2: "",
+                        question_3: "",
+                    });
+                }
 
                 const users = await getStoreData('/api/admin/user/list', 'user-list')
                 setUserList(users.response.users)
@@ -274,6 +291,7 @@ export default function Page({isMobile}) {
                             <div className="flex flex-col w-full h-full items-center p-1">
                                 {(userType === 1) && (
                                     <IsStudent
+                                        questionOK={questionOK}
                                         aList={aList}
                                         timeData={timeData}
                                         date={calendarValue}
@@ -290,6 +308,8 @@ export default function Page({isMobile}) {
                                         userList={userList}
                                         date={calendarValue}
                                         tab={tab}
+                                        questionOK={questionOK}
+                                        setQuestionOK={setQuestionOK}
                                     />
                                 )}
                                 {isMobile && (

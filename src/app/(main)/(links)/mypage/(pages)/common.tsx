@@ -5,7 +5,7 @@ import React, {useState} from "react";
 import {cn, getStoreData, put} from "@/app/(main)/components/functions";
 import {TimeInput} from "@/app/(main)/components/common";
 
-export function IsStudent({timeData, setTimeData, aList, setAList, answered, date, isMobile}) {
+export function IsStudent({timeData, setTimeData, aList, setAList, answered, date, isMobile, questionOK}) {
     const [editAnswer, setEditAnswer] = useState(false);
     const [error, setError] = useState("");
 
@@ -98,75 +98,83 @@ export function IsStudent({timeData, setTimeData, aList, setAList, answered, dat
                     </div>
                 )}
             </div>
-            <div className={cn(
-                "grid w-full gap-4",
-                isMobile ? "grid-rows-2" : "grid-cols-2"
-            )}>
-                <div className={cn(
-                    "items-center justify-center flex",
-                    {"flex-col": !isMobile}
-                )}>
-                    <div className="text-xl font-semibold">
-                        취침 시간
-                    </div>
-                    <TimeInput
-                        className="w-fit p-1"
-                        setState={setTimeData}
-                        state={timeData}
-                        stateKey={"sleep"}
-                        // onChange={() => setError("")}
-                        selectorPointerEventsNone={!editAnswer}
-                    />
-                </div>
-                <div className={cn(
-                    "items-center justify-center flex",
-                    {"flex-col": !isMobile}
-                )}>
-                    <div className="text-xl font-semibold">
-                        기상 시간
-                    </div>
-                    <TimeInput
-                        className="w-fit p-1"
-                        setState={setTimeData}
-                        state={timeData}
-                        stateKey={"wakeup"}
-                        // onChange={() => setError("")}
-                        selectorPointerEventsNone={!editAnswer}
-                    />
-                </div>
-            </div>
-            <div className="w-full space-y-4">
-                {Object.entries(aList).map(([q, a], i) => {
-                    return <div key={i}>
-                        <div key={i}>
-                            <label htmlFor="name" className="component-button-info">
-                                {q}
-                            </label>
-                            <TextareaAutosize
-                                readOnly={!editAnswer}
-                                className={cn(
-                                    "component-input resize-none",
-                                    {'bg-white': editAnswer}
-                                )}
-                                cacheMeasurements
-                                value={a as string}
-                                onChange={(e) => {
-                                    setAList((prev) => {
-                                        const _obj = {...prev};
-                                        _obj[q] = e.target.value;
-                                        return _obj;
-                                    });
-                                }}
+            {questionOK ? (
+                <>
+                    <div className={cn(
+                        "grid w-full gap-4",
+                        isMobile ? "grid-rows-2" : "grid-cols-2"
+                    )}>
+                        <div className={cn(
+                            "items-center justify-center flex",
+                            {"flex-col": !isMobile}
+                        )}>
+                            <div className="text-xl font-semibold">
+                                취침 시간
+                            </div>
+                            <TimeInput
+                                className="w-fit p-1"
+                                setState={setTimeData}
+                                state={timeData}
+                                stateKey={"sleep"}
+                                // onChange={() => setError("")}
+                                selectorPointerEventsNone={!editAnswer}
+                            />
+                        </div>
+                        <div className={cn(
+                            "items-center justify-center flex",
+                            {"flex-col": !isMobile}
+                        )}>
+                            <div className="text-xl font-semibold">
+                                기상 시간
+                            </div>
+                            <TimeInput
+                                className="w-fit p-1"
+                                setState={setTimeData}
+                                state={timeData}
+                                stateKey={"wakeup"}
+                                // onChange={() => setError("")}
+                                selectorPointerEventsNone={!editAnswer}
                             />
                         </div>
                     </div>
-                })}
-            </div>
+                    <div className="w-full space-y-4">
+                        {Object.entries(aList).map(([q, a], i) => {
+                            return <div key={i}>
+                                <div key={i}>
+                                    <label htmlFor="name" className="component-button-info">
+                                        {q}
+                                    </label>
+                                    <TextareaAutosize
+                                        readOnly={!editAnswer}
+                                        className={cn(
+                                            "component-input resize-none",
+                                            {'bg-white': editAnswer}
+                                        )}
+                                        cacheMeasurements
+                                        value={a as string}
+                                        onChange={(e) => {
+                                            setAList((prev) => {
+                                                const _obj = {...prev};
+                                                _obj[q] = e.target.value;
+                                                return _obj;
+                                            });
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        })}
+                    </div>
+                </>
+            ) : (
+                <div className="flex w-full h-full justify-center items-center text-xl font-bold">
+                    질문이 등록되지 않았습니다.
+                </div>
+            )}
         </div>
     );
 }
 
-export function IsAdmin({qList, setQList, userList, date, tab}) {
+export function IsAdmin({qList, setQList, userList, date, tab, questionOK, setQuestionOK}) {
     const [editQuestion, setEditQuestion] = useState(false);
     const today = new Date();
     const params = `date=${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
@@ -181,7 +189,12 @@ export function IsAdmin({qList, setQList, userList, date, tab}) {
             });
 
             const questions = await getStoreData(`/api/admin/today/question?${params}`, `question-list-${params}`, true);
-            setQList(questions.response.today_questions);
+            setQList(questions.response.today_questions || {
+                question_1: "",
+                question_2: "",
+                question_3: "",
+            });
+            setQuestionOK(questions.response.today_questions !== null);
         }
         setEditQuestion(!editQuestion)
     }
@@ -192,7 +205,7 @@ export function IsAdmin({qList, setQList, userList, date, tab}) {
                 <>
                     <div className="flex items-center w-full justify-between">
                         <div className="text-3xl text-gray-800 font-semibold">
-                            오늘의 질문 목록 ({date.toLocaleDateString()})
+                            오늘의 질문 목록 ({date.toLocaleDateString()}) {questionOK.toString()}
                         </div>
                         {(today.getDate() === date.getDate()) && (
                             <div
@@ -203,11 +216,45 @@ export function IsAdmin({qList, setQList, userList, date, tab}) {
                                 )}
                                 onClick={update}
                             >
-                                {(editQuestion) ? "저장하기" : "수정하기"}
+                                {(
+                                    editQuestion
+                                ) ? (
+                                    "저장하기"
+                                ) : (
+                                    questionOK
+                                ) ? (
+                                    "수정하기"
+                                ) : (
+                                    "등록하기"
+                                )}
                             </div>
                         )}
                     </div>
                     <div className="w-full space-y-4">
+                        {Object.entries(qList).map(([key, q]) => {
+                            if (key !== "date") {
+                                return (
+                                    <TextareaAutosize
+                                        key={key}
+                                        readOnly={!editQuestion}
+                                        className={cn(
+                                            "component-input resize-none",
+                                            {'bg-white': editQuestion}
+                                        )}
+                                        value={q as string || ""}
+                                        placeholder="질문을 입력해 주세요"
+                                        onChange={(e) => {
+                                            setQList((prev) => {
+                                                const obj = {...prev};
+                                                obj[key] = e.target.value || "";
+                                                return obj;
+                                            });
+                                        }}
+                                    />
+                                );
+                            } else {
+                            }
+                        })}
                         {Object.entries({
                             "answer_lastday": "어젯밤 공부한 내용은?",
                             "answer_school": "오늘의 학교 과제는?",
@@ -225,29 +272,6 @@ export function IsAdmin({qList, setQList, userList, date, tab}) {
                                     value={qString.toString()}
                                 />
                             );
-                        })}
-                        {Object.entries(qList).map(([key, q]) => {
-                            if (key !== "date") {
-                                return (
-                                    <TextareaAutosize
-                                        key={key}
-                                        readOnly={!editQuestion}
-                                        className={cn(
-                                            "component-input resize-none",
-                                            {'bg-white': editQuestion}
-                                        )}
-                                        value={q as string}
-                                        onChange={(e) => {
-                                            setQList((prev) => {
-                                                const obj = {...prev};
-                                                obj[key] = e.target.value;
-                                                return obj;
-                                            });
-                                        }}
-                                    />
-                                );
-                            } else {
-                            }
                         })}
                     </div>
                 </>
