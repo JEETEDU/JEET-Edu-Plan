@@ -19,9 +19,9 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
  * /api/class/{class_id}:
  *   get:
  *     summary: Get details about a specific class
- *     description: Retrieves information about a specific class, including its students and teachers, based on the user type.
+ *     description: Retrieves information about a specific class, including its students and teachers, based on the user type. Students can only view classes they are in.
  *     tags:
- *       - Classes
+ *       - Class
  *     parameters:
  *       - name: class_id
  *         in: path
@@ -219,7 +219,7 @@ export async function GET(req: NextRequest, {params}: {params: {class_id: number
                 eq(schema.studentClasses.class_id, class_id)
             );
 
-        // if the user is a student, they should only see their own information
+        // if the user is a student, they cannot view classes they are not in
         if (decoded.user_type == UserType.STUDENT) {
             if (students.filter((student: any) => student.uid == decoded.user_id).length == 0) {
                 return return_permission_denied();
