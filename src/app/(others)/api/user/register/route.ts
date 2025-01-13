@@ -124,24 +124,10 @@ export async function POST(req: NextRequest) {
                     name: name,
                 });
 
-            // set token
-            let [user] = await tx.select()
-                .from(schema.users)
-                .where(eq(schema.users.login_id, login_id));
-
-            let new_token = generateToken(user.uid, user.user_type);
-            let res = NextResponse.json({
+            return NextResponse.json({
                 success: true,
                 message: "Register successful"
             })
-            res.cookies.set("token", new_token, {
-                path: '/',
-                httpOnly: true,
-                sameSite: 'strict',
-                maxAge: 3 * 60 * 60,
-                secure: true
-            });
-            return res;
         });
     } catch (e: any) {
         if (e.code == 'ER_DUP_ENTRY') {
