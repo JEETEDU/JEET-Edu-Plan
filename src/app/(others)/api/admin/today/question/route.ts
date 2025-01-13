@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server';
 import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
-import {count, eq, sql} from 'drizzle-orm';
+import {count, eq, SQL, sql} from 'drizzle-orm';
 import {
     db_log,
     return_400, return_500,
@@ -17,8 +17,8 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  * @swagger
  * /api/admin/today/question:
  *   put:
- *     summary: Create or update today's question
- *     description: <b>Admin</b><br>Create or update today's question. If today's question is already created, it will be updated. Otherwise, it will be created.
+ *     summary: Create or update today's question.
+ *     description: <b>Admin</b><br>Create or update today's question. If today's question is already created, it will be updated. Otherwise, it will be created. If date is not provided, it will change today's.
  *     tags:
  *       - Admin
  *       - Today
@@ -43,6 +43,10 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *                 type: string
  *                 description: The third question (optional)
  *                 example: "What is your hobby?"
+ *               date:
+ *                 type: string
+ *                 description: Date in YYYY-MM-DD format
+ *                 example: "2025-01-01"
  *             required:
  *               - question_1
  *     responses:
@@ -120,13 +124,23 @@ export async function PUT(req: NextRequest) {
         const data = await req.json();
         if(!data.question_1) return return_400('question_1 is required');
         if(!data.question_2 && data.question_3) return return_400('question_2 is required');
+        let date: string | SQL = data.date
+
+        const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+        if (date) {
+            if (!datePattern.test(date)) {
+                return return_400('Invalid date format');
+            }
+        }
+        else date = sql`CURDATE()`;
 
         let [today_question] = await db.select({
             count: count()
         })
             .from(schema.todayQuestions)
             .where(
-                eq(schema.todayQuestions.date, sql`CURDATE()`)
+                // @ts-ignore
+                eq(schema.todayQuestions.date, date)
             );
         if (today_question.count > 0) {
             await tx.update(schema.todayQuestions)
@@ -136,10 +150,11 @@ export async function PUT(req: NextRequest) {
                     question_3: data.question_3
                 })
                 .where(
-                    eq(schema.todayQuestions.date, sql`CURDATE()`)
+                    // @ts-ignore
+                    eq(schema.todayQuestions.date, date)
                 );
 
-            await db_log(tx, decoded.user_id, `Updated today question for ${new Date().toDateString()} with question_1: ${data.question_1}, question_2: ${data.question_2}, question_3: ${data.question_3}`);
+            await db_log(tx, decoded.user_id, `Updated today question for ${date} with question_1: ${data.question_1}, question_2: ${data.question_2}, question_3: ${data.question_3}`);
 
             return NextResponse.json({
                 success: true,
@@ -148,12 +163,13 @@ export async function PUT(req: NextRequest) {
         }
         await tx.insert(schema.todayQuestions)
             .values({
-                date: sql`CURDATE()`,
+                // @ts-ignore
+                date: date,
                 question_1: data.question_1,
                 question_2: data.question_2,
-                question_3: data.question_3
+                question_3: data.question_3,
             });
-        await db_log(tx, decoded.user_id, `Created today question for ${new Date().toDateString()} with question_1: ${data.question_1}, question_2: ${data.question_2}, question_3: ${data.question_3}`);
+        await db_log(tx, decoded.user_id, `Created today question for ${date} with question_1: ${data.question_1}, question_2: ${data.question_2}, question_3: ${data.question_3}`);
         return NextResponse.json({
             success: true,
             message: 'Successfully created today question'
