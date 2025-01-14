@@ -23,7 +23,7 @@ import {studentClasses} from "@/database/schema";
  *      security:
  *          - cookieAuth: []
  *      summary: Quit teacher from the class
- *      description: <b>Admin</b><br>Quit teacher from the class
+ *      description: <b>Admin</b><br>Quit teacher from the class. If subject_id is not provided, the teacher will be removed from all subjects in the class.
  *      requestBody:
  *          required: true
  *          content:
@@ -33,11 +33,12 @@ import {studentClasses} from "@/database/schema";
  *                      properties:
  *                          class_id:
  *                              type: number
- *                              description: Class ID
  *                              example: 1
  *                          user_id:
  *                              type: number
- *                              description: User ID
+ *                              example: 1
+ *                          subject_id:
+ *                              type: number
  *                              example: 1
  *                      required:
  *                          - class_id
@@ -134,15 +135,27 @@ export async function POST(req: NextRequest) {
                 return return_400('User not joined the class');
             }
 
-            await tx.delete(schema.teacherClasses)
-                .where(
-                    and(
-                        eq(schema.teacherClasses.user_id, data.user_id),
-                        eq(schema.teacherClasses.class_id, data.class_id)
-                    )
-                );
+            if (data.subject_id) {
+                await tx.delete(schema.teacherClasses)
+                    .where(
+                        and(
+                            eq(schema.teacherClasses.user_id, data.user_id),
+                            eq(schema.teacherClasses.class_id, data.class_id),
+                            eq(schema.teacherClasses.subject_id, data.subject_id)
+                        )
+                    );
+            }
+            else {
+                await tx.delete(schema.teacherClasses)
+                    .where(
+                        and(
+                            eq(schema.teacherClasses.user_id, data.user_id),
+                            eq(schema.teacherClasses.class_id, data.class_id),
+                        )
+                    );
+            }
 
-            await db_log(tx, decoded.user_id, `User ${class_.teacher_class.user_id} quit class ${class_.class_info.id}(name: ${class_.class_info.name})`);
+            await db_log(tx, decoded.user_id, `User ${class_.teacher_class.user_id} quit class ${class_.class_info.id}(name: ${class_.class_info.name}) for subject ${data.subject_id ?? 'all'}`);
 
             return NextResponse.json({
                 success: true,

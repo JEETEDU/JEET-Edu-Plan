@@ -49,6 +49,17 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
  *                     name:
  *                       type: string
  *                       example: "Mathematics 101"
+ *                     subjects:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                             example: 1
+ *                           name:
+ *                             type: string
+ *                             example: "Algebra"
  *                     students:
  *                       type: array
  *                       items:
@@ -246,11 +257,21 @@ export async function GET(req: NextRequest, {params}: {params: {class_id: number
                 eq(schema.teacherClasses.class_id, class_id)
             );
 
+        let subjects = await db.select({
+            id: schema.subjects.id,
+            name: schema.subjects.name
+        })
+            .from(schema.subjects)
+            .where(
+                eq(schema.subjects.class_id, class_id)
+            );
+
         let class_info = {
             id: class_.id,
             name: class_.name,
             students: students,
-            teachers: teachers
+            teachers: teachers,
+            subjects: subjects
         }
 
         return NextResponse.json({

@@ -125,6 +125,9 @@ export async function POST(req: NextRequest) {
             if (!data.user_id) {
                 return return_400('user_id is required');
             }
+            if (!data.subject_id) {
+                return return_400('subject_id is required');
+            }
 
             let [user] =
                 await tx.select()
@@ -146,7 +149,8 @@ export async function POST(req: NextRequest) {
                         schema.teacherClasses,
                         and(
                             eq(schema.teacherClasses.user_id, data.user_id),
-                            eq(schema.teacherClasses.class_id, data.class_id)
+                            eq(schema.teacherClasses.class_id, data.class_id),
+                            eq(schema.teacherClasses.subject_id, data.subject_id)
                         )
                     )
                     .where(
