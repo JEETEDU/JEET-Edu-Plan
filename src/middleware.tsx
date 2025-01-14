@@ -1,9 +1,11 @@
 import {NextRequest, NextResponse} from "next/server";
+import {getStoreData} from "@/app/(main)/components/functions";
 
 export async function middleware(req: NextRequest) {
     const userAgent = req.headers.get('user-agent') || '';
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
     const url = req.nextUrl.clone();
+    // const userInfo = await getStoreData('/api/user/info', 'user-info');
 
     const isAsset = url.pathname.match(/\.(png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$/);
     if (isAsset) {
@@ -26,6 +28,9 @@ export async function middleware(req: NextRequest) {
     } else if (hasToken && req.nextUrl.pathname === '/') {
         res = NextResponse.redirect(new URL('/home', req.nextUrl.origin));
     }
+    // else if (hasToken && userInfo.response.user.user_type === 0) {
+    //     res = NextResponse.redirect(new URL('/new', req.nextUrl.origin));
+    // }
 
     res.cookies.set("isMobile", isMobile);
 

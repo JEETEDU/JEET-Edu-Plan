@@ -50,9 +50,9 @@ export default function Page({isMobile}) {
             setSchool(userInfo.school);
             setUserType(userInfo.user_type);
 
-            if (userInfo.user_type === 1) {
-                const today = new Date();
+            const today = new Date();
 
+            if (userInfo.user_type === 1) {
                 let questions = await getStoreData(`/api/user/today/question?${params}`, `question-list-${params}`)
                 if (new Date(questions.last_update).getDate() !== today.getDate()) {
                     questions = await getStoreData(`/api/user/today/question?${params}`, `question-list-${params}`, true)
@@ -88,8 +88,6 @@ export default function Page({isMobile}) {
                 // console.log(questions.response.answers[0].answers)
                 // console.log(times.response.sleep_info[0])
             } else if (userInfo.user_type >= 2) {
-                const today = new Date();
-
                 let questions = await getStoreData(`/api/admin/today/question?${params}`, `question-list-${params}`)
                 if (new Date(questions.last_update).getDate() !== today.getDate()) {
                     questions = await getStoreData(`/api/admin/today/question?${params}`, `question-list-${params}`, true)
