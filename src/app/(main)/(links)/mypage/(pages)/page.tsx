@@ -6,5 +6,6 @@ export default async function Login() {
     const isMobile = cookieStore.get("isMobile");
 
     // return (isMobile.value === 'true' ? <Mobile/> : <Desktop/>)
+    // @ts-expect-error
     return <Page isMobile={isMobile.value === "true"}/>
 }

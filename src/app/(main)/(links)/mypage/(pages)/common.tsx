@@ -1,11 +1,19 @@
 "use client";
 
 import TextareaAutosize from "react-textarea-autosize";
-import React, {useState} from "react";
-import {cn, getStoreData, put} from "@/app/(main)/components/functions";
+import React, {useEffect, useState} from "react";
+import {cn, getStoreData, post, put} from "@/app/(main)/components/functions";
 import {TimeInput} from "@/app/(main)/components/common";
+import Select from "react-select";
 
-export function IsStudent({timeData, setTimeData, aList, setAList, answered, date, isMobile, questionOK}) {
+export function IsStudent(
+    {
+        timeData, setTimeData,
+        aList, setAList,
+        date,
+        isMobile,
+    }
+) {
     const [editAnswer, setEditAnswer] = useState(false);
     const [error, setError] = useState("");
 
@@ -21,7 +29,47 @@ export function IsStudent({timeData, setTimeData, aList, setAList, answered, dat
     const today = new Date();
     const params = `date=${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
 
-    // console.log(timeData);
+    const [answered, setAnswered] = useState(false);
+    const [questionOK, setQuestionOK] = useState(false);
+
+    useEffect(() => {
+        const _params = `date=${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+        (async () => {
+            let questions = await getStoreData(`/api/user/today/question?${_params}`, `question-list-${_params}`)
+            if (new Date(questions.last_update).getDate() !== today.getDate()) {
+                questions = await getStoreData(`/api/user/today/question?${_params}`, `question-list-${_params}`, true)
+            }
+
+            if (questions.response.success) {
+                setQuestionOK(true);
+                //----------------------------------------------
+                const _q = Object.values(questions.response.answers[0].questions);
+                const qArr = _q.concat("오늘의 학원 과제는?", "어젯밤 공부한 내용은?", "오늘의 학교 과제는?");
+                const aArr = Object.values(questions.response.answers[0].answers);
+                const qaArr = qArr.map((q, i) => {
+                    return [q, aArr[i] || "아직 답하지 않았습니다."];
+                });
+                const qaObj = qaArr.reduce((map, value) => {
+                    // @ts-ignore
+                    map[value[0].toString()] = value[1].toString();
+                    return map;
+                }, {})
+                //----------------------------------------------
+                setAList(qaObj);
+                setAnswered(Boolean(questions.response.answers[0].answers.answer_1 !== null));
+            } else {
+                setQuestionOK(false);
+            }
+
+            let times = await getStoreData(`/api/user/today/sleep?${params}`, `sleep-time-${params}`);
+            if (new Date(times.last_update).getDate() !== today.getDate()) {
+                times = await getStoreData(`/api/user/today/sleep?${params}`, `sleep-time-${params}`, true);
+            }
+
+            setTimeData(times.response.sleep_info[0] || {wakeup: "--:--", sleep: "--:--"});
+        })();
+    }, [])
 
     const update = async () => {
         if (editAnswer) {
@@ -174,13 +222,58 @@ export function IsStudent({timeData, setTimeData, aList, setAList, answered, dat
     );
 }
 
-export function IsAdmin({qList, setQList, userList, date, tab, questionOK, setQuestionOK}) {
+export function IsAdmin(
+    {
+        qList, setQList,
+        date,
+        tab
+    }
+) {
     const [editQuestion, setEditQuestion] = useState(false);
     const today = new Date();
     const dateString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     const params = `date=${dateString}`;
 
-    const update = async () => {
+    const [userList, setUserList] = useState([]);
+    const [newUserList, setNewUserList] = useState([]);
+
+    const [questionOK, setQuestionOK] = useState(false);
+    const [head, setHead] = useState(-1);
+
+    useEffect(() => {
+        const _params = `date=${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+        (async () => {
+            let questions = await getStoreData(`/api/admin/today/question?${_params}`, `question-list-${_params}`)
+            if (new Date(questions.last_update).getDate() !== today.getDate()) {
+                questions = await getStoreData(`/api/admin/today/question?${_params}`, `question-list-${_params}`, true)
+            }
+
+            if (questions.response.success) {
+                setQuestionOK(true);
+                setQList(questions.response.today_questions);
+                console.log(questions.response.today_questions)
+            } else {
+                setQuestionOK(false);
+                setQList({
+                    question_1: "",
+                    question_2: "",
+                    question_3: "",
+                });
+            }
+
+            const users = (await getStoreData('/api/admin/user/list?search_by=user_type&search_string=1&order_by=name&order=ASC', 'user-list-student')).response.users;
+            setUserList(users);
+            setHead(users[0].uid);
+
+            const newUsers = (await getStoreData('/api/admin/user/list?search_by=user_type&search_string=0&order_by=name&order=ASC', 'user-list-student-new')).response.users;
+            setNewUserList(newUsers.map((u) => {
+                return {...u, accept: false}
+            }));
+        })();
+    }, [date,])
+
+    const updateQuestion = async () => {
         if (editQuestion) {
             const body = {date: dateString};
             Array.from({length: 3, 0: 1}).map((_, i) => {
@@ -203,22 +296,37 @@ export function IsAdmin({qList, setQList, userList, date, tab, questionOK, setQu
         setEditQuestion(!editQuestion)
     }
 
+    const refreshUser = () => {
+        (async () => {
+            const users = (await getStoreData('/api/admin/user/list?search_by=user_type&search_string=1&order_by=name&order=ASC', 'user-list-student', true)).response.users;
+            setUserList(users);
+            setHead(users[0].uid);
+
+            const newUsers = (await getStoreData('/api/admin/user/list?search_by=user_type&search_string=0&order_by=name&order=ASC', 'user-list-student-new', true)).response.users;
+            setNewUserList(newUsers.map((u) => {
+                return {...u, accept: false}
+            }));
+        })();
+    }
+
+    const [focusOnSearch, setFocusOnSearch] = useState(false);
+
     return (
-        <div className="w-full p-6 space-y-8">
+        <div className="w-full h-fit pt-6 space-y-8">
             {(tab === 0) && (
                 <>
                     <div className="flex items-center w-full justify-between">
                         <div className="text-3xl text-gray-800 font-semibold">
-                            오늘의 질문 목록 ({date.toLocaleDateString()}) {questionOK.toString()}
+                            오늘의 질문 목록 ({date.toLocaleDateString()})
                         </div>
                         {(today.getDate() === date.getDate()) && (
                             <div
                                 className={cn(
-                                    "text-lg text-white rounded-lg font-semibold p-1",
+                                    "px-3 py-1 text-white text-lg font-bold rounded w-fit",
                                     {"bg-blue hover:bg-blue-700": !editQuestion},
                                     {"bg-blue-700 hover:bg-blue": editQuestion}
                                 )}
-                                onClick={update}
+                                onClick={updateQuestion}
                             >
                                 {(
                                     editQuestion
@@ -282,16 +390,125 @@ export function IsAdmin({qList, setQList, userList, date, tab, questionOK, setQu
             )}
             {(tab === 1) && (
                 <>
-                    <div className="flex items-center w-full justify-between">
+                    <div className="flex items-center w-full justify-between gap-4">
                         <div className="text-3xl text-gray-800 font-semibold">
                             학생 목록
                         </div>
+                        <div
+                            className={cn(
+                                "border-2 py-1 px-3 flex-1 flex justify-between items-center gap-3",
+                                {"border-black": focusOnSearch}
+                            )}
+                            onFocus={() => setFocusOnSearch(true)}
+                            onBlur={() => setFocusOnSearch(false)}
+                        >
+                            <input
+                                className="flex-1 bg-gray-100 outline-none"
+                            />
+                            <Select
+                                options={[
+                                    {value: "name", label: "이름"}
+                                ]}
+                                defaultValue={{value: "name", label: "이름"}}
+                                components={{
+                                    IndicatorSeparator: () => null
+                                }}
+                            />
+                            <div
+                                className="i-heroicons-outline-search"
+                            />
+                        </div>
+                        <div
+                            className="px-3 py-1 bg-blue-500 text-white text-lg font-bold rounded hover:bg-blue-600 w-fit"
+                            onClick={refreshUser}
+                        >
+                            새로고침
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-6 h-full">
+                        <div className="w-full space-y-4">
+                            {userList.map((u) => {
+                                return (
+                                    <div
+                                        key={u.uid}
+                                        className={cn(
+                                            "border-2 rounded flex w-full justify-between p-2 gap-8",
+                                            {"border-black": u.uid === head}
+                                        )}
+                                        onClick={() => setHead(u.uid)}
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <div>
+                                                <div className="text-xl font-bold">
+                                                    {u.name as string}
+                                                </div>
+                                                <div className="text-sm text-gray-500">
+                                                    {u.login_id as string}
+                                                </div>
+                                            </div>
+                                            {/*<div>*/}
+                                            {/*    {(u.user_type === 1) ? "S" : (u.user_type === 2) ? "T" : "A"}*/}
+                                            {/*</div>*/}
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <div className="flex items-center justify-end">
+                                                {u.first_year as string} {u.joined_term as string}
+                                            </div>
+                                            <div className="flex items-center justify-end">
+                                                {u.school as string}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                        <div className="w-full h-full border-2 col-span-2">
+
+                        </div>
+                    </div>
+                </>
+            )}
+            {(tab === 2) && (
+                <>
+                    <div className="flex items-center w-full justify-between">
+                        <div className="text-3xl text-gray-800 font-semibold">
+                            신규 학생/선생님 목록
+                        </div>
+                        <div
+                            className="px-3 py-1 bg-blue-500 text-white text-lg font-bold rounded hover:bg-blue-600 w-fit"
+                            onClick={refreshUser}
+                        >
+                            새로고침
+                        </div>
                     </div>
                     <div className="w-full space-y-4">
-                        {userList.map((u) => {
+                        {newUserList.map((u, i) => {
                             return (
-                                <div key={u.uid}>
-                                    {JSON.stringify(u)}
+                                <div key={u.uid} className="flex flex-row w-full justify-between items-center gap-8">
+                                    <div className="border-2 rounded flex p-2 items-center gap-8 flex-1">
+                                        <div className="text-xl font-bold">
+                                            {u.name as string}
+                                        </div>
+                                        <div className="text-sm text-gray-500">
+                                            {u.login_id as string}
+                                        </div>
+                                    </div>
+                                    <div
+                                        className={cn(
+                                            "px-3 py-1 text-white text-lg font-bold rounded",
+                                            (u.accept) ? "bg-blue-500" : "bg-green-500 hover:bg-green-600 w-fit"
+                                        )}
+                                        onClick={() => {
+                                            post('/api/admin/user/accept', {user_id: u.uid});
+                                            setNewUserList((users) => {
+                                                let _users = [...users];
+                                                _users[i].accept = true;
+                                                return _users;
+                                            })
+                                        }}
+                                    >
+                                        {u.accept ? "승인완료" : "승인하기"}
+                                    </div>
                                 </div>
                             )
                         })}
