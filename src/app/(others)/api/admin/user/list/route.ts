@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server';
 import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
-import {asc, desc, eq, like} from 'drizzle-orm';
+import {asc, desc, eq, like, sql} from 'drizzle-orm';
 import {
     return_400,
     return_500,
@@ -170,7 +170,7 @@ export async function GET(req: NextRequest) {
         const search_by = data.get('search_by') ?? '';
         const search_string = data.get('search_string') ?? '';
         const order_by = data.get('order_by') ?? 'name';
-        const order = data.get('order') ?? 'ASC';
+        const order = (data.get('order') ?? 'ASC').toUpperCase();
 
         if (isNaN(parseInt(page))) {
             return return_400('Invalid page');
@@ -188,9 +188,19 @@ export async function GET(req: NextRequest) {
                     name: schema.users.name,
                     first_year: schema.users.first_year,
                     school: schema.users.school,
-                    joined_term: schema.users.joined_term
+                    joined_term: schema.users.joined_term,
+                    class_id: sql`class_info.id as class_id`,
+                    class_name: sql`class_info.name as class_name`
                 })
                 .from(schema.users)
+                .leftJoin(
+                    schema.studentClasses,
+                    eq(schema.studentClasses.user_id, schema.users.uid)
+                )
+                .leftJoin(
+                    schema.classes,
+                    eq(schema.studentClasses.class_id, schema.classes.id)
+                )
                 .$dynamic();
         if (search_by && search_string) {
             if (search_by == 'user_id') {
@@ -247,8 +257,32 @@ export async function GET(req: NextRequest) {
             }
         }
         query = query.limit(parseInt(limit)).offset((parseInt(page) - 1) * parseInt(limit));
-
-        let [users] = await db.execute(query);
+        console.log(query.toSQL());
+        let [rows] = await db.execute(query);
+        console.log(rows);
+        let users = rows.reduce((acc: any, row: any) => {
+            let user = acc.find((u: any) => u.uid === row.uid);
+            if (!user) {
+                user = {
+                    uid: row.uid,
+                    login_id: row.login_id,
+                    user_type: row.user_type,
+                    name: row.name,
+                    first_year: row.first_year,
+                    school: row.school,
+                    joined_term: row.joined_term,
+                    classes: []
+                };
+                acc.push(user);
+            }
+            if (row.class_id) {
+                user.classes.push({
+                    id: row.class_id,
+                    name: row.class_name
+                });
+            }
+            return acc;
+        }, []);
 
         return NextResponse.json({
             success: true,
