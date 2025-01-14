@@ -122,12 +122,13 @@ export async function PUT(req: NextRequest) {
         }
 
         const data = await req.json();
-        if(!data.question_1) return return_400('question_1 is required');
+        if(!data.question_1 && (data.question_2 || data.question_3)) return return_400('question_1 is required');
         if(!data.question_2 && data.question_3) return return_400('question_2 is required');
-        let date: string | SQL = data.date
+        let date: string | SQL = data.date ?? '';
 
         const datePattern = /^\d{4}-\d{2}-\d{2}$/;
         if (date) {
+            // @ts-ignore
             if (!datePattern.test(date)) {
                 return return_400('Invalid date format');
             }
