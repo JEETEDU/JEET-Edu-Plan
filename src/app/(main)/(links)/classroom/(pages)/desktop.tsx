@@ -22,6 +22,10 @@ export default function Desktop() {
                 const classList = (await getStoreData("/api/user/class", 'class-list')).response.classes;
                 setClasses(classList);
                 setHead(classList[0].class_id)
+            } else if (userInfo.user_type >= 2) {
+                const classList = (await getStoreData("/api/user/class", 'class-list')).response.classes;
+                setClasses(classList);
+                setHead(classList[0].class_id)
             }
         })();
     }, []);
