@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server';
 import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
-import { eq } from 'drizzle-orm';
+import {and, eq} from 'drizzle-orm';
 import {
     return_400, return_500,
     return_not_logged_in,
@@ -36,10 +36,10 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *                   items:
  *                     type: object
  *                     properties:
- *                       class_id:
+ *                       id:
  *                         type: integer
  *                         example: 12
- *                       class_name:
+ *                       name:
  *                         type: string
  *                         example: "G3 K"
  *       400:
@@ -85,8 +85,8 @@ export async function GET(req: NextRequest) {
         let classes;
         if (decoded.user_type == UserType.STUDENT) {
             classes = await db.select({
-                class_id: schema.classes.id,
-                class_name: schema.classes.name,
+                id: schema.classes.id,
+                name: schema.classes.name,
                 //class_description: schema.classes.description
             })
                 .from(schema.classes)
@@ -99,7 +99,10 @@ export async function GET(req: NextRequest) {
                     eq(schema.studentClasses.user_id, schema.users.uid)
                 )
                 .where(
-                    eq(schema.studentClasses.user_id, decoded.user_id)
+                    and(
+                        eq(schema.studentClasses.user_id, decoded.user_id),
+                        eq(schema.classes.display, 1)
+                    )
                 );
         } else {
             classes = await db.select({
@@ -117,7 +120,10 @@ export async function GET(req: NextRequest) {
                     eq(schema.teacherClasses.user_id, schema.users.uid)
                 )
                 .where(
-                    eq(schema.teacherClasses.user_id, decoded.user_id)
+                    and(
+                        eq(schema.teacherClasses.user_id, decoded.user_id),
+                        eq(schema.classes.display, 1)
+                    )
                 );
         }
 
