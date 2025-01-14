@@ -177,22 +177,26 @@ export function IsStudent({timeData, setTimeData, aList, setAList, answered, dat
 export function IsAdmin({qList, setQList, userList, date, tab, questionOK, setQuestionOK}) {
     const [editQuestion, setEditQuestion] = useState(false);
     const today = new Date();
-    const params = `date=${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+    const dateString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    const params = `date=${dateString}`;
 
     const update = async () => {
         if (editQuestion) {
-
-            await put('/api/admin/today/question', {
-                question_1: qList.question_1,
-                question_2: qList.question_2,
-                question_3: qList.question_3
+            const body = {date: dateString};
+            Array.from({length: 3, 0: 1}).map((_, i) => {
+                if (qList[`question_${i + 1}`] !== "") {
+                    body[`question_${i + 1}`] = qList[`question_${i + 1}`];
+                }
             });
+            console.log(body)
+            await put('/api/admin/today/question', body);
 
             const questions = await getStoreData(`/api/admin/today/question?${params}`, `question-list-${params}`, true);
             setQList(questions.response.today_questions || {
                 question_1: "",
                 question_2: "",
                 question_3: "",
+                date: dateString,
             });
             setQuestionOK(questions.response.today_questions !== null);
         }

@@ -1,30 +1,30 @@
 "use client";
 
-import React, {useState} from "react";
-import {cn} from "@/app/(main)/components/functions";
+import React, {useEffect, useState} from "react";
+import {cn, getStoreData} from "@/app/(main)/components/functions";
 import Link from "next/link";
 import Chatting from "@/app/(main)/(links)/classroom/[id]/mobile";
 import Scrollbars from "react-custom-scrollbars-2";
 
 export default function Desktop() {
-    const [head, setHead] = useState(0);
-    const [isTeacher, setIsTeacher] = useState(true);
+    const [head, setHead] = useState(-1);
+    const [userType, setUserType] = useState(0);
+    const [classes, setClasses] = useState([]);
 
-    const chatInfos = [
-        {title: "G3A", header: "나태양: I am SUN", time: "지금"},
-        {title: "반별 제목 예시", header: "마지막 대회 예시", time: "3분 전"},
-        {title: "반별 제목 예시", header: "마지막 대회 예시", time: "3분 전"},
-        {title: "반별 제목 예시", header: "마지막 대회 예시", time: "3분 전"},
-        {title: "반별 제목 예시", header: "마지막 대회 예시", time: "3분 전"},
-        {title: "반별 제목 예시", header: "마지막 대회 예시", time: "3분 전"},
-        {title: "반별 제목 예시", header: "마지막 대회 예시", time: "3분 전"},
-        {title: "반별 제목 예시", header: "마지막 대회 예시", time: "3분 전"},
-        {title: "반별 제목 예시", header: "마지막 대회 예시", time: "3분 전"},
-        {title: "반별 제목 예시", header: "마지막 대회 예시", time: "3분 전"},
-        {title: "반별 제목 예시", header: "마지막 대회 예시", time: "3분 전"},
-        {title: "반별 제목 예시", header: "마지막 대회 예시", time: "3분 전"},
-        {title: "반별 제목 예시", header: "마지막 대회 예시", time: "3분 전"},
-    ];
+    useEffect(() => {
+        (async () => {
+            const userInfo = (await getStoreData('/api/user/info', 'user-info')).response.user;
+            setUserType(userInfo.user_type);
+
+            // const today = new Date();
+
+            if (userInfo.user_type === 1) {
+                const classList = (await getStoreData("/api/user/class", 'class-list')).response.classes;
+                setClasses(classList);
+                setHead(classList[0].class_id)
+            }
+        })();
+    }, []);
 
 
     return (
@@ -33,7 +33,7 @@ export default function Desktop() {
                 <div className="grid grid-cols-3 overflow-hidden flex-grow"> {/* hear */}
                     <div className="col-span-2 flex flex-col">
                         <div className="flex-grow w-full">
-                            <Chatting id={head}/>
+                            {(head !== -1) && <Chatting id={head}/>}
                         </div>
                     </div>
                     <div className="flex-grow bg-gray-100">
@@ -43,26 +43,26 @@ export default function Desktop() {
                             autoHide
                         >
                             <div className="px-4">
-                                {chatInfos.map((chat, index) => (
+                                {classes.map((chat) => (
                                     <div
-                                        key={index}
+                                        key={chat.class_id}
                                         className={cn(
                                             "p-4 block mb-2 bg-white rounded-lg border border-gray-200 w-full",
-                                            (index === head) ? "border-2 border-black" : ""
+                                            (chat.class_id === head) ? "border-2 border-black" : ""
                                         )}
-                                        onClick={() => setHead(index)}
+                                        onClick={() => setHead(chat.class_id)}
                                     >
                                         <div className={cn(
                                             "flex justify-between items-center",
                                         )}>
-                                            <span className="font-semibold text-gray-800 text-lg">{chat.title}</span>
-                                            <span className="text-sm text-gray-500">{chat.time}</span>
+                                            <span className="font-semibold text-gray-800 text-lg">{chat.class_name}</span>
+                                            <span className="text-sm text-gray-500">{/*{chat.time}*/}[마지막으로 대화한 시간]</span>
                                         </div>
                                         <hr className="my-2 border-gray-300"/>
                                         <div className="flex items-center justify-between">
                                             <div className="w-8 h-8 bg-gray-200 rounded-md"/>
                                             {/* 가능하다면? 채팅방 별 이미지를 설정할 수 있으면 좋지 않을까 하는 마음 */}
-                                            <p className="ml-3 text-gray-500 text-base">{chat.header}</p>
+                                            <p className="ml-3 text-gray-500 text-base">{/*{chat.header}*/}[마지막 대화]</p>
                                         </div>
                                     </div>
                                 ))}
@@ -86,10 +86,10 @@ export default function Desktop() {
                         <button
                             className={cn(
                                 "bg-white hover:bg-gray-200 transition duration-200 h-fit rounded-lg text-center py-2 px-5",
-                                {"invisible": !isTeacher}
+                                {"invisible": userType === 1}
                             )}
                             onClick={() => {
-                                setIsTeacher(!isTeacher);
+                                // setIsTeacher(!isTeacher);
                                 alert('게시글 추가 창으로 연결해야됨')
                             }}
                         >

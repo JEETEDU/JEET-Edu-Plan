@@ -63,7 +63,7 @@
  ┃ ┃ ┣ 📂components
  ┃ ┃ ┃ ┣ 📜common.tsx
  ┃ ┃ ┃ ┣ 📜desktop.tsx
- ┃ ┃ ┃ ┣ 📜functions.tsx
+ ┃ ┃ ┃ ┣ 📜functions.ts
  ┃ ┃ ┃ ┗ 📜mobile.tsx
  ┃ ┃ ┣ 📜globals.css
  ┃ ┃ ┗ 📜layout.tsx

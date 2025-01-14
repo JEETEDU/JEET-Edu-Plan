@@ -41,6 +41,7 @@ export async function put(url, body) {
         (res) => res.json()
     ).then(
         (res) => {
+            console.log(res)
             return res;
         }
     )
