@@ -108,6 +108,17 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
  *                                          joined_term:
  *                                              type: string
  *                                              example: "2021 Spring"
+ *                                          classes:
+ *                                              type: array
+ *                                              items:
+ *                                                  type: object
+ *                                                  properties:
+ *                                                      id:
+ *                                                          type: number
+ *                                                          example: 1
+ *                                                      name:
+ *                                                          type: string
+ *                                                          example: "G3 K"
  *          "400":
  *              description: Bad request
  *              content:
@@ -189,7 +200,9 @@ export async function GET(req: NextRequest) {
                     first_year: schema.users.first_year,
                     school: schema.users.school,
                     joined_term: schema.users.joined_term,
+                    // @ts-ignore
                     class_id: sql`class_info.id as class_id`,
+                    // @ts-ignore
                     class_name: sql`class_info.name as class_name`
                 })
                 .from(schema.users)
@@ -258,9 +271,9 @@ export async function GET(req: NextRequest) {
         }
         query = query.limit(parseInt(limit)).offset((parseInt(page) - 1) * parseInt(limit));
         console.log(query.toSQL());
-        let [rows] = await db.execute(query);
+        let [rows]: any = await db.execute(query);
         console.log(rows);
-        let users = rows.reduce((acc: any, row: any) => {
+        let users = Array.isArray(rows) ? rows.reduce((acc: any, row: any) => {
             let user = acc.find((u: any) => u.uid === row.uid);
             if (!user) {
                 user = {
@@ -282,7 +295,7 @@ export async function GET(req: NextRequest) {
                 });
             }
             return acc;
-        }, []);
+        }, []) : [];
 
         return NextResponse.json({
             success: true,
