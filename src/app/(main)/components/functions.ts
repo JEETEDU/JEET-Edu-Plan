@@ -7,7 +7,7 @@ export const cn = (...inputs: ClassValue[]) => {
     return twMerge(clsx(inputs));
 };
 
-export async function post(url, body) {
+export async function post(url: string, body: string) {
     return await fetch(url, {
         method: 'POST',
         body: JSON.stringify(body),
@@ -20,7 +20,7 @@ export async function post(url, body) {
     )
 }
 
-export async function get(url) {
+export async function get(url: string) {
     return await fetch(url, {
         method: 'GET',
     }).then(
@@ -33,7 +33,7 @@ export async function get(url) {
     )
 }
 
-export async function put(url, body) {
+export async function put(url: string, body: string) {
     return await fetch(url, {
         method: 'PUT',
         body: JSON.stringify(body)
@@ -50,11 +50,11 @@ export async function put(url, body) {
 
 /**
  * @constructor
- * @param url api url for get datas
+ * @param url api url for get data
  * @param storeName session storage key
  * @param forceUpdate force update stored date (default: false)
  */
-export async function getStoreData(url, storeName, forceUpdate = false) {
+export async function getStoreData(url: string, storeName: string, forceUpdate: boolean = false) {
     if (typeof window === 'undefined') {
         console.warn("sessionStorage is unavailable on the server.");
         return false;
@@ -67,7 +67,7 @@ export async function getStoreData(url, storeName, forceUpdate = false) {
     if (value && !forceUpdate) {
         return JSON.parse(value);
     } else {
-        const res = await get(url)
+        const res = await get(url);
         const body = {
             last_update: new Date(),
             response: res
@@ -77,11 +77,11 @@ export async function getStoreData(url, storeName, forceUpdate = false) {
     }
 }
 
-export function getSessionItem(name) {
+export function getSessionItem(name: string) {
     return typeof window !== 'undefined' ? sessionStorage.getItem(name) : null;
 }
 
-export function setSessionItem(name, value) {
+export function setSessionItem(name: string, value: string) {
     if (typeof window === 'undefined') {
         return false;
     } else {
