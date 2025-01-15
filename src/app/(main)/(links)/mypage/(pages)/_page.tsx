@@ -68,13 +68,6 @@ export default function Page({isMobile}) {
 
     const [showCalendar, setShowCalendar] = useState(!isMobile);
 
-    const [tab, setTab] = useState(0);
-    const tabList = [
-        "오늘의 질문",
-        "학생 목록",
-        "신규 학생/선생님 승인"
-    ];
-
     return (
         <>
             <div className='text-red-600 font-bold'>
@@ -202,29 +195,11 @@ export default function Page({isMobile}) {
                         </div>
                     )}
                     <div className="w-full h-full flex flex-col">
-                        <div className="flex flex-row gap-2">
-                            {(userType >= 2) && (
-                                <div className={cn(
-                                    "grid text-xl font-bold gap-2 items-center flex-grow",
-                                    `grid-cols-${tabList.length}`
-                                )}>
-                                    {tabList.map((t, i) => {
-                                        return (
-                                            <div
-                                                key={i}
-                                                className={cn(
-                                                    "flex justify-center hover:bg-gray-300 p-1 rounded",
-                                                    {"border-2 border-gray": (i === tab)}
-                                                )}
-                                                onClick={() => setTab(i)}
-                                            >
-                                                {t}
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-                            )}
-                        </div>
+                        {/*<div className="flex flex-row gap-2">*/}
+                        {/*    {(userType >= 2) && (*/}
+                        {/*        */}
+                        {/*    )}*/}
+                        {/*</div>*/}
 
                         {(userType === 1) && (
                             <IsStudent
@@ -239,7 +214,6 @@ export default function Page({isMobile}) {
                                 qList={qList}
                                 setQList={setQList}
                                 date={calendarValue}
-                                tab={tab}
                             />
                         )}
                         {isMobile && (

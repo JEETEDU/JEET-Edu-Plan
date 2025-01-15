@@ -6,6 +6,7 @@ import {cn, getStoreData, post, put} from "@/app/(main)/components/functions";
 import {TimeInput} from "@/app/(main)/components/common";
 import Select from "react-select";
 import Scrollbars from "react-custom-scrollbars-2";
+import UserDetail from "@/app/(main)/(links)/mypage/(pages)/userDetail";
 
 export function IsStudent(
     {
@@ -204,7 +205,7 @@ export function IsStudent(
                                                     value={a as string}
                                                     onChange={(e) => {
                                                         setAList((prev) => {
-                                                            const _arr: Array = [...prev];
+                                                            const _arr = [...prev];
                                                             _arr[i] = [q, e.target.value];
                                                             return _arr;
                                                         });
@@ -231,7 +232,6 @@ export function IsAdmin(
     {
         qList, setQList,
         date,
-        tab
     }
 ) {
     const [editQuestion, setEditQuestion] = useState(false);
@@ -266,17 +266,25 @@ export function IsAdmin(
                     question_3: "",
                 });
             }
+        })();
+    }, [date,])
 
-            const users = (await getStoreData('/api/admin/user/list?search_by=user_type&search_string=1&order_by=name&order=ASC', 'user-list-student')).response.users;
+    useEffect(() => {
+        (async () => {
+            const users = (await getStoreData('/api/admin/user/list?user_type=1&order_by=name&order=ASC', 'user-list-student')).response.users;
             setUserList(users);
             setHead(users[0].uid);
 
-            const newUsers = (await getStoreData('/api/admin/user/list?search_by=user_type&search_string=0&order_by=name&order=ASC', 'user-list-student-new')).response.users;
+            const newUsers = (await getStoreData('/api/admin/user/list?user_type=0&order_by=name&order=ASC', 'user-list-student-new')).response.users;
             setNewUserList(newUsers.map((u) => {
-                return {...u, accept: false}
+                return {
+                    ...u,
+                    accept: false,
+                    reject: false
+                }
             }));
         })();
-    }, [date,])
+    }, []);
 
     const updateQuestion = async () => {
         if (editQuestion) {
@@ -301,23 +309,80 @@ export function IsAdmin(
         setEditQuestion(!editQuestion)
     }
 
-    const refreshUser = () => {
-        (async () => {
-            const users = (await getStoreData('/api/admin/user/list?search_by=user_type&search_string=1&order_by=name&order=ASC', 'user-list-student', true)).response.users;
-            setUserList(users);
-            setHead(users[0].uid);
+    const [userParams, setUserParams] = useState({
+        user_type: "1",
+        search_by: "",
+        search_string: ""
+    });
 
-            const newUsers = (await getStoreData('/api/admin/user/list?search_by=user_type&search_string=0&order_by=name&order=ASC', 'user-list-student-new', true)).response.users;
+    const [focusOnSearch, setFocusOnSearch] = useState(false);
+
+    const [tab, setTab] = useState(0);
+    const tabList = [
+        "오늘의 질문",
+        "유저 목록",
+        "신규 유저 승인"
+    ];
+
+    useEffect(() => {
+        refreshUser();
+    }, [userParams,]);
+
+    useEffect(() => {
+        if (tab === 1) {
+            refreshUser();
+        } else if (tab === 2) {
+            refreshNewUser();
+        }
+    }, [tab,]);
+
+    const refreshUser = (refreshHead: boolean = true) => {
+        const _param = Object.entries(userParams).reduce((str, [k, v]) => {
+            if (v !== "") {
+                return `${str}&${String(k)}=${String(v)}`;
+            } else {
+                return str;
+            }
+        }, "order_by=name&order=ASC");
+        (async () => {
+            const users = (await getStoreData(`/api/admin/user/list?${_param}`, 'user-list-student', true)).response.users;
+            setUserList(users);
+            if (refreshHead) {
+                setHead(users[0].uid);
+            }
+        })();
+    }
+
+    const refreshNewUser = () => {
+        (async () => {
+            const newUsers = (await getStoreData('/api/admin/user/list?user_type=0&order_by=name&order=ASC', 'user-list-student-new', true)).response.users;
             setNewUserList(newUsers.map((u) => {
                 return {...u, accept: false}
             }));
         })();
     }
 
-    const [focusOnSearch, setFocusOnSearch] = useState(false);
-
     return (
-        <div className="w-full h-fit pt-6 space-y-8">
+        <div className="w-full h-full flex flex-col gap-4">
+            <div className={cn(
+                "grid text-xl font-bold gap-2 items-center h-fit",
+                `grid-cols-${tabList.length}`
+            )}>
+                {tabList.map((t, i) => {
+                    return (
+                        <div
+                            key={i}
+                            className={cn(
+                                "flex justify-center hover:bg-gray-300 p-1 rounded",
+                                {"border-2 border-gray": (i === tab)}
+                            )}
+                            onClick={() => setTab(i)}
+                        >
+                            {t}
+                        </div>
+                    )
+                })}
+            </div>
             {(tab === 0) && (
                 <>
                     <div className="flex items-center w-full justify-between">
@@ -347,58 +412,98 @@ export function IsAdmin(
                             </div>
                         )}
                     </div>
-                    <div className="w-full space-y-4">
-                        {Object.entries(qList).map(([key, q]) => {
-                            if (key !== "date") {
+                    <Scrollbars
+                        className="w-full flex-1"
+                        universal
+                        autoHide
+                    >
+                        <div className="flex flex-col w-full items-center p-1 space-y-4">
+                            {Object.entries(qList).map(([key, q]) => {
+                                if (key !== "date") {
+                                    return (
+                                        <TextareaAutosize
+                                            key={key}
+                                            readOnly={!editQuestion}
+                                            className={cn(
+                                                "component-input resize-none",
+                                                {'bg-white': editQuestion}
+                                            )}
+                                            value={q as string || ""}
+                                            placeholder="질문을 입력해 주세요"
+                                            onChange={(e) => {
+                                                setQList((prev) => {
+                                                    const obj = {...prev};
+                                                    obj[key] = e.target.value || "";
+                                                    return obj;
+                                                });
+                                            }}
+                                        />
+                                    );
+                                } else {
+                                }
+                            })}
+                            {Object.entries({
+                                "answer_lastday": "어젯밤 공부한 내용은?",
+                                "answer_school": "오늘의 학교 과제는?",
+                                "answer_academy": "오늘의 학원 과제는?"
+                            }).map(([key, qString]) => {
                                 return (
+                                    // eslint-disable-next-line react/jsx-key
                                     <TextareaAutosize
                                         key={key}
-                                        readOnly={!editQuestion}
+                                        readOnly
                                         className={cn(
                                             "component-input resize-none",
-                                            {'bg-white': editQuestion}
+                                            // {'bg-white': editQuestion}
                                         )}
-                                        value={q as string || ""}
-                                        placeholder="질문을 입력해 주세요"
-                                        onChange={(e) => {
-                                            setQList((prev) => {
-                                                const obj = {...prev};
-                                                obj[key] = e.target.value || "";
-                                                return obj;
-                                            });
-                                        }}
+                                        value={qString.toString()}
                                     />
                                 );
-                            } else {
-                            }
-                        })}
-                        {Object.entries({
-                            "answer_lastday": "어젯밤 공부한 내용은?",
-                            "answer_school": "오늘의 학교 과제는?",
-                            "answer_academy": "오늘의 학원 과제는?"
-                        }).map(([key, qString]) => {
-                            return (
-                                // eslint-disable-next-line react/jsx-key
-                                <TextareaAutosize
-                                    key={key}
-                                    readOnly
-                                    className={cn(
-                                        "component-input resize-none",
-                                        // {'bg-white': editQuestion}
-                                    )}
-                                    value={qString.toString()}
-                                />
-                            );
-                        })}
-                    </div>
+                            })}
+                        </div>
+                    </Scrollbars>
                 </>
             )}
             {(tab === 1) && (
                 <>
-                    <div className="flex items-center w-full justify-between gap-4">
-                        <div className="text-3xl text-gray-800 font-semibold">
-                            학생 목록
-                        </div>
+                    <div className="flex items-start w-full justify-between gap-4">
+                        <Select
+                            className="text-lg font-bold"
+                            options={[
+                                {value: "1", label: "학생 목록"},
+                                {value: "2", label: "선생 목록"}
+                            ]}
+                            defaultValue={{value: "1", label: "학생 목록"}}
+                            onChange={(e) => {
+                                setUserParams((prev) => {
+                                    const obj = {...prev};
+                                    obj.user_type = e.value;
+                                    return obj;
+                                })
+                            }}
+                            components={{
+                                IndicatorSeparator: () => null
+                            }}
+                        />
+                        <Select
+                            options={[
+                                {value: "name", label: "이름 (ex. 나태양)"},
+                                {value: "first_year", label: "중학교 입학 년도 (ex. 2024)"},
+                                {value: "school", label: "중학교 이름 (ex. 지트중학교, 지트중)"},
+                                {value: "joined_term", label: "지트 등록 분기 (ex. J)"},
+                            ]}
+                            placeholder={'검색 조건'}
+                            onChange={(e) => {
+                                setUserParams((prev) => {
+                                    const obj = {...prev};
+                                    obj.search_by = e.value;
+                                    return obj;
+                                })
+                            }}
+                            components={{
+                                IndicatorSeparator: () => null
+                            }}
+                        />
                         <div
                             className={cn(
                                 "border-2 py-1 px-3 flex-1 flex justify-between items-center gap-3",
@@ -409,18 +514,17 @@ export function IsAdmin(
                         >
                             <input
                                 className="flex-1 bg-gray-100 outline-none"
-                            />
-                            <Select
-                                options={[
-                                    {value: "name", label: "이름"}
-                                ]}
-                                defaultValue={{value: "name", label: "이름"}}
-                                components={{
-                                    IndicatorSeparator: () => null
+                                onChange={(e) => {
+                                    setUserParams((prev) => {
+                                        const obj = {...prev};
+                                        obj.search_string = e.target.value;
+                                        return obj;
+                                    })
                                 }}
                             />
                             <div
                                 className="i-heroicons-outline-search"
+                                onClick={refreshUser}
                             />
                         </div>
                         <div
@@ -431,45 +535,59 @@ export function IsAdmin(
                         </div>
                     </div>
                     <div className="grid grid-cols-3 gap-6 h-full">
-                        <div className="w-full space-y-4">
-                            {userList.map((u) => {
-                                return (
-                                    <div
-                                        key={u.uid}
-                                        className={cn(
-                                            "border-2 rounded flex w-full justify-between p-2 gap-8",
-                                            {"border-black": u.uid === head}
-                                        )}
-                                        onClick={() => setHead(u.uid)}
-                                    >
-                                        <div className="flex items-center gap-4">
-                                            <div>
-                                                <div className="text-xl font-bold">
-                                                    {u.name as string}
+                        <Scrollbars
+                            className="w-full flex-1"
+                            universal
+                            autoHide
+                        >
+                            <div className="flex flex-col w-full items-center space-y-4">
+                                {userList.map((u) => {
+                                    return (
+                                        <div
+                                            key={u.uid}
+                                            className={cn(
+                                                "border-2 rounded flex w-full justify-between p-2 gap-8",
+                                                {"border-black": u.uid === head}
+                                            )}
+                                            onClick={() => setHead(u.uid)}
+                                        >
+                                            <div className="flex items-center gap-4">
+                                                <div>
+                                                    <div className="text-xl font-bold">
+                                                        {u.name as string}
+                                                    </div>
+                                                    <div className="text-sm text-gray-500">
+                                                        {u.login_id as string}
+                                                    </div>
                                                 </div>
-                                                <div className="text-sm text-gray-500">
-                                                    {u.login_id as string}
+                                                {/*<div>*/}
+                                                {/*    {(u.user_type === 1) ? "S" : (u.user_type === 2) ? "T" : "A"}*/}
+                                                {/*</div>*/}
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <div className="flex items-center justify-end">
+                                                    {u.first_year as string} {u.joined_term as string}
+                                                </div>
+                                                <div className="flex items-center justify-end">
+                                                    {u.school as string}
                                                 </div>
                                             </div>
-                                            {/*<div>*/}
-                                            {/*    {(u.user_type === 1) ? "S" : (u.user_type === 2) ? "T" : "A"}*/}
-                                            {/*</div>*/}
                                         </div>
-                                        <div className="flex flex-col">
-                                            <div className="flex items-center justify-end">
-                                                {u.first_year as string} {u.joined_term as string}
-                                            </div>
-                                            <div className="flex items-center justify-end">
-                                                {u.school as string}
-                                            </div>
-                                        </div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                        <div className="w-full h-full border-2 col-span-2">
-
-                        </div>
+                                    )
+                                })}
+                            </div>
+                        </Scrollbars>
+                        <Scrollbars
+                            className="w-full flex-1 col-span-2"
+                            universal
+                            autoHide
+                        >
+                            <UserDetail
+                                uid={head}
+                                date={date}
+                                refresh={refreshUser}
+                            />
+                        </Scrollbars>
                     </div>
                 </>
             )}
@@ -481,45 +599,72 @@ export function IsAdmin(
                         </div>
                         <div
                             className="px-3 py-1 bg-blue-500 text-white text-lg font-bold rounded hover:bg-blue-600 w-fit"
-                            onClick={refreshUser}
+                            onClick={refreshNewUser}
                         >
                             새로고침
                         </div>
                     </div>
-                    <div className="w-full space-y-4">
-                        {newUserList.map((u, i) => {
-                            return (
-                                <div key={u.uid} className="flex flex-row w-full justify-between items-center gap-8">
-                                    <div className="border-2 rounded flex p-2 items-center gap-8 flex-1">
-                                        <div className="text-xl font-bold">
-                                            {u.name as string}
+                    <Scrollbars
+                        className="w-full flex-1"
+                        universal
+                        autoHide
+                    >
+                        <div className="flex flex-col w-full items-center space-y-4">
+                            {newUserList.map((u, i) => {
+                                return (
+                                    <div key={u.uid} className="flex flex-row w-full justify-between items-center gap-8">
+                                        <div className="border-2 rounded flex p-2 items-center gap-8 flex-1">
+                                            <div className="text-xl font-bold">
+                                                {u.name as string}
+                                            </div>
+                                            <div className="text-sm text-gray-500">
+                                                {u.login_id as string}
+                                            </div>
                                         </div>
-                                        <div className="text-sm text-gray-500">
-                                            {u.login_id as string}
+                                        <div className="flex flex-row gap-2">
+                                            <div
+                                                className={cn(
+                                                    "px-3 py-1 text-white text-lg font-bold rounded",
+                                                    (u.reject) ? "bg-black" : "bg-red-500 hover:bg-red-600 w-fit"
+                                                )}
+                                                onClick={() => {
+                                                    post('/api/admin/user/reject', {user_id: u.uid});
+                                                    setNewUserList((users) => {
+                                                        let _users = [...users];
+                                                        _users[i].reject = true;
+                                                        return _users;
+                                                    })
+                                                }}
+                                            >
+                                                {u.reject ? "거절완료" : "거절하기"}
+                                            </div>
+                                            <div
+                                                className={cn(
+                                                    "px-3 py-1 text-white text-lg font-bold rounded",
+                                                    (u.reject) ? "bg-gray-500" : (u.accept) ? "bg-blue-500" : "bg-green-500 hover:bg-green-600 w-fit",
+                                                    {"pointer-events-none": (u.reject)},
+                                                )}
+                                                onClick={() => {
+                                                    post('/api/admin/user/accept', {user_id: u.uid});
+                                                    setNewUserList((users) => {
+                                                        let _users = [...users];
+                                                        _users[i].accept = true;
+                                                        return _users;
+                                                    })
+                                                }}
+                                            >
+                                                {u.accept ? "승인완료" : "승인하기"}
+                                            </div>
                                         </div>
                                     </div>
-                                    <div
-                                        className={cn(
-                                            "px-3 py-1 text-white text-lg font-bold rounded",
-                                            (u.accept) ? "bg-blue-500" : "bg-green-500 hover:bg-green-600 w-fit"
-                                        )}
-                                        onClick={() => {
-                                            post('/api/admin/user/accept', {user_id: u.uid});
-                                            setNewUserList((users) => {
-                                                let _users = [...users];
-                                                _users[i].accept = true;
-                                                return _users;
-                                            })
-                                        }}
-                                    >
-                                        {u.accept ? "승인완료" : "승인하기"}
-                                    </div>
-                                </div>
-                            )
-                        })}
-                    </div>
+                                )
+                            })}
+                        </div>
+                    </Scrollbars>
                 </>
             )}
         </div>
+        //     </Scrollbars>
+        // </div>
     );
 }
