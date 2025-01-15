@@ -45,8 +45,8 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
  *            schema:
  *              type: string
  *              example: "name"
- *              enum: ["user_id", "user_type", "name", "first_year", "school", "joined_term"]
- *            description: Search by field (user_id, user_type(0, 1, 2, 3), name(like), first_year(eq), school(like), joined_term(like))
+ *              enum: ["user_id", "name", "first_year", "school", "joined_term"]
+ *            description: Search by field (user_id, name(like), first_year(eq), school(like), joined_term(like))
  *            required: false
  *          - in: query
  *            name: search_string
@@ -70,6 +70,14 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
  *              type: string
  *              example: "ASC"
  *            description: Order(ASC or DESC)
+ *            required: false
+ *          - in: query
+ *            name: user_type
+ *            schema:
+ *              type: number
+ *              example: 1
+ *              enum: [0, 1, 2, 3]
+ *            description: Filter by user type
  *            required: false
  *      responses:
  *          "200":
@@ -180,6 +188,7 @@ export async function GET(req: NextRequest) {
         const limit = data.get('limit') ?? '10';
         const search_by = data.get('search_by') ?? '';
         const search_string = data.get('search_string') ?? '';
+        const user_type = data.get('user_type') ?? '';
         const order_by = data.get('order_by') ?? 'name';
         const order = (data.get('order') ?? 'ASC').toUpperCase();
 
@@ -216,9 +225,6 @@ export async function GET(req: NextRequest) {
         if (search_by && search_string) {
             if (search_by == 'user_id') {
                 query = query.where(eq(schema.users.uid, parseInt(search_string)));
-            }
-            else if (search_by == 'user_type') {
-                query = query.where(eq(schema.users.user_type, parseInt(search_string)));
             }
             else if (search_by == 'name') {
                 query = query.where(like(schema.users.name, `%${search_string}%`));
@@ -266,6 +272,12 @@ export async function GET(req: NextRequest) {
             else {
                 return return_400('Invalid order_by');
             }
+        }
+        if (user_type) {
+            if (isNaN(parseInt(user_type))) {
+                return return_400('Invalid user_type');
+            }
+            query = query.where(eq(schema.users.user_type, parseInt(user_type)));
         }
         query = query.limit(parseInt(limit)).offset((parseInt(page) - 1) * parseInt(limit));
         let [rows]: any = await db.execute(query);
