@@ -49,6 +49,7 @@ export const classes = mysqlTable('class_info', {
     id: int().autoincrement().primaryKey(),
     name: varchar({ length: 255 }).notNull(),
     display: tinyint().notNull().default(1),
+    description: varchar({ length: 255 }),
 });
 
 export const classInfoRelations = relations(

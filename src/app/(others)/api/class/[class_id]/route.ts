@@ -102,25 +102,22 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
  *                             example: "Jane Smith"
  *                           first_year:
  *                             type: integer
- *                             example: 2018
+ *                             example: 2018(only for teacher)
  *                           school:
  *                             type: string
- *                             example: "Greenwood High"
+ *                             example: "Greenwood High(only for teacher)"
  *                           joined_term:
  *                             type: string
- *                             example: "Fall"
+ *                             example: "Fall(only for teacher)"
  *                           login_id:
  *                             type: string
- *                             example: "janesmith789"
+ *                             example: "janesmith789(only for admin)"
  *                           subject:
  *                             type: object
  *                             properties:
  *                                 id:
  *                                     type: integer
  *                                     example: 1
- *                                 name:
- *                                     type: string
- *                                     example: "Mathematics"
  *       400:
  *         description: Class not found or missing parameters.
  *         content:
@@ -199,6 +196,7 @@ export async function GET(req: NextRequest, {params}: {params: {class_id: number
             return return_400('Class not found');
         }
 
+        // return only necessary columns based on user type
         let user_select_columns: any = {
             uid: schema.users.uid,
             user_type: schema.users.user_type,
@@ -240,8 +238,7 @@ export async function GET(req: NextRequest, {params}: {params: {class_id: number
         let teachers = await db.select({
             ...user_select_columns,
             subject: {
-                id: schema.subjects.id,
-                name: schema.subjects.name
+                id: schema.subjects.id
             }
         })
             .from(schema.users)
@@ -269,6 +266,7 @@ export async function GET(req: NextRequest, {params}: {params: {class_id: number
         let class_info = {
             id: class_.id,
             name: class_.name,
+            description: class_.description,
             students: students,
             teachers: teachers,
             subjects: subjects

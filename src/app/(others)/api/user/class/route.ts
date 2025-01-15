@@ -42,6 +42,9 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *                       name:
  *                         type: string
  *                         example: "G3 K"
+ *                       description:
+ *                         type: string
+ *                         example: "Class for grade 3 students"
  *       400:
  *         description: Missing parameters or bad input.
  *         content:
@@ -87,7 +90,7 @@ export async function GET(req: NextRequest) {
             classes = await db.select({
                 id: schema.classes.id,
                 name: schema.classes.name,
-                //class_description: schema.classes.description
+                description: schema.classes.description
             })
                 .from(schema.classes)
                 .leftJoin(
@@ -108,7 +111,7 @@ export async function GET(req: NextRequest) {
             classes = await db.select({
                 class_id: schema.classes.id,
                 class_name: schema.classes.name,
-                //class_description
+                description: schema.classes.description,
             })
                 .from(schema.classes)
                 .leftJoin(
