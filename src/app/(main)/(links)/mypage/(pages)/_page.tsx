@@ -6,10 +6,8 @@ import {useRouter} from "next/navigation";
 import {IsAdmin, IsStudent} from "@/app/(main)/(links)/mypage/(pages)/common";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import Scrollbars from "react-custom-scrollbars-2";
 // import {useEffectAsync} from "@/app/(main)/hooks";
 
-// @ts-ignore
 export default function Page({isMobile}) {
     const [error, setError] = useState("");
     const router = useRouter();
@@ -22,7 +20,6 @@ export default function Page({isMobile}) {
     // const [answered, setAnswered] = useState(false);
 
     const [qList, setQList] = useState({});
-    const [aList, setAList] = useState({});
     const [timeData, setTimeData] = useState({wakeup: "", sleep: ""});
 
     // const [userList, setUserList] = useState([]);
@@ -87,6 +84,15 @@ export default function Page({isMobile}) {
             <div className="w-full h-full flex flex-col items-center bg-gray-100">
                 <div className="w-full flex flex-row justify-between items-center py-3 px-6">
                     <div className="flex items-center gap-4">
+                        {!isMobile && (
+                            <div
+                                className="p-2 rounded text-lg font-bold bg-gray-500 text-white hover:bg-gray-600"
+                                onClick={() => setShowCalendar((prev) => !prev)}
+                            >
+                                {/*{showCalendar ? "달력 숨기기" : "달력 보이기"}*/}
+                                <div className='i-clarity-calendar-line'/>
+                            </div>
+                        )}
                         <div className={cn(
                             "font-bold text-gray-800",
                             isMobile ? "text-3xl" : "text-4xl"
@@ -197,14 +203,6 @@ export default function Page({isMobile}) {
                     )}
                     <div className="w-full h-full flex flex-col">
                         <div className="flex flex-row gap-2">
-                            {!isMobile && (
-                                <div
-                                    className="px-3 py-1 rounded text-lg font-bold bg-gray text-white hover:bg-gray-500"
-                                    onClick={() => setShowCalendar((prev) => !prev)}
-                                >
-                                    {showCalendar ? "달력 숨기기" : "달력 보이기"}
-                                </div>
-                            )}
                             {(userType >= 2) && (
                                 <div className={cn(
                                     "grid text-xl font-bold gap-2 items-center flex-grow",
@@ -227,40 +225,31 @@ export default function Page({isMobile}) {
                                 </div>
                             )}
                         </div>
-                        <Scrollbars
-                            className="w-full h-full"
-                            universal
-                            autoHide
-                        >
-                            <div className="flex flex-col w-full h-full items-center p-1">
-                                {(userType === 1) && (
-                                    <IsStudent
-                                        aList={aList}
-                                        timeData={timeData}
-                                        date={calendarValue}
-                                        setAList={setAList}
-                                        setTimeData={setTimeData}
-                                        isMobile={isMobile}
-                                    />
-                                )}
-                                {(userType >= 2) && (
-                                    <IsAdmin
-                                        qList={qList}
-                                        setQList={setQList}
-                                        date={calendarValue}
-                                        tab={tab}
-                                    />
-                                )}
-                                {isMobile && (
-                                    <div
-                                        className="m-6 px-4 py-2 bg-red-500 text-white font-bold rounded hover:bg-red-600 w-fit"
-                                        onClick={logout}
-                                    >
-                                        로그아웃
-                                    </div>
-                                )}
+
+                        {(userType === 1) && (
+                            <IsStudent
+                                timeData={timeData}
+                                date={calendarValue}
+                                setTimeData={setTimeData}
+                                isMobile={isMobile}
+                            />
+                        )}
+                        {(userType >= 2) && (
+                            <IsAdmin
+                                qList={qList}
+                                setQList={setQList}
+                                date={calendarValue}
+                                tab={tab}
+                            />
+                        )}
+                        {isMobile && (
+                            <div
+                                className="m-6 px-4 py-2 bg-red-500 text-white font-bold rounded hover:bg-red-600 w-fit"
+                                onClick={logout}
+                            >
+                                로그아웃
                             </div>
-                        </Scrollbars>
+                        )}
                     </div>
                 </div>
             </div>
