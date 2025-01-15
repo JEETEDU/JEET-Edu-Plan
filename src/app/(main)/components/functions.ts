@@ -7,9 +7,22 @@ export const cn = (...inputs: ClassValue[]) => {
     return twMerge(clsx(inputs));
 };
 
-export async function post(url: string, body: string) {
+export async function post(url: string, body: object) {
     return await fetch(url, {
         method: 'POST',
+        body: JSON.stringify(body),
+    }).then(
+        (res) => res.json()
+    ).then(
+        (res) => {
+            return res;
+        }
+    )
+}
+
+export async function patch(url: string, body: object) {
+    return await fetch(url, {
+        method: 'PATCH',
         body: JSON.stringify(body),
     }).then(
         (res) => res.json()
@@ -33,7 +46,7 @@ export async function get(url: string) {
     )
 }
 
-export async function put(url: string, body: string) {
+export async function put(url: string, body: object) {
     return await fetch(url, {
         method: 'PUT',
         body: JSON.stringify(body)
