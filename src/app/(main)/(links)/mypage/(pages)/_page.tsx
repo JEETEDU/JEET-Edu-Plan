@@ -51,7 +51,7 @@ export default function Page({isMobile}) {
             // console.log(userInfo);
 
             setName(userInfo.name);
-            setGrade(userInfo.first_year);
+            setGrade(`${userInfo.first_year} | ${userInfo.joined_term}`);
             setSchool(userInfo.school);
             setUserType(userInfo.user_type);
 
