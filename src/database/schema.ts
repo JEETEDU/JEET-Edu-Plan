@@ -79,7 +79,7 @@ export const boards = mysqlTable('board', {
     title: varchar({ length: 255 }).notNull(),
     content: longtext().notNull(),
     create_time: datetime().notNull().default(sql`CURRENT_TIMESTAMP()`),
-    update_time: datetime().notNull().default(sql`CURRENT_TIMESTAMP()`).$onUpdate(() => sql`CURRENT_TIMESTAMP()`),
+    update_time: datetime().notNull().default(sql`CURRENT_TIMESTAMP()`),
     attach_files: json(),
     category: tinyint(),
     notice: tinyint(),
@@ -176,8 +176,10 @@ export const subjects = mysqlTable('subject', {
 // Comment table
 export const comments = mysqlTable('comment', {
     id: int().autoincrement().primaryKey(),
-    id2: int().notNull().references(() => boards.id, { onDelete: 'cascade' }),
-    id3: int().notNull().references(() => users.uid),
+    article_id: int().notNull().references(() => boards.id, { onDelete: 'cascade' }),
+    user_id: int().notNull().references(() => users.uid),
+    create_time: datetime().notNull().default(sql`CURRENT_TIMESTAMP()`),
+    update_time: datetime().notNull().default(sql`CURRENT_TIMESTAMP()`),
     content: longtext().notNull(),
     attach_files: json(),
 });

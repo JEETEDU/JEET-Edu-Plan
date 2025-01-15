@@ -13,7 +13,7 @@ import {
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
 import {QueryBuilder} from "drizzle-orm/mysql-core";
-import {save_files} from "@/app/(others)/api/(tools)/files";
+import {save_files, update_files} from "@/app/(others)/api/(tools)/files";
 
 /**
  * @swagger
@@ -32,7 +32,7 @@ import {save_files} from "@/app/(others)/api/(tools)/files";
  *             properties:
  *               article:
  *                 type: object
- *                 description: JSON string containing article information. class_id, title, content is required. <br> Category <br><li> 0 - None <li> 1 - Question <li> 2 - Notice <li> 3 - Homework
+ *                 description: JSON string containing article information. class_id, title, content is required. <br> Category(예시, 추후 수정예정) <br><li> 0 - None <li> 1 - Question <li> 2 - Notice <li> 3 - Homework
  *                 properties:
  *                   class_id:
  *                     type: number
@@ -52,9 +52,6 @@ import {save_files} from "@/app/(others)/api/(tools)/files";
  *                   subject_id:
  *                     type: number
  *                     example: 123
- *                   due_date:
- *                     type: string
- *                     example: "2022-12-31"
  *                 required:
  *                   - class_id
  *                   - title
@@ -82,44 +79,12 @@ import {save_files} from "@/app/(others)/api/(tools)/files";
  *                   example: 123
  *       400:
  *         description: Bad Request - Invalid/missing data or validation failed.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "class_id is required"
  *       401:
  *         description: Unauthorized - User is not logged in.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "User not logged in"
  *       403:
- *         description: Forbidden - User does not have the required permissions.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Permission denied"
+ *         description: Forbidden - User does not have the required permissions. Maybe the user is not in the class.
  *       500:
  *         description: Internal Server Error.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Internal server error"
  */
 export async function POST(req: NextRequest) {
     try {
@@ -147,6 +112,7 @@ export async function POST(req: NextRequest) {
 
             if (!class_id) return return_400("class_id is required");
             if (!title) return return_400("title is required");
+            if (title.length > 255) return return_400("title is too long");
             if (!content) return return_400("content is required");
             if (Number.isNaN(is_notice) || is_notice !== 1 && is_notice !== 0) return return_400("is_notice is required(0 or 1)");
             if (is_notice === 1 && user_type < UserType.TEACHER) return return_permission_denied();
@@ -155,8 +121,9 @@ export async function POST(req: NextRequest) {
 
             let [class_] =
                 await tx.select({
-                    users_count: count(schema.users.uid),
-                    subjects_count: count(schema.subjects.id)
+                    class_count: count(schema.classes.id),
+                    user_count: count(schema.users.uid),
+                    subject_count: count(schema.subjects.id)
                 })
                     .from(schema.classes)
                     .leftJoin(
@@ -175,9 +142,9 @@ export async function POST(req: NextRequest) {
                         eq(schema.subjects.id, Number.isNaN(subject_id) ? 0 : subject_id)
                     )
                     .where(eq(schema.classes.id, class_id))
-            if (!class_) return return_400("Class not found");
-            if (class_.users_count === 0) return return_permission_denied();
-            if (subject_id && class_.subjects_count === 0) return return_400("Subject not found");
+            if (class_.class_count === 0) return return_400("Class not found");
+            if (class_.user_count === 0 && user_type !== UserType.ADMIN) return return_permission_denied();
+            if (subject_id && class_.subject_count === 0) return return_400("Subject not found");
 
             let files_path: string[] = save_files(files);
 
@@ -199,6 +166,151 @@ export async function POST(req: NextRequest) {
                 success: true,
                 article_id: article_id
             });
+        });
+    } catch (e) {
+        console.error(e);
+        return return_500();
+    }
+}
+
+
+/**
+ * @swagger
+ * /api/board:
+ *   patch:
+ *     summary: Update an existing article
+ *     description: Updates an existing article with new information. Only the user who created the article or a teacher can update it.
+ *     tags:
+ *       - Board
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               article:
+ *                 type: object
+ *                 description: Object containing the article details (class_id, title, content, etc.).<br>Attach_files is an array of file paths to attach to the article. This is for remove files by not including them in the array only. If you want to add new files, use the files field.
+ *                 properties:
+ *                   title:
+ *                     type: string
+ *                     example: "Sample Article"
+ *                   content:
+ *                     type: string
+ *                     example: "This is the content of the article."
+ *                   is_notice:
+ *                     type: integer
+ *                     example: 0
+ *                   category:
+ *                     type: integer
+ *                     example: 2
+ *                   subject_id:
+ *                     type: integer
+ *                     example: 3
+ *                   attach_files:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                       example: "/file/abc123"
+ *               files:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *                 description: Optional files to attach to the article.
+ *               article_id:
+ *                 type: integer
+ *                 example: 123
+ *     responses:
+ *       200:
+ *         description: Article successfully created.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 article_id:
+ *                   type: integer
+ *                   example: 234
+ *       400:
+ *         description: Bad request. Missing or incorrect data.
+ *       401:
+ *         description: User is not logged in.
+ *       403:
+ *         description: User lacks permission to perform this action.
+ *       500:
+ *         description: Internal server error.
+ */
+export async function PATCH(req: NextRequest) {
+    try {
+        return db.transaction(async (tx) => {
+            const token = req.cookies.get("token")?.value ?? '';
+            let decoded: DecodedToken | false = verifyToken(token);
+            if (!decoded) return return_not_logged_in();
+
+            const data = await req.formData();
+            const article_id = parseInt(data.get("article_id")?.toString() ?? '0');
+            const article = data.get("article");
+            if (!article) return return_400("article is required");
+            const article_json = JSON.parse(article.toString());
+            // @ts-ignore
+            const files = data.getAll("files") as FileList;
+
+            let user_id = decoded.user_id;
+            let user_type = decoded.user_type;
+
+            let title: string = article_json.title?.toString() ?? '';
+            let content: string = article_json.content?.toString() ?? '';
+            let is_notice: number = parseInt(article_json.is_notice ?? -1);
+            let category: number = parseInt(article_json.category ?? -1);
+            let subject_id: number = parseInt(article_json.subject_id ?? -1);
+            let attach_files: string[] = article_json.attach_files ?? '[]';
+
+            if (!article_id) return return_400("article_id is required");
+            if (title && title.length > 255) return return_400("title is too long");
+            if (Number.isNaN(is_notice) || is_notice !== 1 && is_notice !== 0 && is_notice !== -1) return return_400("is_notice should be 0 or 1");
+            if (is_notice === 1 && user_type < UserType.TEACHER) return return_permission_denied();
+            if (Number.isNaN(category)) return return_400("category should be a number");
+            if (Number.isNaN(subject_id)) return return_400("subject_id should be a number");
+
+            let [article_] =
+                await tx.select()
+                    .from(schema.boards)
+                    .where(eq(schema.boards.id, article_id))
+            if (!article_) return return_400("Article not found");
+            if (article_.user_id !== user_id && user_type < UserType.TEACHER) return return_permission_denied();
+
+            let update_data: any = {}
+            if (title) update_data['title'] = title;
+            if (content) update_data['content'] = content;
+            if (is_notice !== -1) update_data['notice'] = is_notice;
+            if (category !== -1) update_data['category'] = category;
+            if (subject_id !== -1) {
+                console.log(article_.class_id);
+                let [subject_] =
+                    await tx.select()
+                        .from(schema.subjects)
+                        .where(and(
+                            eq(schema.subjects.id, subject_id),
+                            eq(schema.subjects.class_id, article_.class_id)
+                        ))
+                if (!subject_) return return_400("Subject not found");
+                update_data['subject_id'] = subject_id;
+                // TODO: alert를 새로 만들어야 하는지 확인
+            }
+            let files_path: string[] = update_files(files, article_.attach_files as string[], attach_files);
+            if (files_path.length > 0) update_data['attach_files'] = JSON.stringify(files_path);
+            if (article_.attach_files && article_.attach_files != files_path) update_data['attach_files'] = JSON.stringify(files_path);
+
+            await tx.update(schema.boards)
+                .set(update_data)
+                .where(eq(schema.boards.id, article_id))
+
+            return NextResponse.json({ success: true });
         });
     } catch (e) {
         console.error(e);
