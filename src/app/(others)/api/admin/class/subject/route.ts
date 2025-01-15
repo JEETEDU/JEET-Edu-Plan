@@ -23,8 +23,7 @@ import {subjects} from "@/database/schema";
  *     summary: Get subjects for the class
  *     description: Retrieves a list of subjects for the specified class ID.
  *     tags:
- *       - Admin
- *       - Class
+ *       - Admin/Class
  *     security:
  *       - cookieAuth: []
  *     parameters:
@@ -165,8 +164,7 @@ export async function GET(req: NextRequest) {
  *     summary: Create a new subject
  *     description: Creates a new subject for the specified class ID.
  *     tags:
- *       - Admin
- *       - Class
+ *       - Admin/Class
  *     security:
  *       - cookieAuth: []
  *     requestBody:
@@ -269,8 +267,7 @@ export async function POST(req: NextRequest) {
  *     summary: Delete a subject
  *     description: Deletes a specific subject by its ID.
  *     tags:
- *       - Admin
- *       - Class
+ *       - Admin/Class
  *     security:
  *       - cookieAuth: []
  *     requestBody:

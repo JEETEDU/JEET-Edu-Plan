@@ -22,8 +22,7 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
  *     summary: Get the user's answers for today's questions of the logged in user
  *     description: <b>Student</b><br>Get the user's answers for today's questions of the logged in user and the questions for today. If the date is not specified, it will return the answers for today. If the date is specified, it will return the answers for that date.
  *     tags:
- *       - Today
- *       - User
+ *       - User/Today
  *     parameters:
  *       - name: date
  *         in: query
@@ -195,8 +194,7 @@ export async function GET(req: NextRequest) {
  *     summary: Register or update the user's answers for today's questions of the logged in user
  *     description: <b>Student</b><br><li>answer_n - n번째 오늘의 질문 답변.<br><li>answer_lastday - 어젯밤 공부한 내용.<br><li>answer_school - 오늘 학교 과제.<br><li>answer_academy - 오늘 학원 과제.
  *     tags:
- *       - Today
- *       - User
+ *       - User/Today
  *     requestBody:
  *       required: true
  *       content:

@@ -21,7 +21,8 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
  *       - cookieAuth: []
  *     summary: Get today's user responses
  *     description: <b>Admin</b><br>Get user responses of one day. If date is not provided, it will get today's responses.
- *     tags: [Admin, Today]
+ *     tags:
+ *       - Admin/Today
  *     parameters:
  *       - in: query
  *         name: page

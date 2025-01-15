@@ -20,8 +20,7 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *     summary: Create or update today's question.
  *     description: <b>Admin</b><br>Create or update today's question. If today's question is already created, it will be updated. Otherwise, it will be created. If date is not provided, it will change today's.
  *     tags:
- *       - Admin
- *       - Today
+ *       - Admin/Today
  *     security:
  *       - cookieAuth: []
  *     requestBody:
@@ -191,8 +190,7 @@ export async function PUT(req: NextRequest) {
  *     security:
  *       - cookieAuth: []
  *     tags:
- *       - Admin
- *       - Today
+ *       - Admin/Today
  *     parameters:
  *       - name: date
  *         in: query

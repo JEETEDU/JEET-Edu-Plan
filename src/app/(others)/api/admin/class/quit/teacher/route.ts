@@ -18,8 +18,7 @@ import {studentClasses} from "@/database/schema";
  * /api/admin/class/quit/teacher:
  *  post:
  *      tags:
- *          - Admin
- *          - Class
+ *          - Admin/Class
  *      security:
  *          - cookieAuth: []
  *      summary: Quit teacher from the class

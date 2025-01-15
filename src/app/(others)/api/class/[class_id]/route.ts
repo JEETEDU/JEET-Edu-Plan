@@ -48,7 +48,7 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
  *                       example: 1
  *                     name:
  *                       type: string
- *                       example: "Mathematics 101"
+ *                       example: "Mathematics 10 1"
  *                     subjects:
  *                       type: array
  *                       items:

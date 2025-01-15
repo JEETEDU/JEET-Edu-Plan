@@ -18,8 +18,7 @@ import {studentClasses} from "@/database/schema";
  * /api/admin/class/join/teacher:
  *  post:
  *      tags:
- *          - Admin
- *          - Class
+ *          - Admin/Class
  *      security:
  *          - cookieAuth: []
  *      summary: Join Teacher to the class
