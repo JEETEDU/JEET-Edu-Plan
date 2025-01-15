@@ -53,3 +53,7 @@ export function to_time_string(date: Date): string {
     date.setHours(date.getHours() + 9);
     return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 }
+
+export function check_date_string(date: string): boolean {
+    return /^\d{4}-\d{2}-\d{2}$/.test(date);
+}
