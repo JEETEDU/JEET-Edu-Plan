@@ -19,8 +19,7 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
  * /api/user/today/sleep:
  *  put:
  *      tags:
- *          - User
- *          - Today
+ *          - User/Today
  *      summary: Register today's sleep time of the logged in user
  *      description: Register today's sleep time if not registered yet and update if already registered
  *      requestBody:
@@ -162,8 +161,7 @@ export async function PUT(req: NextRequest) {
  * /api/user/today/sleep:
  *  get:
  *      tags:
- *          - User
- *          - Today
+ *          - User/Today
  *      summary: Get today's sleep time of the logged in user
  *      description: Get today's sleep time. If date is not provided, it will return today's sleep time.
  *      parameters:

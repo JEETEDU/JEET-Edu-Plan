@@ -20,8 +20,7 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
  * /api/admin/class:
  *  get:
  *      tags:
- *          - Admin
- *          - Class
+ *          - Admin/Class
  *      summary: Get classes
  *      description: <b>Admin</b><br>Retrieve a list of classes filtered by name
  *      security:
@@ -58,6 +57,9 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
  *                                          display:
  *                                              type: boolean
  *                                              example: true
+ *                                          description:
+ *                                              type: string
+ *                                              example: "Class description"
  *          "400":
  *              description: Bad request
  *              content:
@@ -109,7 +111,8 @@ export async function GET(req: NextRequest) {
         let classes = await db.select({
             id: schema.classes.id,
             name: schema.classes.name,
-            display: schema.classes.display
+            display: schema.classes.display,
+            description: schema.classes.description
         })
             .from(schema.classes)
             .where(
@@ -131,8 +134,7 @@ export async function GET(req: NextRequest) {
  * /api/admin/class:
  *  post:
  *      tags:
- *          - Admin
- *          - Class
+ *          - Admin/Class
  *      security:
  *          - cookieAuth: []
  *      summary: Create a class
@@ -152,6 +154,9 @@ export async function GET(req: NextRequest) {
  *                              type: boolean
  *                              description: Display the class
  *                              example: true
+ *                          description:
+ *                              type: string
+ *                              description: Class description
  *                      required:
  *                          - class_name
  *      responses:
@@ -239,12 +244,16 @@ export async function POST(req: NextRequest) {
             if (typeof display !== 'boolean') {
                 return return_400('display must be a boolean');
             }
+            if (data.description?.length > 255) {
+                return return_400('description is too long');
+            }
 
             const [class_id] =
                 await tx.insert(schema.classes)
                 .values({
                     name: name.toString(),
-                    display: display ? 1 : 0
+                    display: display ? 1 : 0,
+                    description: data.description ?? ''
                 }).$returningId();
 
             await db_log(tx, decoded.user_id, `Class ${class_id.id}(name: ${name}) created`);
@@ -265,8 +274,7 @@ export async function POST(req: NextRequest) {
  * /api/admin/class:
  *  delete:
  *      tags:
- *          - Admin
- *          - Class
+ *          - Admin/Class
  *      summary: Delete a class
  *      description: <b>Admin</b><br>Delete a class
  *      security:
@@ -386,8 +394,7 @@ export async function DELETE(req: NextRequest) {
  * /api/admin/class:
  *  put:
  *      tags:
- *          - Admin
- *          - Class
+ *          - Admin/Class
  *      security:
  *          - cookieAuth: []
  *      summary: Update a class info
@@ -411,6 +418,10 @@ export async function DELETE(req: NextRequest) {
  *                              type: boolean
  *                              description: Display the class
  *                              example: true
+ *                          description:
+ *                              type: string
+ *                              description: Class description
+ *                              example: "Class description"
  *                      required:
  *                          - class_id
  *                          - class_name
@@ -475,6 +486,9 @@ export async function PUT(req: NextRequest) {
             if (typeof display !== 'boolean') {
                 return return_400('display must be a boolean');
             }
+            if (data.description?.length > 255) {
+                return return_400('description is too long');
+            }
 
             let [classInfo] =
                 await tx.select()
@@ -489,7 +503,8 @@ export async function PUT(req: NextRequest) {
             await tx.update(schema.classes)
                 .set({
                     name: name.toString(),
-                    display: display ? 1 : 0
+                    display: display ? 1 : 0,
+                    description: data.description ?? ''
                 })
                 .where(eq(schema.classes.id, class_id));
 
