@@ -1,0 +1,62 @@
+import type { NextRequest } from 'next/server';
+import {
+    return_400, return_not_logged_in
+} from "@/app/(others)/api/(tools)/tools";
+import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
+import * as fs from "node:fs";
+
+
+/**
+ * @swagger
+ * /api/{file_name}:
+ *   get:
+ *     summary: Download a file by its name
+ *     description: Returns the contents of a file from the server as an attachment.
+ *     tags:
+ *       - Files
+ *     parameters:
+ *       - in: path
+ *         name: file_name
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The name of the file to retrieve.
+ *     responses:
+ *       200:
+ *         description: The file has been retrieved successfully.
+ *         content:
+ *           application/octet-stream:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       400:
+ *         description: File not found or invalid request.
+ *       401:
+ *         description: Unauthorized. User is not logged in or token is invalid.
+ */
+export async function GET(req: NextRequest, { params }: { params: { file_name: string } }) {
+    const token = req.cookies.get("token")?.value ?? '';
+    let decoded: DecodedToken | false = verifyToken(token);
+    if (!decoded) return return_not_logged_in();
+
+    const file_name = (await params).file_name;
+
+    let file_path = 'uploads/files/' + file_name;
+    let file_ext = file_name.split('.').pop();
+    if (!fs.existsSync(file_path)) return return_400("file not found");
+
+    let content_type = 'application/octet-stream';
+    if (file_ext == 'png' || file_ext == 'jpg' || file_ext == 'jpeg') {
+        content_type = 'image/' + file_ext;
+    }
+    else if (file_ext == 'pdf') {
+        content_type = 'application/pdf';
+    }
+
+    return new Response(fs.readFileSync(file_path), {
+        headers: {
+            'Content-Type': content_type,
+            'Content-Disposition': `attachment; filename=${file_name}`
+        }
+    });
+}

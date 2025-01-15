@@ -77,17 +77,16 @@ export const boards = mysqlTable('board', {
     class_id: int().notNull().references(() => classes.id),
     user_id: int().notNull().references(() => users.uid),
     title: varchar({ length: 255 }).notNull(),
-    content: longtext(),
+    content: longtext().notNull(),
     create_time: datetime().notNull().default(sql`CURRENT_TIMESTAMP()`),
     update_time: datetime().notNull().default(sql`CURRENT_TIMESTAMP()`).$onUpdate(() => sql`CURRENT_TIMESTAMP()`),
     attach_files: json(),
     category: tinyint(),
     notice: tinyint(),
     due_date: date(),
-    tag_user_id: int().references(() => users.uid),
     view_count: int().notNull(),
     comment_count: int().notNull(),
-    subject_id: int().notNull().references(() => subjects.id),
+    subject_id: int().references(() => subjects.id),
 });
 
 // Relation table between user and class
