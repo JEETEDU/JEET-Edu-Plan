@@ -48,7 +48,7 @@ export function IsStudent(
                 const qArr = _q.concat("오늘의 학원 과제는?", "어젯밤 공부한 내용은?", "오늘의 학교 과제는?");
                 const aArr = Object.values(questions.response.answers[0].answers);
                 const qaArr = qArr.map((q, i) => {
-                    return [q, aArr[i] || "아직 답하지 않았습니다."];
+                    return [q || "", aArr[i] || "아직 답하지 않았습니다."];
                 });
                 const qaObj = qaArr.reduce((map, value) => {
                     // @ts-ignore
@@ -69,7 +69,7 @@ export function IsStudent(
 
             setTimeData(times.response.sleep_info[0] || {wakeup: "--:--", sleep: "--:--"});
         })();
-    }, [])
+    }, [date,])
 
     const update = async () => {
         if (editAnswer) {
@@ -187,29 +187,31 @@ export function IsStudent(
                     </div>
                     <div className="w-full space-y-4">
                         {Object.entries(aList).map(([q, a], i) => {
-                            return <div key={i}>
-                                <div key={i}>
-                                    <label htmlFor="name" className="component-button-info">
-                                        {q}
-                                    </label>
-                                    <TextareaAutosize
-                                        readOnly={!editAnswer}
-                                        className={cn(
-                                            "component-input resize-none",
-                                            {'bg-white': editAnswer}
-                                        )}
-                                        cacheMeasurements
-                                        value={a as string}
-                                        onChange={(e) => {
-                                            setAList((prev) => {
-                                                const _obj = {...prev};
-                                                _obj[q] = e.target.value;
-                                                return _obj;
-                                            });
-                                        }}
-                                    />
+                            if (q !== "") {
+                                return <div key={i}>
+                                    <div key={i}>
+                                        <label htmlFor="name" className="component-button-info">
+                                            {q}
+                                        </label>
+                                        <TextareaAutosize
+                                            readOnly={!editAnswer}
+                                            className={cn(
+                                                "component-input resize-none",
+                                                {'bg-white': editAnswer}
+                                            )}
+                                            cacheMeasurements
+                                            value={a as string}
+                                            onChange={(e) => {
+                                                setAList((prev) => {
+                                                    const _obj = {...prev};
+                                                    _obj[q] = e.target.value;
+                                                    return _obj;
+                                                });
+                                            }}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
+                            }
                         })}
                     </div>
                 </>
