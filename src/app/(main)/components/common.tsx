@@ -133,17 +133,19 @@ export function TodayQuestion({device}: { device }) {
             answer_lastday: document.getElementById('y').value,
             answer_school: document.getElementById('s').value,
             answer_academy: document.getElementById('a').value
-        }
+        };
 
-        Object.keys(qList).map((key, index) => {
-            body[`answer_${index + 1}`] = document.getElementById(key).value
+        Object.entries(qList).map(([key, value], index) => {
+            if (value !== null) {
+                body[`answer_${index + 1}`] = document.getElementById(key).value;
+            }
         });
 
         const r1 = await put('/api/user/today/sleep', timeData)
         // console.log(r1)
         if (!r1.success) {
             // alert("error occurred while put sleep / wakeup time");
-            return false
+            return false;
         }
 
         const r2 = await put('/api/user/today/question', body)
@@ -234,21 +236,23 @@ export function TodayQuestion({device}: { device }) {
 
                     <div className="space-y-4">
                         {Object.entries(qList).map(([key, value]) => {
-                            return (
-                                // eslint-disable-next-line react/jsx-key
-                                <div key={key}>
-                                    <label htmlFor="name" className="component-button-info">
-                                        {value.toString()}
-                                    </label>
-                                    <TextareaAutosize
-                                        id={key}
-                                        className="component-input resize-none"
-                                        placeholder={"몰라요"}
-                                        required
-                                        onChange={() => setError("")}
-                                    />
-                                </div>
-                            );
+                            if (value !== null) {
+                                return (
+                                    // eslint-disable-next-line react/jsx-key
+                                    <div key={key}>
+                                        <label htmlFor="name" className="component-button-info">
+                                            {value.toString()}
+                                        </label>
+                                        <TextareaAutosize
+                                            id={key}
+                                            className="component-input resize-none"
+                                            placeholder={"몰라요"}
+                                            required
+                                            onChange={() => setError("")}
+                                        />
+                                    </div>
+                                );
+                            }
                         })}
 
                         <div>
