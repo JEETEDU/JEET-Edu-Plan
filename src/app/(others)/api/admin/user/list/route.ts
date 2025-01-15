@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server';
 import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
-import {asc, desc, eq, like, sql} from 'drizzle-orm';
+import {and, asc, desc, eq, like, sql} from 'drizzle-orm';
 import {
     return_400,
     return_500,
@@ -222,21 +222,22 @@ export async function GET(req: NextRequest) {
                     eq(schema.studentClasses.class_id, schema.classes.id)
                 )
                 .$dynamic();
+        let where_clause;
         if (search_by && search_string) {
             if (search_by == 'user_id') {
-                query = query.where(eq(schema.users.uid, parseInt(search_string)));
+                where_clause = eq(schema.users.uid, parseInt(search_string));
             }
             else if (search_by == 'name') {
-                query = query.where(like(schema.users.name, `%${search_string}%`));
+                where_clause = like(schema.users.name, `%${search_string}%`);
             }
             else if (search_by == 'first_year') {
-                query = query.where(eq(schema.users.first_year, parseInt(search_string)));
+                where_clause = eq(schema.users.first_year, parseInt(search_string));
             }
             else if (search_by == 'school') {
-                query = query.where(like(schema.users.school, `%${search_string}%`));
+                where_clause = like(schema.users.school, `%${search_string}%`);
             }
             else if (search_by == 'joined_term') {
-                query = query.where(like(schema.users.joined_term, `%${search_string}%`));
+                where_clause = like(schema.users.joined_term, `%${search_string}%`);
             }
             else {
                 return return_400('Invalid search_by');
@@ -277,9 +278,12 @@ export async function GET(req: NextRequest) {
             if (isNaN(parseInt(user_type))) {
                 return return_400('Invalid user_type');
             }
-            query = query.where(eq(schema.users.user_type, parseInt(user_type)));
+            where_clause = and(
+                eq(schema.users.user_type, parseInt(user_type)),
+                where_clause
+            );
         }
-        query = query.limit(parseInt(limit)).offset((parseInt(page) - 1) * parseInt(limit));
+        query = query.where(where_clause).limit(parseInt(limit)).offset((parseInt(page) - 1) * parseInt(limit));
         let [rows]: any = await db.execute(query);
         let users = Array.isArray(rows) ? rows.reduce((acc: any, row: any) => {
             let user = acc.find((u: any) => u.uid === row.uid);
