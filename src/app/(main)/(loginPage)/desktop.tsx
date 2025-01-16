@@ -1,7 +1,7 @@
 "use client";
 
 import React, {useState} from "react";
-import {cn, post} from "@/app/(main)/components/functions";
+import {cn, POST} from "@/app/(main)/components/functions";
 import {useRouter} from "next/navigation";
 
 export default function Desktop() {
@@ -11,7 +11,7 @@ export default function Desktop() {
     const router = useRouter();
 
     const login = async () => {
-        const res = await post('/api/user/login', {
+        const res = await POST('/api/user/login', {
             login_id: document.getElementById("id").value,
             pw: document.getElementById("password").value
         })
@@ -23,7 +23,7 @@ export default function Desktop() {
     }
 
     const register = async () => {
-        const res = await post('/api/user/register', {
+        const res = await POST('/api/user/register', {
             name: document.getElementById("name").value,
             login_id: document.getElementById("id").value,
             pw: document.getElementById("password").value

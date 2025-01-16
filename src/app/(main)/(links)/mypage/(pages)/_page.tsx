@@ -1,6 +1,6 @@
 'use client';
 
-import {clearSessionStorage, cn, getSessionItem, getStoreData, post, setSessionItem} from "@/app/(main)/components/functions";
+import {clearSessionStorage, cn, getSessionItem, getStoreData, POST, setSessionItem} from "@/app/(main)/components/functions";
 import React, {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
 import {IsAdmin, IsStudent} from "@/app/(main)/(links)/mypage/(pages)/common";
@@ -58,7 +58,7 @@ export default function Page({isMobile}) {
 
     const logout = async () => {
         clearSessionStorage();
-        const res = await post("/api/user/logout", {})
+        const res = await POST("/api/user/logout", {})
         if (res.success) {
             router.push('/');
         } else {

@@ -2,7 +2,7 @@
 
 import TextareaAutosize from "react-textarea-autosize";
 import React, {useEffect, useState} from "react";
-import {cn, getStoreData, post, put} from "@/app/(main)/components/functions";
+import {cn, getStoreData, POST, PUT} from "@/app/(main)/components/functions";
 import {TimeInput} from "@/app/(main)/components/common";
 import Select from "react-select";
 import Scrollbars from "react-custom-scrollbars-2";
@@ -82,7 +82,7 @@ export function IsStudent(
             }, {});
             console.log(body)
 
-            await put('/api/user/today/question', body);
+            await PUT('/api/user/today/question', body);
 
             const questions = await getStoreData(`/api/user/today/question?${params}`, `question-list-${params}`, true);
 
@@ -96,7 +96,7 @@ export function IsStudent(
             console.log(qaArr)
             setAList(qaArr);
 
-            await put('/api/user/today/sleep', {
+            await PUT('/api/user/today/sleep', {
                 sleep_time: timeData.sleep,
                 wakeup_time: timeData.wakeup,
             }).then(r => {
@@ -271,7 +271,7 @@ export function IsAdmin(
 
     useEffect(() => {
         (async () => {
-            const users = (await getStoreData('/api/admin/user/list?user_type=1&order_by=name&order=ASC', 'user-list-student')).response.users;
+            const users = (await getStoreData('/api/admin/user/list?user_type=1&order_by=name&order=ASC&limit=10', 'user-list-student')).response.users;
             setUserList(users);
             setHead(users[0].uid);
 
@@ -295,7 +295,7 @@ export function IsAdmin(
                 }
             });
             console.log(body)
-            await put('/api/admin/today/question', body);
+            await PUT('/api/admin/today/question', body);
 
             const questions = await getStoreData(`/api/admin/today/question?${params}`, `question-list-${params}`, true);
             setQList(questions.response.today_questions || {
@@ -347,7 +347,7 @@ export function IsAdmin(
         (async () => {
             const users = (await getStoreData(`/api/admin/user/list?${_param}`, 'user-list-student', true)).response.users;
             setUserList(users);
-            if (refreshHead) {
+            if (refreshHead && users[0]) {
                 setHead(users[0].uid);
             }
         })();
@@ -628,7 +628,7 @@ export function IsAdmin(
                                                     (u.reject) ? "bg-black" : "bg-red-500 hover:bg-red-600 w-fit"
                                                 )}
                                                 onClick={() => {
-                                                    post('/api/admin/user/reject', {user_id: u.uid});
+                                                    POST('/api/admin/user/reject', {user_id: u.uid});
                                                     setNewUserList((users) => {
                                                         let _users = [...users];
                                                         _users[i].reject = true;
@@ -645,7 +645,7 @@ export function IsAdmin(
                                                     {"pointer-events-none": (u.reject)},
                                                 )}
                                                 onClick={() => {
-                                                    post('/api/admin/user/accept', {user_id: u.uid});
+                                                    POST('/api/admin/user/accept', {user_id: u.uid});
                                                     setNewUserList((users) => {
                                                         let _users = [...users];
                                                         _users[i].accept = true;
