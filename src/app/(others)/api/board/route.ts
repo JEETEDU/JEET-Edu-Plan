@@ -13,7 +13,7 @@ import {
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
 import {QueryBuilder} from "drizzle-orm/mysql-core";
-import {save_files, update_files} from "@/app/(others)/api/(tools)/files";
+import {delete_files, save_files, SavedFileList, update_files} from "@/app/(others)/api/(tools)/files";
 
 /**
  * @swagger
@@ -146,7 +146,7 @@ export async function POST(req: NextRequest) {
             if (class_.user_count === 0 && user_type !== UserType.ADMIN) return return_permission_denied();
             if (subject_id && class_.subject_count === 0) return return_400("Subject not found");
 
-            let files_path: string[] = save_files(files);
+            let files_path: SavedFileList = await save_files(tx, files);
 
             let [article_id] = await tx.insert(schema.boards).values({
                     class_id: class_id,
@@ -158,7 +158,7 @@ export async function POST(req: NextRequest) {
                     subject_id: subject_id === 0 ? null : subject_id,
                     view_count: 0,
                     comment_count: 0,
-                    attach_files: files_path.length === 0 ? null : JSON.stringify(files_path)
+                    attach_files: files_path.length === 0 ? null : files_path
                 }
             ).$returningId();
 
@@ -211,8 +211,14 @@ export async function POST(req: NextRequest) {
  *                   attach_files:
  *                     type: array
  *                     items:
- *                       type: string
- *                       example: "/file/abc123"
+ *                       type: object
+ *                       properties:
+ *                         path:
+ *                           type: string
+ *                           example: "/file/c02diejdklq.png"
+ *                         name:
+ *                           type: string
+ *                           example: "file.png"
  *               files:
  *                 type: array
  *                 items:
@@ -268,7 +274,7 @@ export async function PATCH(req: NextRequest) {
             let is_notice: number = parseInt(article_json.is_notice ?? -1);
             let category: number = parseInt(article_json.category ?? -1);
             let subject_id: number = parseInt(article_json.subject_id ?? -1);
-            let attach_files: string[] = article_json.attach_files ?? '[]';
+            let attach_files: SavedFileList = article_json.attach_files ?? '[]';
 
             if (!article_id) return return_400("article_id is required");
             if (title && title.length > 255) return return_400("title is too long");
@@ -302,12 +308,87 @@ export async function PATCH(req: NextRequest) {
                 update_data['subject_id'] = subject_id;
                 // TODO: alert를 새로 만들어야 하는지 확인
             }
-            let files_path: string[] = update_files(files, article_.attach_files as string[], attach_files);
-            if (files_path.length > 0) update_data['attach_files'] = JSON.stringify(files_path);
-            if (article_.attach_files && article_.attach_files != files_path) update_data['attach_files'] = JSON.stringify(files_path);
+            let files_path: SavedFileList = await update_files(tx, files, JSON.parse(article_.attach_files?.toString() ?? '[]'), attach_files);
+            if (files_path.length > 0) update_data['attach_files'] = files_path;
+            if (article_.attach_files && article_.attach_files != files_path) update_data['attach_files'] = files_path;
 
             await tx.update(schema.boards)
                 .set(update_data)
+                .where(eq(schema.boards.id, article_id))
+
+            return NextResponse.json({ success: true });
+        });
+    } catch (e) {
+        console.error(e);
+        return return_500();
+    }
+}
+
+
+/**
+ * @swagger
+ * /api/board:
+ *   delete:
+ *     summary: Delete an existing article
+ *     description: Deletes an existing article. Only the user who created the article or a teacher can delete it.
+ *     tags:
+ *       - Board
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               article_id:
+ *                 type: integer
+ *                 description: The ID of the article to be deleted.
+ *                 example: 123
+ *     responses:
+ *       200:
+ *         description: Article successfully deleted.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *       400:
+ *         description: Bad request. Missing or incorrect data.
+ *       401:
+ *         description: User is not logged in.
+ *       403:
+ *         description: User lacks permission to perform this action.
+ *       404:
+ *         description: Article not found.
+ *       500:
+ *         description: Internal server error.
+ */
+export async function DELETE(req: NextRequest) {
+    try {
+        return db.transaction(async (tx) => {
+            const token = req.cookies.get("token")?.value ?? '';
+            let decoded: DecodedToken | false = verifyToken(token);
+            if (!decoded) return return_not_logged_in();
+
+            const data = await req.json();
+            const article_id = parseInt(data.article_id ?? '');
+            if (Number.isNaN(article_id)) return return_400("article_id is required");
+
+            let user_id = decoded.user_id;
+            let user_type = decoded.user_type;
+
+            let [article] =
+                await tx.select()
+                    .from(schema.boards)
+                    .where(eq(schema.boards.id, article_id))
+            if (!article) return return_400("Article not found");
+            if (article.user_id !== user_id && user_type < UserType.TEACHER) return return_permission_denied();
+            await delete_files(tx, JSON.parse(article.attach_files?.toString() ?? '[]'));
+
+            await tx.delete(schema.boards)
                 .where(eq(schema.boards.id, article_id))
 
             return NextResponse.json({ success: true });

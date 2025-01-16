@@ -8,6 +8,13 @@ export function return_400(message: string): NextResponse {
             }, {status: 400});
 }
 
+export function return_404(message: string): NextResponse {
+    return NextResponse.json({
+                success: false,
+                message: message,
+            }, {status: 404});
+}
+
 export function return_not_logged_in(): NextResponse {
     return NextResponse.json({
                 success: false,

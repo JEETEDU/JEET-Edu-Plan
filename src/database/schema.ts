@@ -216,3 +216,8 @@ export const studentClassesRelations = relations(
         })
     })
 );
+
+export const file = mysqlTable('file', {
+    id: char({length: 11}).primaryKey(),
+    name: varchar({length: 255}).notNull(),
+});

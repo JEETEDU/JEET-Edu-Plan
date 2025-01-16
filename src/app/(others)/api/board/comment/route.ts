@@ -13,7 +13,7 @@ import {
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
 import {QueryBuilder} from "drizzle-orm/mysql-core";
-import {save_files} from "@/app/(others)/api/(tools)/files";
+import {save_files, SavedFileList} from "@/app/(others)/api/(tools)/files";
 
 
 /**
@@ -124,7 +124,7 @@ export async function POST(req: NextRequest) {
             if (article.board_count === 0) return return_400('Article not found');
             if (article.user_count === 0 && user_type !== UserType.ADMIN) return return_permission_denied();
 
-            let files_path: string[] = save_files(files);
+            let files_path: SavedFileList = await save_files(tx, files);
             await tx.insert(schema.comments).values({
                 article_id: article_id,
                 user_id: user_id,
