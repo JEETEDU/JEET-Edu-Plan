@@ -7,7 +7,7 @@ export const cn = (...inputs: ClassValue[]) => {
     return twMerge(clsx(inputs));
 };
 
-export async function post(url: string, body: string) {
+export async function POST(url: string, body: object) {
     return await fetch(url, {
         method: 'POST',
         body: JSON.stringify(body),
@@ -20,7 +20,20 @@ export async function post(url: string, body: string) {
     )
 }
 
-export async function get(url: string) {
+export async function PATCH(url: string, body: object) {
+    return await fetch(url, {
+        method: 'PATCH',
+        body: JSON.stringify(body),
+    }).then(
+        (res) => res.json()
+    ).then(
+        (res) => {
+            return res;
+        }
+    )
+}
+
+export async function GET(url: string) {
     return await fetch(url, {
         method: 'GET',
     }).then(
@@ -33,7 +46,7 @@ export async function get(url: string) {
     )
 }
 
-export async function put(url: string, body: string) {
+export async function PUT(url: string, body: object) {
     return await fetch(url, {
         method: 'PUT',
         body: JSON.stringify(body)
@@ -42,6 +55,19 @@ export async function put(url: string, body: string) {
     ).then(
         (res) => {
             console.log(res)
+            return res;
+        }
+    )
+}
+
+export async function DELETE(url: string, body: object) {
+    return await fetch(url, {
+        method: 'DELETE',
+        body: JSON.stringify(body),
+    }).then(
+        (res) => res.json()
+    ).then(
+        (res) => {
             return res;
         }
     )
@@ -67,7 +93,7 @@ export async function getStoreData(url: string, storeName: string, forceUpdate: 
     if (value && !forceUpdate) {
         return JSON.parse(value);
     } else {
-        const res = await get(url);
+        const res = await GET(url);
         const body = {
             last_update: new Date(),
             response: res
