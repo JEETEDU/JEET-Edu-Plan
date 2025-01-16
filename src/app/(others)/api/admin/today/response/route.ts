@@ -231,23 +231,28 @@ export async function GET(req: NextRequest) {
                 .leftJoin(schema.todayAnswers, eq(schema.users.uid, schema.todayAnswers.user_id))
                 .$dynamic();
 
+        let where_clause;
         if (search_by && search_string) {
             if (search_by == 'user_id') {
-                query = query.where(eq(schema.users.uid, parseInt(search_string)));
+                where_clause = eq(schema.users.uid, parseInt(search_string));
             } else if (search_by == 'user_type') {
-                query = query.where(eq(schema.users.user_type, parseInt(search_string)));
+                where_clause = eq(schema.users.user_type, parseInt(search_string));
             } else if (search_by == 'name') {
-                query = query.where(like(schema.users.name, `%${search_string}%`));
+                where_clause = like(schema.users.name, `%${search_string}%`);
             } else if (search_by == 'first_year') {
-                query = query.where(eq(schema.users.first_year, parseInt(search_string)));
+                where_clause = eq(schema.users.first_year, parseInt(search_string));
             } else if (search_by == 'school') {
-                query = query.where(like(schema.users.school, `%${search_string}%`));
+                where_clause = like(schema.users.school, `%${search_string}%`);
             } else if (search_by == 'joined_term') {
-                query = query.where(like(schema.users.joined_term, `%${search_string}%`));
+                where_clause = like(schema.users.joined_term, `%${search_string}%`);
             } else {
                 return return_400('Invalid search_by');
             }
         }
+        // @ts-ignore
+        if (where_clause) query = query.where(and(where_clause, eq(schema.todayAnswers.date, date)));
+        // @ts-ignore
+        else query = query.where(eq(schema.todayAnswers.date, date));
 
         if (order_by && order) {
             let order_func = asc;
