@@ -84,8 +84,7 @@ export const boards = mysqlTable('board', {
     category: tinyint(),
     notice: tinyint(),
     due_date: date(),
-    view_count: int().notNull(),
-    comment_count: int().notNull(),
+    comment_count: int().notNull().default(0),
     subject_id: int().references(() => subjects.id),
 });
 

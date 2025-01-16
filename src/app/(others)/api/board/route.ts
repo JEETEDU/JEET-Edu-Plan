@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server';
 import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
-import {and, asc, count, desc, eq, like, sql} from 'drizzle-orm';
+import {and, asc, count, desc, eq, like, or, SQL, sql} from 'drizzle-orm';
 import {
     check_date_string,
     return_400,
@@ -156,7 +156,6 @@ export async function POST(req: NextRequest) {
                     category: category,
                     notice: is_notice,
                     subject_id: subject_id === 0 ? null : subject_id,
-                    view_count: 0,
                     comment_count: 0,
                     attach_files: files_path.length === 0 ? null : files_path
                 }
@@ -224,7 +223,7 @@ export async function POST(req: NextRequest) {
  *                 items:
  *                   type: string
  *                   format: binary
- *                 description: Optional files to attach to the article.
+ *                 description: Attachments to add for the comment (optional).
  *               article_id:
  *                 type: integer
  *                 example: 123
@@ -260,8 +259,7 @@ export async function PATCH(req: NextRequest) {
 
             const data = await req.formData();
             const article_id = parseInt(data.get("article_id")?.toString() ?? '0');
-            const article = data.get("article");
-            if (!article) return return_400("article is required");
+            const article = data.get("article") ?? '{}';
             const article_json = JSON.parse(article.toString());
             // @ts-ignore
             const files = data.getAll("files") as FileList;
@@ -274,7 +272,7 @@ export async function PATCH(req: NextRequest) {
             let is_notice: number = parseInt(article_json.is_notice ?? -1);
             let category: number = parseInt(article_json.category ?? -1);
             let subject_id: number = parseInt(article_json.subject_id ?? -1);
-            let attach_files: SavedFileList = article_json.attach_files ?? '[]';
+            let attach_files: SavedFileList = article_json.attach_files ?? [];
 
             if (!article_id) return return_400("article_id is required");
             if (title && title.length > 255) return return_400("title is too long");
@@ -286,7 +284,7 @@ export async function PATCH(req: NextRequest) {
             let [article_] =
                 await tx.select()
                     .from(schema.boards)
-                    .where(eq(schema.boards.id, article_id))
+                    .where(eq(schema.boards.id, article_id));
             if (!article_) return return_400("Article not found");
             if (article_.user_id !== user_id && user_type < UserType.TEACHER) return return_permission_denied();
 
@@ -392,6 +390,290 @@ export async function DELETE(req: NextRequest) {
                 .where(eq(schema.boards.id, article_id))
 
             return NextResponse.json({ success: true });
+        });
+    } catch (e) {
+        console.error(e);
+        return return_500();
+    }
+}
+
+
+/**
+ * @swagger
+ * /api/board:
+ *   get:
+ *     summary: Retrieve articles
+ *     description: Retrieves a list of articles based on filters such as class, subject, category, and more. Pagination is supported.
+ *     tags:
+ *       - Board
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *           description: The page number for pagination.
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *           description: The number of articles per page.
+ *       - in: query
+ *         name: class_id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           description: The ID of the class to retrieve articles for.
+ *       - in: query
+ *         name: subject_id
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           description: Filter articles by the subject ID.
+ *       - in: query
+ *         name: category
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           description: Filter articles by their category (-1 or empty means no filter).
+ *       - in: query
+ *         name: search_by
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum: [title, title_content, author]
+ *           description: Search criteria.
+ *       - in: query
+ *         name: search_string
+ *         required: false
+ *         schema:
+ *           type: string
+ *           description: The search string to match with the given search criterion.
+ *       - in: query
+ *         name: order_by
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum: [created_at, updated_at]
+ *           description: Field to order the articles by.
+ *       - in: query
+ *         name: order
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum: [ASC, DESC]
+ *           default: DESC
+ *           description: Sort order for the articles.
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved articles.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       title:
+ *                         type: string
+ *                       content:
+ *                         type: string
+ *                       create_time:
+ *                         type: string
+ *                         format: date-time
+ *                       update_time:
+ *                         type: string
+ *                         format: date-time
+ *                       attach_files_exist:
+ *                         type: boolean
+ *                       category:
+ *                         type: integer
+ *                       notice:
+ *                         type: boolean
+ *                       due_date:
+ *                         type: string
+ *                         format: date-time
+ *                       comment_count:
+ *                         type: integer
+ *                       user:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                           name:
+ *                             type: string
+ *                       subject:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                           name:
+ *                             type: string
+ *       400:
+ *         description: Bad request. Missing or invalid query parameters.
+ *       401:
+ *         description: User is not authenticated.
+ *       403:
+ *         description: User does not have permission to retrieve the articles.
+ *       500:
+ *         description: Internal server error.
+ */
+export async function GET(req: NextRequest) {
+    try {
+        const token = req.cookies.get("token")?.value ?? '';
+        let decoded: DecodedToken | false = verifyToken(token);
+        if (!decoded) return return_not_logged_in();
+
+        const data = req.nextUrl.searchParams;
+        const page = parseInt(data.get("page") ?? '1');
+        const limit = parseInt(data.get("limit") ?? '10');
+        const class_id = parseInt(data.get("class_id") ?? '0');
+        const subject_id = parseInt(data.get("subject_id") ?? '0');
+        const category = parseInt(data.get("category") ?? '-1');
+        const search_by = data.get("search_by") ?? '';
+        const search_string = data.get("search_string") ?? '';
+        const order_by = data.get("order_by") ?? 'created_at';
+        const order = (data.get('order') ?? 'DESC').toUpperCase();
+
+        if (Number.isNaN(page) || page < 1) return return_400("Invalid page number");
+        if (Number.isNaN(limit) || limit < 1) return return_400("Invalid limit number");
+        if (Number.isNaN(class_id) || class_id < 1) return return_400("Invalid class_id");
+
+        let user_id = decoded.user_id;
+        let user_type = decoded.user_type;
+
+        // check permission
+        let [class_] =
+            await db.select({
+                class_count: count(schema.classes.id),
+                user_count: count(schema.users.uid)
+            })
+                .from(schema.classes)
+                .leftJoin(
+                    user_type === UserType.STUDENT ? schema.studentClasses : schema.teacherClasses,
+                    eq((user_type === UserType.STUDENT ? schema.studentClasses : schema.teacherClasses).class_id, schema.classes.id)
+                )
+                .leftJoin(
+                    schema.users,
+                    and(
+                        eq((user_type === UserType.STUDENT ? schema.studentClasses : schema.teacherClasses).user_id, schema.users.uid),
+                        eq(schema.users.uid, user_id)
+                    )
+                )
+                .where(eq(schema.classes.id, class_id))
+        if (class_.class_count === 0) return return_400("Class not found");
+        if (class_.user_count === 0 && user_type !== UserType.ADMIN) return return_permission_denied();
+
+        let queryBuilder: QueryBuilder = new QueryBuilder();
+        let query = queryBuilder.select({
+            id: schema.boards.id,
+            title: schema.boards.title,
+            content: schema.boards.content,
+            create_time: schema.boards.create_time,
+            update_time: schema.boards.update_time,
+            attach_files_exist: sql`IF(attach_files IS NULL, 0, 1) as attach_files_exist`,
+            category: schema.boards.category,
+            notice: schema.boards.notice,
+            due_date: schema.boards.due_date,
+            comment_count: schema.boards.comment_count,
+            user: {
+                id: sql`${schema.users.uid} as user_id`,
+                name: sql`${schema.users.name} as user_name`,
+            },
+            subject: {
+                id: sql`${schema.subjects.id} as subject_id`,
+                name: sql`${schema.subjects.name} as subject_name`,
+            }
+        })
+            .from(schema.boards)
+            .leftJoin(
+                schema.users,
+                eq(schema.boards.user_id, schema.users.uid)
+            )
+            .leftJoin(
+                schema.subjects,
+                eq(schema.boards.subject_id, schema.subjects.id)
+            )
+            .$dynamic();
+
+        let where_clause: SQL | undefined = eq(schema.boards.class_id, class_id);
+        if (subject_id) where_clause = and(where_clause, eq(schema.boards.subject_id, subject_id));
+        if (category !== -1) where_clause = and(where_clause, eq(schema.boards.category, category));
+        if (search_by && search_string) {
+            if (search_by === 'title') where_clause = and(where_clause, like(schema.boards.title, `%${search_string}%`));
+            else if (search_by === 'title_content') {
+                where_clause = and(where_clause, or(
+                    like(schema.boards.title, `%${search_string}%`),
+                    like(schema.boards.content, `%${search_string}%`)
+                ));
+            }
+            else if (search_by === 'author') where_clause = and(where_clause, like(schema.users.name, `%${search_string}%`));
+            else return return_400("Invalid search_by");
+        }
+        query = query.where(where_clause);
+
+        if (order_by && order) {
+            let order_func = asc;
+            if (order == 'ASC') {
+                order_func = asc;
+            }
+            else if (order == 'DESC') {
+                order_func = desc;
+            }
+            else {
+                return return_400('Invalid order');
+            }
+
+            if (order_by === 'created_at') {
+                query = query.orderBy(order_func(schema.boards.create_time));
+            }
+            else if (order_by === 'updated_at') {
+                query = query.orderBy(order_func(schema.boards.update_time));
+            }
+            else {
+                return return_400('Invalid order_by');
+            }
+        }
+        query = query.limit(limit).offset((page - 1) * limit);
+
+        let [articles] = await db.execute(query);
+        console.log(articles);
+        return NextResponse.json({
+            success: true,
+            // @ts-ignore
+            articles: articles?.map((article: any) => {
+                return {
+                    id: article.id,
+                    title: article.title,
+                    content: article.content,
+                    create_time: article.create_time,
+                    update_time: article.update_time,
+                    attach_files_exist: article.attach_files_exist,
+                    category: article.category,
+                    notice: article.notice,
+                    due_date: article.due_date,
+                    comment_count: article.comment_count,
+                    user: {
+                        id: article.user_id,
+                        name: article.user_name,
+                    },
+                    subject: {
+                        id: article.subject_id,
+                        name: article.subject_name,
+                    }
+                }
+            })
         });
     } catch (e) {
         console.error(e);
