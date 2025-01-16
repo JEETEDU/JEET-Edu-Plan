@@ -499,65 +499,68 @@ export async function GET(req: NextRequest) {
         }
 
         const data = req.nextUrl.searchParams;
-        const page = data.get('page') ?? '1';
-        const limit = data.get('limit') ?? '10';
+        const page = parseInt(data.get('page') ?? '1');
+        const limit = parseInt(data.get('limit') ?? '10');
         const search_by = data.get('search_by') ?? '';
         const search_string = data.get('search_string') ?? '';
-        const user_type = data.get('user_type') ?? '';
+        const user_type = parseInt(data.get('user_type') ?? '');
         const order_by = data.get('order_by') ?? 'name';
         const order = (data.get('order') ?? 'ASC').toUpperCase();
 
-        if (isNaN(parseInt(page))) {
+        if (isNaN(page)) {
             return return_400('Invalid page');
         }
-        if (isNaN(parseInt(limit))) {
+        if (isNaN(limit)) {
             return return_400('Invalid limit');
         }
+
+        let subqueryBuilder = new QueryBuilder();
+        let subquery =
+            subqueryBuilder.select()
+                .from(schema.users)
+                .$dynamic();
+        let where_clause;
+        if (search_by && search_string) {
+            if (search_by == 'user_id') where_clause = eq(schema.users.uid, parseInt(search_string));
+            else if (search_by == 'name') where_clause = like(schema.users.name, `%${search_string}%`);
+            else if (search_by == 'first_year') where_clause = eq(schema.users.first_year, parseInt(search_string));
+            else if (search_by == 'school') where_clause = like(schema.users.school, `%${search_string}%`);
+            else if (search_by == 'joined_term') where_clause = like(schema.users.joined_term, `%${search_string}%`);
+            else return return_400('Invalid search_by');
+        }
+        if (user_type) {
+            if (isNaN(user_type)) return return_400('Invalid user_type');
+            where_clause = and(
+                eq(schema.users.user_type, user_type),
+                where_clause
+            );
+        }
+        if (limit) subquery = subquery.limit(limit).offset((page - 1) * limit);
+        let sub_table = subquery.where(where_clause).as('subquery');
 
         let queryBuilder = new QueryBuilder();
         let query =
             queryBuilder.select({
-                    uid: schema.users.uid,
-                    login_id: schema.users.login_id,
-                    user_type: schema.users.user_type,
-                    name: schema.users.name,
-                    first_year: schema.users.first_year,
-                    school: schema.users.school,
-                    joined_term: schema.users.joined_term,
-                    class_id: sql`class_info.id as class_id`,
-                    class_name: sql`class_info.name as class_name`
+                    uid: sub_table.uid,
+                    login_id: sub_table.login_id,
+                    user_type: sub_table.user_type,
+                    name: sub_table.name,
+                    first_year: sub_table.first_year,
+                    school: sub_table.school,
+                    joined_term: sub_table.joined_term,
+                    class_id: sql`${schema.classes.id} as class_id`,
+                    class_name: sql`${schema.classes.name} as class_name`
                 })
-                .from(schema.users)
+                .from(sub_table)
                 .leftJoin(
                     schema.studentClasses,
-                    eq(schema.studentClasses.user_id, schema.users.uid)
+                    eq(schema.studentClasses.user_id, sub_table.uid)
                 )
                 .leftJoin(
                     schema.classes,
                     eq(schema.studentClasses.class_id, schema.classes.id)
                 )
                 .$dynamic();
-        let where_clause;
-        if (search_by && search_string) {
-            if (search_by == 'user_id') {
-                where_clause = eq(schema.users.uid, parseInt(search_string));
-            }
-            else if (search_by == 'name') {
-                where_clause = like(schema.users.name, `%${search_string}%`);
-            }
-            else if (search_by == 'first_year') {
-                where_clause = eq(schema.users.first_year, parseInt(search_string));
-            }
-            else if (search_by == 'school') {
-                where_clause = like(schema.users.school, `%${search_string}%`);
-            }
-            else if (search_by == 'joined_term') {
-                where_clause = like(schema.users.joined_term, `%${search_string}%`);
-            }
-            else {
-                return return_400('Invalid search_by');
-            }
-        }
         if (order_by && order) {
             let order_func = asc;
             if (order == 'ASC') {
@@ -571,34 +574,25 @@ export async function GET(req: NextRequest) {
             }
 
             if (order_by == 'user_type') {
-                query = query.orderBy(order_func(schema.users.user_type));
+                query = query.orderBy(order_func(sub_table.user_type));
             }
             else if (order_by == 'name') {
-                query = query.orderBy(order_func(schema.users.name));
+                query = query.orderBy(order_func(sub_table.name));
             }
             else if (order_by == 'first_year') {
-                query = query.orderBy(order_func(schema.users.first_year));
+                query = query.orderBy(order_func(sub_table.first_year));
             }
             else if (order_by == 'school') {
-                query = query.orderBy(order_func(schema.users.school));
+                query = query.orderBy(order_func(sub_table.school));
             }
             else if (order_by == 'joined_term') {
-                query = query.orderBy(order_func(schema.users.joined_term));
+                query = query.orderBy(order_func(sub_table.joined_term));
             }
             else {
                 return return_400('Invalid order_by');
             }
         }
-        if (user_type) {
-            if (isNaN(parseInt(user_type))) {
-                return return_400('Invalid user_type');
-            }
-            where_clause = and(
-                eq(schema.users.user_type, parseInt(user_type)),
-                where_clause
-            );
-        }
-        query = query.where(where_clause).limit(parseInt(limit)).offset((parseInt(page) - 1) * parseInt(limit));
+
         let [rows]: any = await db.execute(query);
         let users = Array.isArray(rows) ? rows.reduce((acc: any, row: any) => {
             let user = acc.find((u: any) => u.uid === row.uid);
