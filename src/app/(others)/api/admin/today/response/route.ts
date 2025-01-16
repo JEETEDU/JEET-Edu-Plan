@@ -314,7 +314,7 @@ export async function GET(req: NextRequest) {
                         answer_2: user.answer_2,
                         answer_3: user.answer_3,
                         answer_lastday: user.answer_lastday,
-                        answer_schoool: user.answer_schoool,
+                        answer_school: user.answer_school,
                         answer_academy: user.answer_academy
                     }
                 }
