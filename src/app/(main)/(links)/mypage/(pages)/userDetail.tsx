@@ -4,11 +4,12 @@ import React, {useEffect, useState} from "react";
 import {getStoreData} from "@/app/(main)/components/functions";
 import UserInfo from "./component/userInfo";
 import ManageUser from "./component/manageUser";
+import {TodayAnswer} from "@/app/(main)/(links)/mypage/(pages)/component/todayAnswer";
 
 export interface IUserInfo {
     uid: number;
     login_id: string;
-    user_type: number;
+    user_type?: number;
     name: string;
     first_year: string;
     school: string;
@@ -51,6 +52,11 @@ export default function UserDetail({uid, date, refresh}: { uid: number, date: Da
             <ManageUser
                 uid={uid}
                 refresh={refresh}
+            />
+            <Hr/>
+            <TodayAnswer
+                date={date}
+                uid={uid}
             />
             <Hr/>
         </div>
