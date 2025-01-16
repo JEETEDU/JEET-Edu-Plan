@@ -1,10 +1,12 @@
-import type { NextRequest } from 'next/server';
+import {NextRequest, NextResponse} from 'next/server';
 import {
-    return_400, return_not_logged_in
+    return_400, return_404, return_not_logged_in
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
 import * as fs from "node:fs";
-
+import { db } from '@/database';
+import * as schema from '@/database/schema';
+import {eq} from "drizzle-orm";
 
 /**
  * @swagger
@@ -33,20 +35,30 @@ import * as fs from "node:fs";
  *         description: File not found or invalid request.
  *       401:
  *         description: Unauthorized. User is not logged in or token is invalid.
+ *       404:
+ *         description: File not found.
  */
 export async function GET(req: NextRequest, { params }: { params: { file_name: string } }) {
     const token = req.cookies.get("token")?.value ?? '';
     let decoded: DecodedToken | false = verifyToken(token);
     if (!decoded) return return_not_logged_in();
 
-    const file_name = (await params).file_name;
+    let file_id = (await params).file_name;
 
-    let file_path = 'uploads/files/' + file_name;
-    let file_ext = file_name.split('.').pop();
-    if (!fs.existsSync(file_path)) return return_400("file not found");
+    let file_path = 'uploads/files/' + file_id;
+    let file_ext = file_id.split('.').pop();
+    file_id = file_id.split('.').shift() ?? '';
+    if (!fs.existsSync(file_path)) return return_404("file not found");
+    console.log(file_id);
+    let [file_name] =
+        await db.select()
+            .from(schema.file)
+            .where(eq(schema.file.id, file_id));
+
+    if(!file_name) return NextResponse.json({ success: false, message: "File not found" }, { status: 404 });
 
     let content_type = 'application/octet-stream';
-    if (file_ext == 'png' || file_ext == 'jpg' || file_ext == 'jpeg') {
+    if (file_ext == 'png' || file_ext == 'jpg' || file_ext == 'jpeg' || file_ext == 'gif') {
         content_type = 'image/' + file_ext;
     }
     else if (file_ext == 'pdf') {
@@ -56,7 +68,7 @@ export async function GET(req: NextRequest, { params }: { params: { file_name: s
     return new Response(fs.readFileSync(file_path), {
         headers: {
             'Content-Type': content_type,
-            'Content-Disposition': `attachment; filename=${file_name}`
+            'Content-Disposition': `attachment; filename=${file_name.name}`
         }
     });
 }
