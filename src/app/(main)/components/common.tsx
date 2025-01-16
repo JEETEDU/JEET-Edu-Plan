@@ -1,6 +1,6 @@
 'use client';
 
-import {cn, getStoreData, put} from "@/app/(main)/components/functions";
+import {cn, getStoreData, PUT} from "@/app/(main)/components/functions";
 import React, {useEffect, useState} from "react";
 import {usePathname, useRouter} from "next/navigation";
 import TextareaAutosize from "react-textarea-autosize";
@@ -141,14 +141,14 @@ export function TodayQuestion({device}: { device }) {
             }
         });
 
-        const r1 = await put('/api/user/today/sleep', timeData)
+        const r1 = await PUT('/api/user/today/sleep', timeData)
         // console.log(r1)
         if (!r1.success) {
             // alert("error occurred while put sleep / wakeup time");
             return false;
         }
 
-        const r2 = await put('/api/user/today/question', body)
+        const r2 = await PUT('/api/user/today/question', body)
         // console.log(r2)
         if (r2.success) {
             const today = new Date();
