@@ -13,7 +13,7 @@ import {
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
 import {QueryBuilder} from "drizzle-orm/mysql-core";
-import {save_files, SavedFileList} from "@/app/(others)/api/(tools)/files";
+import {delete_files, save_files, SavedFileList, update_files} from "@/app/(others)/api/(tools)/files";
 
 
 /**
@@ -129,8 +129,227 @@ export async function POST(req: NextRequest) {
                 article_id: article_id,
                 user_id: user_id,
                 content: content,
-                attach_files: JSON.stringify(files_path)
+                attach_files: files_path
             });
+
+            await tx.update(schema.boards).set({
+                comment_count: sql`${schema.boards.comment_count} + 1`
+            })
+                .where(eq(schema.boards.id, article_id));
+
+            return NextResponse.json({ success: true });
+        });
+    } catch (e) {
+        console.error(e);
+        return return_500();
+    }
+}
+
+/**
+ * @swagger
+ * /api/board/comment:
+ *   patch:
+ *     summary: Update a comment
+ *     description: Updates an existing comment with new information. Only the user who created the comment or a teacher can update it.
+ *     tags:
+ *       - Board
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               comment_id:
+ *                 type: number
+ *                 example: 123
+ *               comment:
+ *                 type: object
+ *                 description: JSON string containing comment information. <br>Attach_files is an array of file paths to attach to the article. This is for remove files by not including them in the array only. If you want to add new files, use the files field.
+ *                 properties:
+ *                   content:
+ *                     type: string
+ *                     example: "This is an updated comment."
+ *                   attach_files:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         path:
+ *                           type: string
+ *                           example: "/file/c02diejdklq.png"
+ *                         name:
+ *                           type: string
+ *                           example: "file.png"
+ *               files:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *                 description: Attachments to add for the comment (optional).
+ *     responses:
+ *       200:
+ *         description: Comment updated successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *       400:
+ *         description: Bad Request - Missing or invalid parameters.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "comment_id is required"
+ *       403:
+ *         description: Permission Denied.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Permission denied"
+ *       500:
+ *         description: Server Error.
+ */
+export async function PATCH(req: NextRequest) {
+    try {
+        return db.transaction(async (tx) => {
+            const token = req.cookies.get("token")?.value ?? '';
+            let decoded: DecodedToken | false = verifyToken(token);
+            if (!decoded) return return_not_logged_in();
+
+            const data = await req.formData();
+            const comment_json = JSON.parse(data.get('comment')?.toString() ?? '{}');
+            // @ts-ignore
+            const files = data.getAll('files') as FileList;
+
+            let user_id = decoded.user_id;
+            let user_type = decoded.user_type;
+
+            let comment_id: number = parseInt(data.get('comment_id')?.toString() ?? '0');
+            let content: string = comment_json.content.toString() ?? '';
+            let attach_files: SavedFileList = comment_json.attach_files ?? [];
+
+            if (!comment_id) return return_400('comment_id is required');
+
+            let [comment] =
+                await tx.select()
+                    .from(schema.comments)
+                    .where(eq(schema.comments.id, comment_id));
+            if (!comment) return return_400('Comment not found');
+            if (comment.user_id !== user_id && user_type < UserType.TEACHER ) return return_permission_denied();
+
+            let update_data: any = {};
+            if (content) update_data.content = content;
+
+            let files_path: SavedFileList = await update_files(tx, files, JSON.parse(comment.attach_files?.toString() ?? '[]'), attach_files);
+            if (files_path.length) update_data['attach_files'] = files_path;
+            if (comment.attach_files && comment.attach_files != files_path) update_data['attach_files'] = files_path;
+
+            await tx.update(schema.comments)
+                .set(update_data)
+                .where(eq(schema.comments.id, comment_id));
+
+            return NextResponse.json({ success: true });
+        });
+    } catch (e) {
+        console.error(e);
+        return return_500();
+    }
+}
+
+/**
+ * @swagger
+ * /api/board/comment:
+ *   delete:
+ *     summary: Delete a comment
+ *     description: Deletes an existing comment. Only the user who created the comment or a teacher can delete it.
+ *     tags:
+ *       - Board
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               comment_id:
+ *                 type: number
+ *                 example: 123
+ *     responses:
+ *       200:
+ *         description: Comment deleted successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *       400:
+ *         description: Bad Request - Missing or invalid parameters.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "comment_id is required"
+ *       403:
+ *         description: Permission Denied.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Permission denied"
+ *       500:
+ *         description: Server Error.
+ */
+export async function DELETE(req: NextRequest) {
+    try {
+        return db.transaction(async (tx) => {
+            const token = req.cookies.get("token")?.value ?? '';
+            let decoded: DecodedToken | false = verifyToken(token);
+            if (!decoded) return return_not_logged_in();
+
+            const data = await req.json();
+            const comment_id = parseInt(data.comment_id ?? '');
+            if (Number.isNaN(comment_id)) return return_400("comment_id is required");
+
+            let user_id = decoded.user_id;
+            let user_type = decoded.user_type;
+
+            let [comment] =
+                await tx.select()
+                    .from(schema.comments)
+                    .where(eq(schema.comments.id, comment_id))
+            if (!comment) return return_400("Comment not found");
+            if (comment.user_id !== user_id && user_type < UserType.TEACHER) return return_permission_denied();
+            await delete_files(tx, JSON.parse(comment.attach_files?.toString() ?? '[]'));
+
+            await tx.delete(schema.comments)
+                .where(eq(schema.comments.id, comment_id))
+
+            await tx.update(schema.boards)
+                .set({
+                    comment_count: sql`${schema.boards.comment_count} - 1`
+                })
+                .where(eq(schema.boards.id, comment.article_id));
 
             return NextResponse.json({ success: true });
         });
