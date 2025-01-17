@@ -187,8 +187,8 @@ export const comments = mysqlTable('comment', {
 export const alerts = mysqlTable('alert', {
     id: int().autoincrement().primaryKey(),
     user_id: int().notNull().references(() => users.uid, { onDelete: 'cascade' }),
-    read: tinyint(),
-    alert_type: tinyint(),
+    read: tinyint().notNull().default(0),
+    alert_type: tinyint().notNull().default(0),
     article_id: int().references(() => boards.id, { onDelete: 'cascade' }),
     message: varchar({ length: 255 }).notNull(),
 });
