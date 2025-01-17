@@ -4,14 +4,38 @@ import {and, asc, count, desc, eq, like, sql} from 'drizzle-orm';
 import {MySqlTransaction, QueryBuilder} from "drizzle-orm/mysql-core";
 
 type TX = MySqlTransaction<any, any, any, any>;
+export enum AlertType {
+    NORMAL = 0,
+    NOTICE = 1,
+    CALENDAR = 2
+}
 
-export async function register_alert(tx: TX, user_id: number, message: string, alert_type: number = 0, article_id: number | null = null): Promise<void> {
+export async function register_alert(tx: TX, user_id: number | [number], message: string, alert_type: number = 0, article_id: number | null = null): Promise<void> {
+    if (Array.isArray(user_id)) {
+        await tx.insert(schema.alerts).values(user_id.map((id) => ({
+            user_id: id,
+            message: message,
+            alert_type: alert_type,
+            article_id: article_id
+        })));
+        return;
+    }
     await tx.insert(schema.alerts).values({
         user_id: user_id,
         message: message,
         alert_type: alert_type,
         article_id: article_id
     });
+}
+
+export async function register_alert_for_class(tx: TX, class_id: number, message: string, alert_type: number = 0, article_id: number | null = null): Promise<void> {
+    let users = await tx.select({
+        user_id: schema.studentClasses.class_id,
+    })
+        .from(schema.studentClasses)
+        .where(eq(schema.studentClasses.class_id, class_id));
+    // @ts-ignore
+    await register_alert(tx, users.map((u) => u.user_id), message, alert_type, article_id);
 }
 
 export async function delete_alert(tx: TX, user_id: number, alert_id: number): Promise<void> {

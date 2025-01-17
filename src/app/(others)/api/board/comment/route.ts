@@ -14,6 +14,7 @@ import {
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
 import {QueryBuilder} from "drizzle-orm/mysql-core";
 import {delete_files, save_files, SavedFileList, update_files} from "@/app/(others)/api/(tools)/files";
+import {register_alert} from "@/app/(others)/api/(tools)/alerts";
 
 
 /**
@@ -104,6 +105,7 @@ export async function POST(req: NextRequest) {
 
             let [article] =
                 await tx.select({
+                    user_id: schema.boards.user_id,
                     board_count: count(schema.boards.id),
                     user_count: count(schema.users.uid),
                 })
@@ -136,6 +138,8 @@ export async function POST(req: NextRequest) {
                 comment_count: sql`${schema.boards.comment_count} + 1`
             })
                 .where(eq(schema.boards.id, article_id));
+
+            await register_alert(tx, user_id, `새 댓글이 달렸습니다.\n ${content.substring(0, 20)}`, 0, article_id)
 
             return NextResponse.json({ success: true });
         });
