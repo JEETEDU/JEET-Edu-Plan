@@ -1,7 +1,7 @@
 "use client";
 
-import React, {useState} from "react";
-import {cn} from "@/app/(main)/components/functions";
+import React, {useEffect, useState} from "react";
+import {cn, GET} from "@/app/(main)/components/functions";
 import Link from "next/link";
 import Scrollbars from "react-custom-scrollbars-2";
 
@@ -10,28 +10,42 @@ export default function Desktop() {
     const [head, setHead] = useState(0);
     const [isTeacher, setIsTeacher] = useState(true);
 
-    const notifications = [
-        "이 알림은 테스트 메시지입니다.",
-        "새로운 알림이 도착했습니다!",
-        "오늘 할 일을 체크하세요.",
-        "이벤트 참여 기회를 놓치지 마세요.",
-        "보안 업데이트가 필요합니다.",
-        "새로운 메시지가 있습니다.",
-        "친구 요청을 확인하세요.",
-        "업데이트 알림: 새로운 기능이 추가되었습니다.",
-        "건강 체크를 위한 알림입니다.",
-        "계정 설정을 확인하세요.",
-        "새로운 알림이 도착했습니다!",
-        "오늘 할 일을 체크하세요.",
-        "이벤트 참여 기회를 놓치지 마세요.",
-        "보안 업데이트가 필요합니다.",
-        "새로운 메시지가 있습니다.",
-        "친구 요청을 확인하세요.",
-        "업데이트 알림: 새로운 기능이 추가되었습니다.",
-        "건강 체크를 위한 알림입니다.",
-        "계정 설정을 확인하세요.",
-        "이 알림은 테스트 메시지입니다.",
-    ];
+    interface IArticle {
+        "id": number;
+        "title": string;
+        "content": string;
+        "create_time": string;
+        "update_time": string;
+        "attach_files_exist": number;
+        "category": number;
+        "notice": number;
+        "due_date": string | null;
+        "comment_count": number;
+        "user": {
+            "id": number;
+            "name": string;
+        },
+        "subject": {
+            "id": number | null;
+            "name": string | null;
+        }
+    }
+
+    const [articles, setArticles] = useState<IArticle[]>([]);
+
+    useEffect(() => {
+        interface IResponse {
+            success: boolean;
+            articles: IArticle[];
+        }
+
+        (async () => {
+            const response: IResponse = await GET('/api/board');
+            if (response.success) {
+                setArticles(response.articles);
+            }
+        })();
+    }, [])
 
     const todo = [
         {title: "할 일 목록은 만들기 귀찮아요", done: true, due: "12/31"},
@@ -54,7 +68,7 @@ export default function Desktop() {
                         <div className="col-span-2 bg-white mt-2 mx-4 rounded-lg border">
                             <div className="flex flex-col gap-5 h-full w-full items-center justify-center">
                                 <div className="text-center text-4xl">
-                                    {notifications[head]}
+                                    {/*{notifications[head]}*/}
                                 </div>
                                 <div>
                                     여기에는 상세 내용이 자세하게 보이게 하고싶다
@@ -67,7 +81,7 @@ export default function Desktop() {
                             autoHide
                         >
                             <div className="p-2 space-y-2">
-                                {notifications.map((notification, index) => (
+                                {articles.map((article, index) => (
                                     <button
                                         key={index}
                                         className="block w-full"
@@ -77,14 +91,14 @@ export default function Desktop() {
                                             "p-3 hover:bg-gray-100 rounded-lg border border-gray-200 w-full",
                                             (index === head) ? "bg-gray-200" : "bg-white"
                                         )}>
-                                            {notification}
+                                            {article.title}
                                         </div>
                                     </button>
                                 ))}
                             </div>
                         </Scrollbars>
                     </div>
-                    ) : (
+                ) : (
                     <div className="flex-1 grid grid-cols-2 overflow-hidden">
                         <div className="overflow-hidden bg-gray-100 flex flex-col px-4 pt-4">
                             <div className="text-center text-2xl mb-4">

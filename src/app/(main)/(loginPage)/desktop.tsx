@@ -11,15 +11,17 @@ export default function Desktop() {
     const router = useRouter();
 
     const login = async () => {
-        const res = await POST('/api/user/login', {
+        await POST('/api/user/login', {
             login_id: document.getElementById("id").value,
             pw: document.getElementById("password").value
+        }).then(res => {
+            if (res.success) {
+                console.log(res);
+                // router.replace('/home');
+            } else {
+                setError({message: res.message, color: "text-red-600"});
+            }
         })
-        if (res.success) {
-            router.push('/home');
-        } else {
-            setError({message: res.message, color: "text-red-600"});
-        }
     }
 
     const register = async () => {
