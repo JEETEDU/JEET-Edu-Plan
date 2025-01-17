@@ -34,7 +34,7 @@ import {ArticleCategory} from "@/app/(others)/api/board/tools";
  *             properties:
  *               article:
  *                 type: object
- *                 description: JSON string containing article information. class_id, title, content is required. <br> Category <br><li> 0 - Normal <li> 1 - Homework <li> 2 - Question <li> 3 - Data
+ *                 description: JSON string containing article information. class_id, title, content is required. <br> Category <br><li> 0 - Normal <li> 1 - Homework(Cannot use in this endpoints. Use the homework endpoints) <li> 2 - Question <li> 3 - Data
  *                 properties:
  *                   class_id:
  *                     type: number
