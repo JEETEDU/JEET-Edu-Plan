@@ -52,7 +52,7 @@ export default function Navigation() {
                         </span>
                         </Link>
                     </div>
-                    <Alert path={path}/>
+                    <Alert path={path} isMobile={false}/>
                 </div>
             </nav>
         </div>
