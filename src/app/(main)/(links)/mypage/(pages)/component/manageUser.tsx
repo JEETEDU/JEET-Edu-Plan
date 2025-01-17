@@ -4,14 +4,12 @@ import React, {useEffect, useState} from "react";
 import {DELETE, POST} from "@/app/(main)/components/functions";
 
 export interface CManageUser {
-    uid: number,
-    refresh: (refreshHead?: boolean) => void;
+    uid: number
 }
 
 export default function ManageUser(
     {
-        uid,
-        refresh
+        uid
     }: CManageUser,
 ) {
     const [message, setMessage] = useState<[string, string]>(["", ""]);
