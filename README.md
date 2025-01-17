@@ -1,6 +1,15 @@
 # for students' MIRACLE-MORNING
 <div><img src="https://wakapi.hegelty.me/api/badge/hegelty/interval:any/project:miracle-morning"/></div>
 
+---
+## Kill Port (in Window)
+```bash
+   netstat -a -o
+   taskkill /f /pid [PID]
+```
+
+---
+
 ## File Setting (editting...)
 
 ```bash
