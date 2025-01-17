@@ -121,7 +121,7 @@ export function IsStudent(
                 )}>
                     오늘의 질문 목록 {!isMobile && `(${date.toLocaleDateString()})`}
                 </div>
-                {(answered && today.getDate() === date.getDate()) && (
+                {(answered && today.getDate() === date.getDate() && questionOK) && (
                     <div className="flex items-center gap-4">
                         <div className="font-bold text-red-600 items-center">
                             {error}
@@ -202,7 +202,7 @@ export function IsStudent(
                                                         {'bg-white': editAnswer}
                                                     )}
                                                     cacheMeasurements
-                                                    value={a as string}
+                                                    value={a || ""}
                                                     onChange={(e) => {
                                                         setAList((prev) => {
                                                             const _arr = [...prev];
@@ -271,11 +271,11 @@ export function IsAdmin(
 
     useEffect(() => {
         (async () => {
-            const users = (await getStoreData('/api/admin/user/list?user_type=1&order_by=name&order=ASC&limit=10', 'user-list-student')).response.users;
+            const users = (await getStoreData('/api/admin/user?user_type=1&order_by=name&order=ASC&limit=10', 'user-list-student')).response.users;
             setUserList(users);
             setHead(users[0].uid);
 
-            const newUsers = (await getStoreData('/api/admin/user/list?user_type=0&order_by=name&order=ASC', 'user-list-student-new')).response.users;
+            const newUsers = (await getStoreData('/api/admin/user?user_type=0&order_by=name&order=ASC', 'user-list-student-new')).response.users;
             setNewUserList(newUsers.map((u) => {
                 return {
                     ...u,
@@ -345,7 +345,7 @@ export function IsAdmin(
             }
         }, "order_by=name&order=ASC");
         (async () => {
-            const users = (await getStoreData(`/api/admin/user/list?${_param}`, 'user-list-student', true)).response.users;
+            const users = (await getStoreData(`/api/admin/user?${_param}`, 'user-list-student', true)).response.users;
             setUserList(users);
             if (refreshHead && users[0]) {
                 setHead(users[0].uid);
@@ -355,7 +355,7 @@ export function IsAdmin(
 
     const refreshNewUser = () => {
         (async () => {
-            const newUsers = (await getStoreData('/api/admin/user/list?user_type=0&order_by=name&order=ASC', 'user-list-student-new', true)).response.users;
+            const newUsers = (await getStoreData('/api/admin/user?user_type=0&order_by=name&order=ASC', 'user-list-student-new', true)).response.users;
             setNewUserList(newUsers.map((u) => {
                 return {...u, accept: false}
             }));

@@ -38,7 +38,7 @@ export default function UserInfo(
     }
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col w-full gap-4">
             <div className="flex items-center w-full justify-between">
                 <div className="text-2xl text-gray-800 font-semibold">
                     유저 정보
