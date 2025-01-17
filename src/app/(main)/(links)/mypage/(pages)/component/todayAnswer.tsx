@@ -11,14 +11,14 @@ export interface CTodayAnswer {
 
 export function TodayAnswer({date, uid}: CTodayAnswer) {
 
-    const _a = [
-        "answer_1",
-        "answer_2",
-        "answer_3",
-        "answer_lastday",
-        "answer_school",
-        "answer_academy",
-    ]
+    // const _a = [
+    //     "answer_1",
+    //     "answer_2",
+    //     "answer_3",
+    //     "answer_lastday",
+    //     "answer_school",
+    //     "answer_academy",
+    // ]
 
     // const today = new Date();
     // const params = `date=${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
@@ -31,7 +31,7 @@ export function TodayAnswer({date, uid}: CTodayAnswer) {
         wakeup?: string;
     }
 
-    const [sleep, setSleep] = useState<ITodaySleep>();
+    const [sleep, setSleep] = useState<ITodaySleep>({});
 
     interface ITodayAnswer {
         answer_1?: string;
@@ -42,7 +42,7 @@ export function TodayAnswer({date, uid}: CTodayAnswer) {
         answer_school?: string;
     }
 
-    const [answer, setAnswer] = useState<ITodayAnswer>();
+    const [answer, setAnswer] = useState<ITodayAnswer>({});
 
     interface ITodayQuestion {
         question_1?: string;
@@ -73,7 +73,7 @@ export function TodayAnswer({date, uid}: CTodayAnswer) {
                         answers: ITodayAnswer;
                     },
                 ];
-                question: ITodayQuestion;
+                questions: ITodayQuestion;
             }
 
             const response: IResponse = await fetch(`/api/admin/today/response?${param}`, {
@@ -86,43 +86,39 @@ export function TodayAnswer({date, uid}: CTodayAnswer) {
                 }
             )
 
+            console.log('res', response)
+
             if (response.success) {
                 if (response.responses[0]) {
-                    setAnswer(response.responses[0].answers);
-                    setSleep(response.responses[0].sleep);
+                    setAnswer(response.responses[0].answers || {});
+                    setSleep(response.responses[0].sleep || {});
+                } else {
+                    setAnswer({});
+                    setSleep({});
                 }
                 setQuestion((prev) => {
                     return {
                         ...prev,
-                        ...response.question,
+                        ...response.questions,
                     }
+                })
+            } else {
+                setAnswer({});
+                setSleep({});
+                setQuestion({
+                    question_lastday: "어젯밤 공부한 내용은?",
+                    question_academy: "오늘의 학원 과제는?",
+                    question_school: "오늘의 학교 과제는?",
                 })
             }
         })();
     }, [date, uid,])
 
-    // return (
-    //     <div className="flex flex-col space-y-4">
-    //         <div>
-    //             {date.toLocaleDateString()} - {uid}
-    //         </div>
-    //         <div>
-    //             sleep: {JSON.stringify(sleep)}
-    //         </div>
-    //         <div>
-    //             answer: {JSON.stringify(answer)}
-    //         </div>
-    //         <div>
-    //             question: {JSON.stringify(question)}
-    //         </div>
-    //     </div>
-    // );
-
     return (
         <div className="flex flex-col justify-between gap-4">
             <div className="flex items-center w-full justify-between">
                 <div className="text-2xl text-gray-800 font-semibold">
-                    오늘의 질문 응답 ({date.toLocaleDateString()})
+                    오늘의 질문 응답 ({date.toLocaleDateString()}) [{uid}]
                 </div>
                 {/*<div className="flex items-center text-lg text-red-700 font-bold">*/}
                 {/*    {error}*/}
@@ -157,19 +153,21 @@ export function TodayAnswer({date, uid}: CTodayAnswer) {
                             'school',
                             'academy'
                         ].map((key, i) => {
-                            return (
-                                <div key={i}>
-                                    <label htmlFor="name" className="component-button-info">
-                                        {question[`question_${key}`]}
-                                    </label>
-                                    <TextareaAutosize
-                                        readOnly
-                                        className="component-input resize-none"
-                                        cacheMeasurements
-                                        value={answer[`answer_${key}`] || "아직 응답하지 않았습니다."}
-                                    />
-                                </div>
-                            )
+                            if (question[`question_${key}`] !== null) {
+                                return (
+                                    <div key={i}>
+                                        <label htmlFor="name" className="component-button-info">
+                                            {question[`question_${key}`]}
+                                        </label>
+                                        <TextareaAutosize
+                                            readOnly
+                                            className="component-input resize-none"
+                                            cacheMeasurements
+                                            value={answer[`answer_${key}`] || "아직 응답하지 않았습니다."}
+                                        />
+                                    </div>
+                                )
+                            }
                         })
                     }
                 </div>
