@@ -67,23 +67,23 @@ export default function ManageUser(
                     <div className="flex items-center text-lg text-green-700 font-bold">
                         {message[0]}
                     </div>
-                    <div
+                    <button
                         className="px-3 py-1 bg-blue-500 text-white text-md font-bold rounded hover:bg-blue-600"
                         onClick={resetPassword}
                     >
                         비밀번호 리셋
-                    </div>
+                    </button>
                 </div>
                 <div className="flex items-center w-full justify-end gap-4">
                     <div className="flex items-center text-lg text-green-700 font-bold">
                         {message[1]}
                     </div>
-                    <div
+                    <button
                         className="px-3 py-1 bg-red-500 text-white text-md font-bold rounded hover:bg-red-600"
                         onClick={deleteUser}
                     >
                         유저 삭제
-                    </div>
+                    </button>
                 </div>
             </div>
         </div>

@@ -3,13 +3,11 @@
 import Link from "next/link";
 import {cn} from "@/app/(main)/components/functions";
 import {usePathname} from "next/navigation";
-import React, {useState} from "react";
-import {TodayQuestion} from "@/app/(main)/components/common";
+import React from "react";
+import {Alert, TodayQuestion} from "@/app/(main)/components/common";
 
 export default function Navigation() {
     const path = usePathname();
-    const [isModalOpen, setModalOpen] = useState(false);
-    const toggleModal = () => setModalOpen((prev) => !prev);
 
     return (
         <div className='nav'>
@@ -31,56 +29,31 @@ export default function Navigation() {
                     강제 새로고침
                 </button>
                 {/* 네비게이션 링크 */}
-                <div className="flex w-1/3 justify-around items-center min-w-fit">
-                    <Link href={"/home"} className="nav-item">
+                <div className="flex items-center space-x-4 w-1/3 justify-between">
+                    <div className="flex flex-1 justify-between items-center min-w-fit">
+                        <Link href={"/home"} className="nav-item">
                         <span className={cn("_nav-item", {"bg-white": path === '/home'})}>
                             공지사항
                         </span>
-                    </Link>
-                    <Link href={"/classroom"} className="nav-item">
+                        </Link>
+                        <Link href={"/classroom"} className="nav-item">
                         <span className={cn("_nav-item", {"bg-white": path === '/classroom'})}>
                             게시판
                         </span>
-                    </Link>
-                    <Link href={"/timeTable"} className="nav-item">
+                        </Link>
+                        <Link href={"/timeTable"} className="nav-item">
                         <span className={cn("_nav-item", {"bg-white": path === '/timeTable'})}>
                             시간표
                         </span>
-                    </Link>
-                    <Link href={"/mypage"} className="nav-item">
+                        </Link>
+                        <Link href={"/mypage"} className="nav-item">
                         <span className={cn("_nav-item", {"bg-white": path === '/mypage'})}>
                             프로필
                         </span>
-                    </Link>
-                    <div className="ml-2">
-                        <div onClick={toggleModal} className={cn("i-system-uicons-bell", {"invisible": (path === '/')})}/>
-                        {/* If there exist unread notice, "i-system-uicons-bell-ringing"   */}
+                        </Link>
                     </div>
+                    <Alert path={path}/>
                 </div>
-
-                {isModalOpen && (
-                    <div
-                        className="fixed inset-0 bg-black/50 flex items-center justify-center z-10"
-                        onClick={toggleModal} // 모달 바깥 클릭 시 닫힘
-                    >
-                        <div
-                            className="bg-white rounded-lg shadow-lg p-6 w-96"
-                            onClick={(e) => e.stopPropagation()} // 모달 내부 클릭 시 닫히지 않도록 방지
-                        >
-                            <h2 className="text-xl font-bold mb-4">알림</h2>
-                            <ul>
-                                <li>읽지 않은 알림이 없습니다.</li>
-                            </ul>
-                            <button
-                                onClick={toggleModal}
-                                className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
-                            >
-                                닫기
-                            </button>
-                        </div>
-                    </div>
-                )}
-
             </nav>
         </div>
     );
