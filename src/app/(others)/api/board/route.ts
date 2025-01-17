@@ -14,13 +14,15 @@ import {
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
 import {QueryBuilder} from "drizzle-orm/mysql-core";
 import {delete_files, save_files, SavedFileList, update_files} from "@/app/(others)/api/(tools)/files";
+import {AlertType, register_alert, register_alert_for_class} from "@/app/(others)/api/(tools)/alerts";
+import {ArticleCategory} from "@/app/(others)/api/board/tools";
 
 /**
  * @swagger
  * /api/board:
  *   post:
  *     summary: Create a new article in the system
- *     description: Validates the user's token, processes form data, and creates a new article for the specified class and subject.
+ *     description: Validates the user's token, processes form data, and creates a new article for the specified class and subject. You cannot create a homework article using this endpoint. Use the homework endpoint instead.
  *     tags:
  *       - Board
  *     requestBody:
@@ -32,7 +34,7 @@ import {delete_files, save_files, SavedFileList, update_files} from "@/app/(othe
  *             properties:
  *               article:
  *                 type: object
- *                 description: JSON string containing article information. class_id, title, content is required. <br> Category(예시, 추후 수정예정) <br><li> 0 - None <li> 1 - Question <li> 2 - Notice <li> 3 - Homework
+ *                 description: JSON string containing article information. class_id, title, content is required. <br> Category <br><li> 0 - Normal <li> 1 - Homework <li> 2 - Question <li> 3 - Data
  *                 properties:
  *                   class_id:
  *                     type: number
@@ -117,6 +119,8 @@ export async function POST(req: NextRequest) {
             if (Number.isNaN(is_notice) || is_notice !== 1 && is_notice !== 0) return return_400("is_notice is required(0 or 1)");
             if (is_notice === 1 && user_type < UserType.TEACHER) return return_permission_denied();
             if (Number.isNaN(category)) return return_400("category is required");
+            if (ArticleCategory[category] === undefined) return return_400("Invalid category");
+            if (category === ArticleCategory.HOMEWORK) return return_400("Cannot create homework article");
             if (Number.isNaN(subject_id)) return return_400("subject_id is required(number)");
 
             let [class_] =
@@ -161,9 +165,27 @@ export async function POST(req: NextRequest) {
                 }
             ).$returningId();
 
+            if (category === ArticleCategory.QUESTION && subject_id) {
+                let [subject_] =
+                    await tx.select({
+                        teacher_id: schema.teacherClasses.user_id
+                    })
+                        .from(schema.teacherClasses)
+                        .where(and(
+                            eq(schema.teacherClasses.subject_id, subject_id),
+                            eq(schema.teacherClasses.class_id, class_id)
+                        ))
+                if (!subject_.teacher_id) return return_400("Teacher not found");
+                await register_alert(tx, subject_.teacher_id, `새 질문이 등록되었습니다.\n${title}`, AlertType.NORMAL, article_id.id);
+            }
+
+            if (is_notice === 1) {
+                await register_alert_for_class(tx, class_id, `새 공지사항이 등록되었습니다.\n${title}`, AlertType.NOTICE, article_id.id);
+            }
+
             return NextResponse.json({
                 success: true,
-                article_id: article_id
+                article_id: article_id.id
             });
         });
     } catch (e) {
@@ -178,7 +200,7 @@ export async function POST(req: NextRequest) {
  * /api/board:
  *   patch:
  *     summary: Update an existing article
- *     description: Updates an existing article with new information. Only the user who created the article or a teacher can update it.
+ *     description: Updates an existing article with new information. Only the user who created the article or a teacher can update it. You cannot update homework articles. If you want to update homework articles, you must use the homework API.
  *     tags:
  *       - Board
  *     requestBody:
@@ -279,6 +301,8 @@ export async function PATCH(req: NextRequest) {
             if (Number.isNaN(is_notice) || is_notice !== 1 && is_notice !== 0 && is_notice !== -1) return return_400("is_notice should be 0 or 1");
             if (is_notice === 1 && user_type < UserType.TEACHER) return return_permission_denied();
             if (Number.isNaN(category)) return return_400("category should be a number");
+            if (ArticleCategory[category] === undefined) return return_400("Invalid category");
+            if (category === ArticleCategory.HOMEWORK) return return_400("Cannot update into homework category");
             if (Number.isNaN(subject_id)) return return_400("subject_id should be a number");
 
             let [article_] =
@@ -287,6 +311,7 @@ export async function PATCH(req: NextRequest) {
                     .where(eq(schema.boards.id, article_id));
             if (!article_) return return_400("Article not found");
             if (article_.user_id !== user_id && user_type < UserType.TEACHER) return return_permission_denied();
+            if (article_.category === ArticleCategory.HOMEWORK) return return_400("Cannot update homework article");
 
             let update_data: any = {}
             if (title) update_data['title'] = title;
@@ -296,15 +321,24 @@ export async function PATCH(req: NextRequest) {
             if (subject_id !== -1) {
                 console.log(article_.class_id);
                 let [subject_] =
-                    await tx.select()
+                    await tx.select({
+                        subject_id: schema.subjects.id,
+                        teacher_id: schema.teacherClasses.user_id
+                    })
                         .from(schema.subjects)
+                        .leftJoin(
+                            schema.teacherClasses,
+                            eq(schema.teacherClasses.subject_id, schema.subjects.id)
+                        )
                         .where(and(
                             eq(schema.subjects.id, subject_id),
                             eq(schema.subjects.class_id, article_.class_id)
                         ))
                 if (!subject_) return return_400("Subject not found");
                 update_data['subject_id'] = subject_id;
-                // TODO: alert를 새로 만들어야 하는지 확인
+                if(category === ArticleCategory.QUESTION && subject_.teacher_id) {
+                    await register_alert(tx, subject_.teacher_id, `새 질문이 등록되었습니다.\n${title}`, AlertType.NORMAL, article_id);
+                }
             }
             let files_path: SavedFileList = await update_files(tx, files, JSON.parse(article_.attach_files?.toString() ?? '[]'), attach_files);
             if (files_path.length > 0) update_data['attach_files'] = files_path;
@@ -328,7 +362,7 @@ export async function PATCH(req: NextRequest) {
  * /api/board:
  *   delete:
  *     summary: Delete an existing article
- *     description: Deletes an existing article. Only the user who created the article or a teacher can delete it.
+ *     description: Deletes an existing article. Only the user who created the article or a teacher can delete it. You cannot delete homework articles. If you want to delete a homework article, use the homework API.
  *     tags:
  *       - Board
  *     requestBody:
@@ -384,6 +418,7 @@ export async function DELETE(req: NextRequest) {
                     .where(eq(schema.boards.id, article_id))
             if (!article) return return_400("Article not found");
             if (article.user_id !== user_id && user_type < UserType.TEACHER) return return_permission_denied();
+            if (article.category === ArticleCategory.HOMEWORK) return return_400("Cannot delete homework article");
             await delete_files(tx, JSON.parse(article.attach_files?.toString() ?? '[]'));
 
             await tx.delete(schema.boards)
