@@ -60,7 +60,7 @@ export async function PUT(url: string, body: object) {
     )
 }
 
-export async function DELETE(url: string, body: object) {
+export async function DELETE(url: string, body?: object) {
     return await fetch(url, {
         method: 'DELETE',
         body: JSON.stringify(body),

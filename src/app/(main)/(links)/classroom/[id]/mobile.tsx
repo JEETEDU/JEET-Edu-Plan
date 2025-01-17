@@ -53,9 +53,9 @@ export default function Chatting({id}: { id: number }) {
                         {classInfo.name || ""}
                     </h2>
                     <div className="flex gap-1 w-fit">
-                        <div className="i-system-uicons-scale" onClick={() => setScreen(1)}/>
-                        <div className="i-system-uicons-scale-contract" onClick={() => setScreen(0)}/>
-                        <div className="i-system-uicons-scale-extend" onClick={() => setScreen(2)}/>
+                        <button className="i-system-uicons-scale" onClick={() => setScreen(1)}/>
+                        <button className="i-system-uicons-scale-contract" onClick={() => setScreen(0)}/>
+                        <button className="i-system-uicons-scale-extend" onClick={() => setScreen(2)}/>
                     </div>
                 </div>
                 {(screen > 0) && (<>
@@ -124,12 +124,12 @@ export default function Chatting({id}: { id: number }) {
                             placeholder="댓글을 입력해 주세요"
                             id={"comment-contents"}
                         />
-                        <div
+                        <button
                             className="h-full bg-blue-300 rounded-lg content-center hover:bg-blue-500"
                             onClick={addComment}
                         >
                             <div className="i-system-uicons-arrow-up-circle text-xl m-1"/>
-                        </div>
+                        </button>
                     </div>
                 </>
             )}

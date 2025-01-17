@@ -121,12 +121,12 @@ export default function Mobile() {
                             <div className='text-red-600 font-bold'>
                                 {error}
                             </div>
-                            <div
+                            <button
                                 className="component-button"
                                 onClick={isLogin ? login : register}
                             >
                                 {isLogin ? "로그인" : "회원가입"}
-                            </div>
+                            </button>
                         </div>
                     </form>
                 </div>

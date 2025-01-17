@@ -68,7 +68,7 @@ export default function Desktop() {
                         >
                             <div className="p-2 space-y-2">
                                 {notifications.map((notification, index) => (
-                                    <div
+                                    <button
                                         key={index}
                                         className="block w-full"
                                         onClick={() => setHead(index)}
@@ -79,7 +79,7 @@ export default function Desktop() {
                                         )}>
                                             {notification}
                                         </div>
-                                    </div>
+                                    </button>
                                 ))}
                             </div>
                         </Scrollbars>

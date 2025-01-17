@@ -141,7 +141,7 @@ export default function Desktop() {
                             <div className={cn('font-bold', error.color)}>
                                 {error.message}
                             </div>
-                            <div
+                            <button
                                 className="component-button"
                                 onClick={
                                     isLogin ? (
@@ -158,7 +158,7 @@ export default function Desktop() {
                                 }
                             >
                                 {isLogin ? "로그인" : "회원가입"}
-                            </div>
+                            </button>
                         </div>
                     </form>
                 </div>
