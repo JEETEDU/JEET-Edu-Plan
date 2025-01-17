@@ -8,6 +8,9 @@ import Select from "react-select";
 import Scrollbars from "react-custom-scrollbars-2";
 
 export function Alert({path, isMobile}: { path: string, isMobile: boolean }) {
+    if (path === "/") {
+        return <></>
+    }
     const [isModalOpen, setModalOpen] = useState<boolean>(false);
     const toggleModal = () => setModalOpen((prev) => !prev);
     const [getOnlyUnread, setGetOnlyUnread] = useState<boolean>(true);
