@@ -196,6 +196,7 @@ export async function GET(req: NextRequest, { params }: { params: { article_id: 
                 create_time: article.create_time,
                 update_time: article.update_time,
                 attach_files_exist: article.attach_files_exist,
+                attach_files: article.attach_files,
                 category: article.category,
                 notice: article.notice,
                 due_date: article.due_date,
