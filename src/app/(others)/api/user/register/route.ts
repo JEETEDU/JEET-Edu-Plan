@@ -12,7 +12,7 @@ import {return_400, return_500} from "@/app/(others)/api/(tools)/tools";
  * /api/user/register:
  *  post:
  *      tags:
- *          - User
+ *          - User/Account
  *      description: Register a new user
  *      requestBody:
  *          required: true

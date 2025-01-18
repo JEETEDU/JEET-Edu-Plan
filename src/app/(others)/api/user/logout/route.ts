@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
  * /api/user/logout:
  *  post:
  *      tags:
- *          - User
+ *          - User/Account
  *      description: Logout
  *      responses:
  *          "200":

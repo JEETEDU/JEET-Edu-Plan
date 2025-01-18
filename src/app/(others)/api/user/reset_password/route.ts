@@ -19,7 +19,7 @@ import crypto from "crypto";
  *     summary: Reset the password for a user
  *     description: Changes the password of the logged-in user after validating the provided new password.
  *     tags:
- *       - User
+ *       - User/Account
  *     requestBody:
  *       required: true
  *       content:
