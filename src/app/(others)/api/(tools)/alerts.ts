@@ -30,10 +30,11 @@ export async function register_alert(tx: TX, user_id: number | [number], message
 
 export async function register_alert_for_class(tx: TX, class_id: number, message: string, alert_type: number = 0, article_id: number | null = null): Promise<void> {
     let users = await tx.select({
-        user_id: schema.studentClasses.class_id,
+        user_id: schema.studentClasses.user_id,
     })
         .from(schema.studentClasses)
         .where(eq(schema.studentClasses.class_id, class_id));
+    console.log(users);
     // @ts-ignore
     await register_alert(tx, users.map((u) => u.user_id), message, alert_type, article_id);
 }
