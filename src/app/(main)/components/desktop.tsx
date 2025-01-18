@@ -36,8 +36,8 @@ export default function Navigation() {
                             공지사항
                         </span>
                         </Link>
-                        <Link href={"/classroom"} className="nav-item">
-                        <span className={cn("_nav-item", {"bg-white": path === '/classroom'})}>
+                        <Link href={"/board"} className="nav-item">
+                        <span className={cn("_nav-item", {"bg-white": path === '/board'})}>
                             게시판
                         </span>
                         </Link>
