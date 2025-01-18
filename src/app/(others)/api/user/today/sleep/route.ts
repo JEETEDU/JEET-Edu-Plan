@@ -6,10 +6,11 @@ import {NextResponse} from "next/server";
 import {eq, and, sql, count} from "drizzle-orm";
 import {DecodedToken, generateToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
 import {
+    parseTime,
     return_400,
     return_500,
     return_not_logged_in,
-    return_permission_denied, to_time_string,
+    return_permission_denied, to_time_string, todayString,
     UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {QueryBuilder} from "drizzle-orm/mysql-core";
@@ -32,11 +33,11 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
  *                          sleep_time:
  *                              type: string
  *                              description: User's sleep time
- *                              example: "23:00"
+ *                              example: "2025-01-01T23:00:00.000Z"
  *                          wakeup_time:
  *                              type: string
  *                              description: User's wakeup time
- *                              example: "07:00"
+ *                              example: "2025-01-02T07:00:00.000Z"
  *                      required:
  *                          - sleep_time
  *                          - wakeup_time
@@ -103,10 +104,8 @@ export async function PUT(req: NextRequest) {
                 return return_400("Invalid time format");
             }
 
-            let sleep_datetime = new Date();
-            let wake_datetime = new Date();
-            sleep_datetime.setHours(parseInt(sleep_time.split(":")[0]), parseInt(sleep_time.split(":")[1]), 0, 0);
-            wake_datetime.setHours(parseInt(wakeup_time.split(":")[0]), parseInt(wakeup_time.split(":")[1]), 0, 0);
+            let sleep_datetime = parseTime(sleep_time);
+            let wake_datetime = parseTime(wakeup_time);
 
             if (sleep_datetime > wake_datetime) {
                 sleep_datetime.setDate(sleep_datetime.getDate() - 1);
@@ -119,7 +118,8 @@ export async function PUT(req: NextRequest) {
                 .from(schema.sleeps)
                 .where(and(
                     eq(schema.sleeps.user_id, user_id),
-                    eq(schema.sleeps.date, sql`CURDATE()`)
+                    // @ts-ignore
+                    eq(schema.sleeps.date, todayString())
                 ));
             if (sleep_info.count != 0) {
                 await tx.update(schema.sleeps)
@@ -129,7 +129,8 @@ export async function PUT(req: NextRequest) {
                     })
                     .where(and(
                         eq(schema.sleeps.user_id, user_id),
-                        eq(schema.sleeps.date, sql`CURDATE()`)
+                        // @ts-ignore
+                        eq(schema.sleeps.date, todayString())
                     ));
                 return NextResponse.json({
                     success: true,
@@ -251,7 +252,8 @@ export async function GET(req: NextRequest) {
         }
         else query = query.where(and(
             eq(schema.sleeps.user_id, user_id),
-            eq(schema.sleeps.date, sql`CURDATE()`)
+            // @ts-ignore
+            eq(schema.sleeps.date, todayString())
         ));
 
         let [sleep_info] = await db.execute(query);
@@ -266,8 +268,8 @@ export async function GET(req: NextRequest) {
             // @ts-ignore
             sleep_info: sleep_info.map((info: any) => {
                 return {
-                    sleep: to_time_string(new Date(info.sleep)),
-                    wakeup: to_time_string(new Date(info.wakeup))
+                    sleep: new Date(info.sleep),
+                    wakeup: new Date(info.wakeup)
                 };
             })
         }, {status: 200});

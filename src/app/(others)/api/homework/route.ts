@@ -143,13 +143,14 @@ export async function POST(req: NextRequest) {
 
             let files_path: SavedFileList = await save_files(tx, files);
 
+            // @ts-ignore
             let [article_id] = await tx.insert(schema.boards).values({
                     class_id: class_id,
                     user_id: user_id,
                     title: title,
                     content: content,
                     category: category,
-                    due_date: due_date ? new Date(due_date) : null,
+                    due_date: due_date ?? null,
                     notice: is_notice,
                     subject_id: subject_id === 0 ? null : subject_id,
                     comment_count: 0,
@@ -162,10 +163,11 @@ export async function POST(req: NextRequest) {
             })
                 .from(schema.studentClasses)
                 .where(eq(schema.studentClasses.class_id, class_id));
+            // @ts-ignore
             await tx.insert(schema.homeworks).values(users.map((u) => ({
                 article_id: article_id.id,
                 user_id: u.user_id,
-                due_date: due_date ? new Date(due_date) : null,
+                due_date: due_date ?? null,
                 done: 0,
                 class_id: class_id,
                 title: title,
@@ -290,7 +292,7 @@ export async function PATCH(req: NextRequest) {
             let update_data: any = {}
             if (title) update_data['title'] = title;
             if (content) update_data['content'] = content;
-            if (due_date) update_data['due_date'] = new Date(due_date);
+            if (due_date) update_data['due_date'] = due_date;
 
             let files_path: SavedFileList = await update_files(tx, files, JSON.parse(article_.attach_files?.toString() ?? '[]'), attach_files);
             if (files_path.length > 0) update_data['attach_files'] = files_path;
@@ -308,7 +310,7 @@ export async function PATCH(req: NextRequest) {
 
             let update_data_homework: any = {}
             if (title) update_data_homework['title'] = title;
-            if (due_date) update_data_homework['due_date'] = new Date(due_date);
+            if (due_date) update_data_homework['due_date'] = due_date;
             await tx.update(schema.homeworks)
                 .set(update_data_homework)
                 .where(eq(schema.homeworks.article_id, article_id));
@@ -329,6 +331,8 @@ export async function PATCH(req: NextRequest) {
  *     description: <b>Teacher</b><br>Deletes an article by ID. This will also delete all associated comments and files.
  *     tags:
  *       - Homework
+ *     security:
+ *       - cookieAuth: []
  *     parameters:
  *       - in: query
  *         name: article_id

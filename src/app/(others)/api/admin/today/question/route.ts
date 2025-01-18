@@ -7,7 +7,7 @@ import {
     db_log,
     return_400, return_500,
     return_not_logged_in,
-    return_permission_denied, to_date_string,
+    return_permission_denied, to_date_string, todayString,
     UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
@@ -132,7 +132,7 @@ export async function PUT(req: NextRequest) {
                 return return_400('Invalid date format');
             }
         }
-        else date = sql`CURDATE()`;
+        else date = todayString();
 
         let [today_question] = await db.select({
             count: count()
@@ -297,7 +297,7 @@ export async function GET(req: NextRequest) {
             .from(schema.todayQuestions)
             .where(
                 // @ts-ignore
-                eq(schema.todayQuestions.date, date ? date : sql`CURDATE()`)
+                eq(schema.todayQuestions.date, date ? date : todayString())
             );
         if (!today_questions) {
             return NextResponse.json({
@@ -309,7 +309,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({
             success: true,
             today_questions: {
-                date: date ? date : to_date_string(new Date()),
+                date: date ? date : todayString(),
                 question_1: today_questions.question_1,
                 question_2: today_questions.question_2,
                 question_3: today_questions.question_3
