@@ -89,8 +89,12 @@ export async function loadArticleInfo(id: number) {
         comments: IComment[];
     }
 
-    const response: IResponseArticleInfo = await GET(`/api/board/${id}`);
-    console.log(response);
+    const response: IResponseArticleInfo = await fetch(`/api/board/${id}`, {
+        method: 'GET',
+    }).then(r => r.json()).then(r => {
+        return r;
+    });
+
     if (response.success) {
         return {
             article: response.article,

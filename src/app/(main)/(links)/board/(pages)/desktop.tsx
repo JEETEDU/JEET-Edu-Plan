@@ -13,6 +13,7 @@ import {Category, Subject} from "@/app/(main)/(links)/home/(pages)/desktop";
 export default function Desktop() {
     const [head, setHead] = useState<number>(0);
     const [userType, setUserType] = useState(0);
+    const [uid, setUid] = useState<number>(0);
 
     const [articles, setArticles] = useState<IArticle[]>([]);
 
@@ -34,6 +35,7 @@ export default function Desktop() {
         (async () => {
             const userInfo = (await getStoreData('/api/user/info', 'user-info')).response.user;
             setUserType(userInfo.user_type);
+            setUid(userInfo.uid);
 
             if (userInfo.user_type === 1) {
                 const classList = (await getStoreData("/api/user/class", 'class-list')).response.classes;
@@ -73,7 +75,7 @@ export default function Desktop() {
                 <div className="grid grid-cols-3 overflow-hidden flex-grow"> {/* hear */}
                     <div className="col-span-2 flex flex-col">
                         <div className="flex-grow w-full">
-                            {(head !== 0) && <Chatting id={head}/>}
+                            {(head !== 0) && <Chatting id={head} uid={uid}/>}
                             {(head === 0) && (
                                 <div className="w-full h-full bg-gray-100 flex justify-center items-center text-xl font-bold text-gray-700">
                                     게시글을 선택해 주세요

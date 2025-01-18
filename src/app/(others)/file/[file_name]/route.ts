@@ -40,17 +40,17 @@ import {eq} from "drizzle-orm";
  */
 export async function GET(req: NextRequest, { params }: { params: { file_name: string } }) {
     const token = req.cookies.get("token")?.value ?? '';
-    let decoded: DecodedToken | false = verifyToken(token);
+    const decoded: DecodedToken | false = verifyToken(token);
     if (!decoded) return return_not_logged_in();
 
     let file_id = (await params).file_name;
 
-    let file_path = 'uploads/files/' + file_id;
-    let file_ext = file_id.split('.').pop();
+    const file_path = 'uploads/files/' + file_id;
+    const file_ext = file_id.split('.').pop();
     file_id = file_id.split('.').shift() ?? '';
     if (!fs.existsSync(file_path)) return return_404("file not found");
     console.log(file_id);
-    let [file_name] =
+    const [file_name] =
         await db.select()
             .from(schema.file)
             .where(eq(schema.file.id, file_id));
