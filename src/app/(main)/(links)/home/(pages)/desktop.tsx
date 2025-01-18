@@ -1,58 +1,46 @@
 "use client";
 
 import React, {useEffect, useState} from "react";
-import {cn, GET} from "@/app/(main)/components/functions";
+import {cn, DELETE, GET} from "@/app/(main)/components/functions";
 import Link from "next/link";
 import Scrollbars from "react-custom-scrollbars-2";
 import Select from "react-select";
+import {IArticle, initArticle, loadArticle} from "@/app/(main)/(links)/board/component";
 
+export function Category({category}: { category: number }) {
+    const text = [
+        "일반",
+        "숙제",
+        "질문",
+        "Data"
+    ]
+    const color = [
+        "bg-green-500 text-white border-green-500",
+        "bg-red-500 text-white border-red-500",
+        "bg-blue-500 text-white border-blue-500",
+        "bg-black text-white border-black",
+    ]
+    return (
+        <div className={cn("p-1 rounded border-2 font-bold", color[category])}>
+            {text[category]}
+        </div>
+    );
+}
+
+export function Subject({subject}: { subject: string | null }) {
+    if (subject) return (
+        <div className="flex flex-col border-2 border-green p-1 rounded justify-center items-end text-black">
+            {subject}
+        </div>
+    );
+}
 
 export default function Desktop() {
     const [isInfo, setIsInfo] = useState(true);
     const [isTeacher, setIsTeacher] = useState(true);
 
-    interface IArticle {
-        id: number;
-        title: string;
-        content: string;
-        create_time: string;
-        update_time: string;
-        attach_files_exist: number;
-        category: number;
-        notice: number;
-        due_date: string | null;
-        comment_count: number;
-        user: {
-            id: number;
-            name: string;
-        },
-        subject: {
-            id: number | null;
-            name: string | null;
-        }
-    }
-
     const [articles, setArticles] = useState<IArticle[]>([]);
-    const initArticle: IArticle = {
-        attach_files_exist: 0,
-        category: 0,
-        comment_count: 0,
-        content: "",
-        create_time: "",
-        due_date: null,
-        id: 0,
-        notice: 0,
-        subject: {
-            id: null,
-            name: null
-        },
-        title: "",
-        update_time: "",
-        user: {
-            id: 0,
-            name: ""
-        }
-    }
+
     const [selectedArticle, setSelectedArticle] = useState<IArticle>(initArticle);
 
     interface IClass {
@@ -62,7 +50,7 @@ export default function Desktop() {
     }
 
     const [classes, setClasses] = useState<IClass[]>([]);
-    const [selectedClass, setSelectedClass] = useState<string>("");
+    const [selectedClass, setSelectedClass] = useState<string>(".반을 선택해 주세요");
 
     useEffect(() => {
         interface IResponseClasses {
@@ -78,48 +66,39 @@ export default function Desktop() {
         })();
     }, [])
 
-    useEffect(() => {
-        interface IResponseArticles {
-            success: boolean;
-            articles: IArticle[];
-        }
 
+    useEffect(() => {
         (async () => {
-            if (selectedClass) {
-                const resArticle: IResponseArticles = await GET(`/api/board?class_id=${selectedClass.split('/')[0]}`);
-                if (resArticle.success) {
-                    setArticles(resArticle.articles);
-                }
-                setSelectedArticle(initArticle);
-            }
+            setArticles(await loadArticle(selectedClass));
         })();
+        setSelectedArticle(initArticle);
     }, [selectedClass]);
 
-    const todo = [
-        {title: "할 일 목록은 만들기 귀찮아요", done: true, due: "12/31"},
-    ];
-
-    const headNotification = {
-        content: "1월 10일에 겨울학기가 시작합니다.",
-    };
-
-    function Category({category}: { category: number }) {
-        const text = [
-            "일반",
-            "숙제",
-            "질문",
-            "Data"
-        ]
-        const color = [
-            "bg-green-500 text-white",
-            "bg-red-500 text-white",
-            "bg-blue-500 text-white",
-            "bg-black text-white",
-        ]
+    function Delete({id}: { id: number }) {
         return (
-            <div className={cn("p-1 rounded  font-bold text-lg", color[category])}>
-                {text[category]}
-            </div>
+            <button
+                className="p-1 rounded border-2 font-bold text-lg bg-red-500 text-white border-red-500"
+                onClick={async () => {
+                    await DELETE("/api/board", {
+                        article_id: id,
+                    }).then(loadArticle);
+                }}
+            >
+                삭제
+            </button>
+        );
+    }
+
+    function Update({id}: { id: number }) {
+        return (
+            <button
+                className="p-1 rounded border-2 font-bold text-lg bg-blue-500 text-white border-blue-500"
+                onClick={() => {
+                    alert("아직 구현 안함")
+                }}
+            >
+                수정
+            </button>
         );
     }
 
@@ -133,21 +112,13 @@ export default function Desktop() {
 
     function Time({create_time, update_time}: { create_time: string, update_time: string }) {
         return (
-            <div className="flex flex-col text-sm justify-center items-end">
+            <div className="flex flex-col text-sm justify-center items-end flex-1 text-gray-600">
                 <div>
                     작성 시간: {create_time}
                 </div>
                 <div>
                     마지막 업데이트: {update_time}
                 </div>
-            </div>
-        );
-    }
-
-    function Subject({subject}: { subject: string }) {
-        return (
-            <div className="flex flex-col text-lg border-2 border-green p-1 rounded justify-center items-end">
-                {subject}
             </div>
         );
     }
@@ -163,11 +134,11 @@ export default function Desktop() {
     return (
         <>
             <div className="h-full flex flex-col">
-                <div className={cn(
-                    "text-center text-3xl py-2 bg-gray-100 border-red-600 border-8 h-fit"
-                )}>
-                    {headNotification.content}
-                </div>
+                {/*<div className={cn(*/}
+                {/*    "text-center text-3xl py-2 bg-gray-100 border-red-600 border-8 h-fit"*/}
+                {/*)}>*/}
+                {/*    {headNotification.content}*/}
+                {/*</div>*/}
                 {isInfo ? (
                     <div className="flex-1 grid grid-cols-3 overflow-hidden bg-gray-100"> {/* hear */}
                         <div className="col-span-2 bg-white mt-2 mx-4 rounded-lg border">
@@ -184,7 +155,9 @@ export default function Desktop() {
                                             {selectedArticle.content}
                                         </div>
                                         <Hr/>
-                                        <div className="flex flex-row gap-4 w-full justify-end items-center">
+                                        <div className="flex flex-row gap-4 w-full justify-between items-center">
+                                            <Update id={selectedArticle.id}/>
+                                            <Delete id={selectedArticle.id}/>
                                             <Time create_time={selectedArticle.create_time} update_time={selectedArticle.update_time}/>
                                         </div>
                                     </>
@@ -288,9 +261,11 @@ export default function Desktop() {
                         <Select
                             menuPlacement="top"
                             options={classes.map((c, i) => {
-                                return {label: `${c.name} | ${c.description}`, value: `${c.id}/${i}`};
+                                return {label: `${c.name} | ${c.description}`, value: `${c.id}/${i}.${c.name} | ${c.description}`};
                             })}
                             required
+                            value={{value: selectedClass, label: selectedClass.split('.')[1]}}
+                            placeholder="반을 선택해 주세요"
                             instanceId={1}
                             onChange={(e) => setSelectedClass(e.value)}
                         />

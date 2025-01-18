@@ -35,9 +35,9 @@ export function Navigation2() {
                         Home
                     </span>
                 </Link>
-                <Link href="/classroom" className="nav-item">
-                    <span className={cn("_nav-item", {"bg-white": path === '/classroom'})}>
-                        Classroom
+                <Link href="/board" className="nav-item">
+                    <span className={cn("_nav-item", {"bg-white": path === '/board'})}>
+                        Board
                     </span>
                 </Link>
                 <Link href="/timeTable" className="nav-item">

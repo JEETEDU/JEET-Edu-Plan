@@ -30,7 +30,7 @@ export default function Mobile() {
                     <div className="flex-grow overflow-y-auto p-4 bg-gray-100">
                         {chatInfos.map((chat, index) => (
                             <Link
-                                href={`/classroom/${index}`}
+                                href={`/board/${index}`}
                                 key={index}
                                 className={cn("p-4 block mb-2 bg-white rounded-lg shadow-lg border border-gray-200 w-full")}
                             >
