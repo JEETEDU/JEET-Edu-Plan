@@ -78,13 +78,13 @@ export default function Page({isMobile}) {
                 <div className="w-full flex flex-row justify-between items-center py-3 px-6">
                     <div className="flex items-center gap-4">
                         {!isMobile && (
-                            <div
+                            <button
                                 className="p-2 rounded text-lg font-bold bg-gray-500 text-white hover:bg-gray-600"
                                 onClick={() => setShowCalendar((prev) => !prev)}
                             >
                                 {/*{showCalendar ? "달력 숨기기" : "달력 보이기"}*/}
                                 <div className='i-clarity-calendar-line'/>
-                            </div>
+                            </button>
                         )}
                         <div className={cn(
                             "font-bold text-gray-800",
@@ -118,12 +118,12 @@ export default function Page({isMobile}) {
                             </div>
                         )}
                         {!isMobile && (
-                            <div
+                            <button
                                 className="px-3 py-1 bg-red-500 text-white text-lg font-bold rounded hover:bg-red-600 w-fit"
                                 onClick={logout}
                             >
                                 로그아웃
-                            </div>
+                            </button>
                         )}
                     </div>
                 </div>
@@ -132,12 +132,12 @@ export default function Page({isMobile}) {
                         <div className="flex justify-center">
                             날짜 선택
                         </div>
-                        <div
+                        <button
                             className="flex justify-center border-2 bg-white rounded-lg"
                             onClick={() => setShowCalendar((prev) => !prev)}
                         >
                             {calendarValue.toLocaleDateString()}
-                        </div>
+                        </button>
                     </div>
                 )}
                 {(isMobile && showCalendar) && (
@@ -163,12 +163,12 @@ export default function Page({isMobile}) {
                             />
 
                             <div className="flex flex-col items-center space-y-4">
-                                <div
+                                <button
                                     className="component-button bg-green-600"
                                     onClick={() => setShowCalendar((prev) => !prev)}
                                 >
                                     저장하기
-                                </div>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -217,12 +217,12 @@ export default function Page({isMobile}) {
                             />
                         )}
                         {isMobile && (
-                            <div
+                            <button
                                 className="m-6 px-4 py-2 bg-red-500 text-white font-bold rounded hover:bg-red-600 w-fit"
                                 onClick={logout}
                             >
                                 로그아웃
-                            </div>
+                            </button>
                         )}
                     </div>
                 </div>

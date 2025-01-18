@@ -48,7 +48,7 @@ export default function Desktop() {
                         >
                             <div className="px-4">
                                 {classes.map((chat) => (
-                                    <div
+                                    <button
                                         key={chat.class_id}
                                         className={cn(
                                             "p-4 block mb-2 bg-white rounded-lg border border-gray-200 w-full",
@@ -68,7 +68,7 @@ export default function Desktop() {
                                             {/* 가능하다면? 채팅방 별 이미지를 설정할 수 있으면 좋지 않을까 하는 마음 */}
                                             <p className="ml-3 text-gray-500 text-base">{/*{chat.header}*/}[마지막 대화]</p>
                                         </div>
-                                    </div>
+                                    </button>
                                 ))}
                             </div>
                         </Scrollbars>

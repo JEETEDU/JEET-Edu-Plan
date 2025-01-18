@@ -1,10 +1,216 @@
 'use client';
 
-import {cn, getStoreData, PUT} from "@/app/(main)/components/functions";
+import {cn, DELETE, GET, getStoreData, PUT} from "@/app/(main)/components/functions";
 import React, {useEffect, useState} from "react";
 import {usePathname, useRouter} from "next/navigation";
 import TextareaAutosize from "react-textarea-autosize";
 import Select from "react-select";
+import Scrollbars from "react-custom-scrollbars-2";
+
+export function Alert({path, isMobile}: { path: string, isMobile: boolean }) {
+    if (path === "/") {
+        return <></>
+    }
+    const [isModalOpen, setModalOpen] = useState<boolean>(false);
+    const toggleModal = () => setModalOpen((prev) => !prev);
+    const [getOnlyUnread, setGetOnlyUnread] = useState<boolean>(true);
+    const [message, setMessage] = useState<string>("");
+
+    interface IAlert {
+        id: number;
+        user_id: number;
+        read: number;
+        alert_type: number;
+        article_id: number | null;
+        message: string;
+    }
+
+    const [alerts, setAlerts] = useState<IAlert[]>([]);
+
+    function loadAlerts() {
+        interface IResponse {
+            success: boolean;
+            alerts: IAlert[];
+        }
+
+        (async () => {
+            setMessage("로딩중...");
+
+            const response: IResponse = await GET(`/api/user/alert?unread=${getOnlyUnread}`);
+            if (response.success) {
+                setAlerts(response.alerts);
+            }
+
+            setMessage("");
+        })();
+    }
+
+    useEffect(() => {
+        loadAlerts();
+    }, [getOnlyUnread]);
+
+    function ReadAllAlerts() {
+        return <button
+            className="flex items-center flex-row gap-2 border-2 p-1 rounded"
+            onClick={async () => {
+                const r = await PUT('/api/user/alert/read', {
+                    alert: alerts.map((alert) => alert.id)
+                });
+                if (r.success) {
+                    loadAlerts();
+                    setGetOnlyUnread(true);
+                }
+            }}
+        >
+            <div>모든 알림 읽기</div>
+        </button>
+    }
+
+    function Shortcut({alert}: { alert: IAlert }) {
+        return <>
+            {(alert.article_id) && (
+                <button
+                    className={cn(isMobile ? "w-full" : "w-fit", "border-2 rounded p-1 flex flex-col items-center gap-1 border-blue-500 bg-blue-500 text-white")}
+                    onClick={() => window.alert(`바로가기: ${alert.article_id}`)}
+                >
+                    <div className="w-fit whitespace-nowrap h-full flex items-center font-bold">
+                        바로가기
+                    </div>
+                </button>
+            )}
+        </>
+    }
+
+    function Read({alert}: { alert: IAlert }) {
+        return <button
+            className={cn("border-2 rounded p-1 flex justify-center items-center gap-1", isMobile ? 'w-full flex-row' : 'w-fit flex-col', {"border-green": (alert.read === 1)})}
+            onClick={async () => {
+                const r = await PUT('/api/user/alert/read', {
+                    alert: [alert.id]
+                });
+                if (r.success) {
+                    loadAlerts();
+                }
+            }}
+        >
+            <div className="w-fit whitespace-nowrap">
+                읽기
+            </div>
+            <div className={(alert.read === 1) ? "i-system-uicons-check-circle-outside" : "i-system-uicons-circle"}/>
+        </button>
+    }
+
+    function Delete({alert}: { alert: IAlert }) {
+        return <button
+            className={cn("border-2 rounded p-1 flex flex-col items-center gap-1 border-red-500 bg-red-500 text-white", isMobile ? "w-full" : "w-fit")}
+            onClick={async () => {
+                const r = await DELETE(`/api/user/alert/?alert_id=${alert.id}`);
+                if (r.success) {
+                    loadAlerts();
+                }
+            }}
+        >
+            <div className="w-fit whitespace-nowrap h-full flex items-center font-bold">
+                삭제
+            </div>
+        </button>
+    }
+
+    return (
+        <div className="flex items-center">
+            <button
+                onClick={toggleModal}
+                className={cn("p-1 rounded", {"invisible": (path === '/')}, {'bg-red': (alerts.length !== 0)})}
+            >
+                <div className={cn((alerts.length !== 0) ? "i-system-uicons-bell-ringing bg-white" : "i-system-uicons-bell")}/>
+            </button>
+            {/* If there exist unread notice, "i-system-uicons-bell-ringing"   */}
+
+            {isModalOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 flex items-center justify-center z-10"
+                    onClick={toggleModal} // 모달 바깥 클릭 시 닫힘
+                >
+                    <div
+                        className={cn("bg-white rounded-lg shadow-lg p-6 flex flex-col gap-8 w-9/10 max-h-9/10", {"h-9/10": (alerts.length !== 0)})}
+                        onClick={(e) => e.stopPropagation()} // 모달 내부 클릭 시 닫히지 않도록 방지
+                    >
+                        <div className="flex w-full justify-between items-center">
+                            <div className="flex flex-row gap-2 items-center">
+                                <div className={cn(isMobile ? "text-xl" : "text-2xl", "font-bold")}>알림</div>
+                                <div className="text-green-700 font-bold">{message}</div>
+                            </div>
+                            <div className="flex items-center flex-row gap-4">
+                                <button
+                                    className="flex items-center flex-row gap-2 border-2 p-1 rounded"
+                                    onClick={() => setGetOnlyUnread((prev) => !prev)}
+                                >
+                                    <div>읽은 알림 보이기</div>
+                                    <div className={cn(getOnlyUnread ? "i-system-uicons-checkbox-empty" : "i-system-uicons-checkbox-checked")}
+                                    />
+                                </button>
+                                {!isMobile && <ReadAllAlerts/>}
+                            </div>
+                        </div>
+
+                        <Scrollbars
+                            className="w-full flex-1 h-full"
+                            autoHeight={(alerts.length === 0)}
+                            // autoHeightMin={"flex-grow"}
+                            universal
+                            autoHide
+                        >
+                            <div className="flex items-center flex-col gap-2 w-full">
+                                {alerts.map((alert) => {
+                                    return (
+                                        <div key={alert.id} className={cn("flex flex-col gap-3 justify-between w-full", {"border p-2 rounded": isMobile})}>
+                                            <div className={cn("flex flex-row gap-3 justify-between w-full", {"border p-2 rounded": !isMobile})}>
+                                                <div className={cn(
+                                                    "w-fit border-2 rounded p-1 flex flex-col items-center gap-1 text-white font-bold text-sm whitespace-break-spaces align-middle justify-center",
+                                                    {"border-green-500 bg-green-500": (alert.alert_type === 0)},
+                                                    {"border-blue-500 bg-blue-500": (alert.alert_type === 1)}
+                                                )}
+                                                >
+                                                    {(alert.alert_type === 0) ? "일\n반" : (alert.alert_type === 1) ? "공\n지" : "기\n타"}
+                                                </div>
+                                                <div className="flex flex-1 items-center whitespace-pre-wrap">
+                                                    {alert.message}
+                                                </div>
+                                                {!isMobile && <>
+                                                    <Shortcut alert={alert}/>
+                                                    <Read alert={alert}/>
+                                                    <Delete alert={alert}/>
+                                                </>}
+                                            </div>
+                                            {isMobile && <>
+                                                <hr/>
+                                                <div className="grid grid-cols-3 w-full justify-between gap-2">
+                                                    <Delete alert={alert}/>
+                                                    <Read alert={alert}/>
+                                                    <Shortcut alert={alert}/>
+                                                </div>
+                                            </>}
+                                        </div>
+                                    );
+                                })}
+                                {(alerts.length === 0) && "읽지 않은 알림이 없습니다."}
+                            </div>
+                        </Scrollbars>
+                        <div className="w-full flex justify-between items-center">
+                            {isMobile && <ReadAllAlerts/>}
+                            <button
+                                onClick={toggleModal}
+                                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                            >
+                                닫기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
 
 export function TimeInput(
     {
@@ -172,7 +378,7 @@ export function TodayQuestion({device}: { device }) {
         {/*  */}
         {(!answered && userType === 1 && questionOK) && (
             <div className="fixed inset-0 flex items-end justify-end z-50 pointer-events-none">
-                <div
+                <button
                     className={cn(
                         "p-3 rounded-2xl bg-blue-400 shadow-2xl hover:bg-blue-500 border border-blueGray pointer-events-auto",
                         (device === 'desktop') ?
@@ -186,7 +392,7 @@ export function TodayQuestion({device}: { device }) {
                     }}
                 >
                     오늘의 질문 답하기
-                </div>
+                </button>
             </div>
         )}
         {showQuestion && (
@@ -298,7 +504,7 @@ export function TodayQuestion({device}: { device }) {
                         <div className="text-red-600 font-bold">
                             {error}
                         </div>
-                        <div
+                        <button
                             className="component-button"
                             onClick={() => {
                                 register().then(r => {
@@ -314,7 +520,7 @@ export function TodayQuestion({device}: { device }) {
                             }}
                         >
                             제출하기
-                        </div>
+                        </button>
                     </div>
                 </div>
             </div>
