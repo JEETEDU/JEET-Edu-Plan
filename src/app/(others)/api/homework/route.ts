@@ -21,12 +21,14 @@ import {inArray} from "drizzle-orm/sql/expressions/conditions";
 
 /**
  * @swagger
- * /api/teacher/homework:
+ * /api/homework:
  *   post:
  *     summary: Create a new homework article
- *     description: Create a new homework article
+ *     description: <b>Teacher</b><br>Create a new homework article
+ *     security:
+ *       - cookieAuth: []
  *     tags:
- *       - Teacher/Homework
+ *       - Homework
  *     requestBody:
  *       required: true
  *       content:
@@ -183,15 +185,16 @@ export async function POST(req: NextRequest) {
     }
 }
 
-
 /**
  * @swagger
- * /api/teacher/homework:
+ * /api/homework:
  *   patch:
  *     summary: Update an article
- *     description: Updates an article by ID. Supports updating fields like title, content, notice flags, etc., while ensuring proper validations.
+ *     description: <b>Teacher</b><br>Updates an article by ID. Supports updating fields like title, content, notice flags, etc., while ensuring proper validations.
  *     tags:
- *       - Teacher/Homework
+ *       - Homework
+ *     security:
+ *       - cookieAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -320,12 +323,12 @@ export async function PATCH(req: NextRequest) {
 
 /**
  * @swagger
- * /api/teacher/homework:
+ * /api/homework:
  *   delete:
  *     summary: Delete an article
- *     description: Deletes an article by ID. This will also delete all associated comments and files.
+ *     description: <b>Teacher</b><br>Deletes an article by ID. This will also delete all associated comments and files.
  *     tags:
- *       - Teacher/Homework
+ *       - Homework
  *     parameters:
  *       - in: query
  *         name: article_id
