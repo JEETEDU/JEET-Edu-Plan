@@ -1,7 +1,7 @@
-import type { NextRequest } from 'next/server';
-import { db } from '@/database';
+import type {NextRequest} from 'next/server';
+import {db} from '@/database';
 import * as schema from '@/database/schema';
-import { NextResponse } from 'next/server';
+import {NextResponse} from 'next/server';
 import {and, asc, count, desc, eq, like, or, SQL, sql} from 'drizzle-orm';
 import {
     check_date_string,
@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
             const token = req.cookies.get("token")?.value ?? '';
-            let decoded: DecodedToken | false = verifyToken(token);
+            const decoded: DecodedToken | false = verifyToken(token);
             if (!decoded) return return_not_logged_in();
 
             const data = await req.formData();
@@ -102,15 +102,15 @@ export async function POST(req: NextRequest) {
             if (!article) return return_400("article is required");
             const article_json = JSON.parse(article.toString());
 
-            let user_id = decoded.user_id;
-            let user_type = decoded.user_type;
+            const user_id = decoded.user_id;
+            const user_type = decoded.user_type;
 
-            let class_id: number = parseInt(article_json.class_id) ?? 0;
-            let title: string = article_json.title.toString() ?? '';
-            let content: string = article_json.content.toString() ?? '';
-            let is_notice: number = parseInt(article_json.is_notice ?? 0);
-            let category: number = parseInt(article_json.category ?? 0);
-            let subject_id: number = parseInt(article_json.subject_id ?? 0);
+            const class_id: number = parseInt(article_json.class_id) ?? 0;
+            const title: string = article_json.title.toString() ?? '';
+            const content: string = article_json.content.toString() ?? '';
+            const is_notice: number = parseInt(article_json.is_notice ?? 0);
+            const category: number = parseInt(article_json.category ?? 0);
+            const subject_id: number = parseInt(article_json.subject_id ?? 0);
 
             if (!class_id) return return_400("class_id is required");
             if (!title) return return_400("title is required");
@@ -123,7 +123,7 @@ export async function POST(req: NextRequest) {
             if (category === ArticleCategory.HOMEWORK) return return_400("Cannot create homework article");
             if (Number.isNaN(subject_id)) return return_400("subject_id is required(number)");
 
-            let [class_] =
+            const [class_] =
                 await tx.select({
                     class_count: count(schema.classes.id),
                     user_count: count(schema.users.uid),
@@ -150,23 +150,22 @@ export async function POST(req: NextRequest) {
             if (class_.user_count === 0 && user_type !== UserType.ADMIN) return return_permission_denied();
             if (subject_id && class_.subject_count === 0) return return_400("Subject not found");
 
-            let files_path: SavedFileList = await save_files(tx, files);
+            const files_path: SavedFileList = await save_files(tx, files);
 
-            let [article_id] = await tx.insert(schema.boards).values({
-                    class_id: class_id,
-                    user_id: user_id,
-                    title: title,
-                    content: content,
-                    category: category,
-                    notice: is_notice,
-                    subject_id: subject_id === 0 ? null : subject_id,
-                    comment_count: 0,
-                    attach_files: files_path.length === 0 ? null : files_path
-                }
-            ).$returningId();
+            const [article_id] = await tx.insert(schema.boards).values({
+                class_id: class_id,
+                user_id: user_id,
+                title: title,
+                content: content,
+                category: category,
+                notice: is_notice,
+                subject_id: subject_id === 0 ? null : subject_id,
+                comment_count: 0,
+                attach_files: files_path.length === 0 ? null : files_path
+            }).$returningId();
 
             if (category === ArticleCategory.QUESTION && subject_id) {
-                let [subject_] =
+                const [subject_] =
                     await tx.select({
                         teacher_id: schema.teacherClasses.user_id
                     })
@@ -276,7 +275,7 @@ export async function PATCH(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
             const token = req.cookies.get("token")?.value ?? '';
-            let decoded: DecodedToken | false = verifyToken(token);
+            const decoded: DecodedToken | false = verifyToken(token);
             if (!decoded) return return_not_logged_in();
 
             const data = await req.formData();
@@ -286,15 +285,15 @@ export async function PATCH(req: NextRequest) {
             // @ts-ignore
             const files = data.getAll("files") as FileList;
 
-            let user_id = decoded.user_id;
-            let user_type = decoded.user_type;
+            const user_id = decoded.user_id;
+            const user_type = decoded.user_type;
 
-            let title: string = article_json.title?.toString() ?? '';
-            let content: string = article_json.content?.toString() ?? '';
-            let is_notice: number = parseInt(article_json.is_notice ?? -1);
-            let category: number = parseInt(article_json.category ?? -1);
-            let subject_id: number = parseInt(article_json.subject_id ?? -1);
-            let attach_files: SavedFileList = article_json.attach_files ?? [];
+            const title: string = article_json.title?.toString() ?? '';
+            const content: string = article_json.content?.toString() ?? '';
+            const is_notice: number = parseInt(article_json.is_notice ?? -1);
+            const category: number = parseInt(article_json.category ?? -1);
+            const subject_id: number = parseInt(article_json.subject_id ?? -1);
+            const attach_files: SavedFileList = article_json.attach_files ?? [];
 
             if (!article_id) return return_400("article_id is required");
             if (title && title.length > 255) return return_400("title is too long");
@@ -305,7 +304,7 @@ export async function PATCH(req: NextRequest) {
             if (category === ArticleCategory.HOMEWORK) return return_400("Cannot update into homework category");
             if (Number.isNaN(subject_id)) return return_400("subject_id should be a number");
 
-            let [article_] =
+            const [article_] =
                 await tx.select()
                     .from(schema.boards)
                     .where(eq(schema.boards.id, article_id));
@@ -313,14 +312,14 @@ export async function PATCH(req: NextRequest) {
             if (article_.user_id !== user_id && user_type < UserType.TEACHER) return return_permission_denied();
             if (article_.category === ArticleCategory.HOMEWORK) return return_400("Cannot update homework article");
 
-            let update_data: any = {}
+            const update_data: any = {}
             if (title) update_data['title'] = title;
             if (content) update_data['content'] = content;
             if (is_notice !== -1) update_data['notice'] = is_notice;
             if (category !== -1) update_data['category'] = category;
             if (subject_id !== -1) {
                 console.log(article_.class_id);
-                let [subject_] =
+                const [subject_] =
                     await tx.select({
                         subject_id: schema.subjects.id,
                         teacher_id: schema.teacherClasses.user_id
@@ -336,11 +335,11 @@ export async function PATCH(req: NextRequest) {
                         ))
                 if (!subject_) return return_400("Subject not found");
                 update_data['subject_id'] = subject_id;
-                if(category === ArticleCategory.QUESTION && subject_.teacher_id) {
+                if (category === ArticleCategory.QUESTION && subject_.teacher_id) {
                     await register_alert(tx, subject_.teacher_id, `새 질문이 등록되었습니다.\n${title}`, AlertType.NORMAL, article_id);
                 }
             }
-            let files_path: SavedFileList = await update_files(tx, files, JSON.parse(article_.attach_files?.toString() ?? '[]'), attach_files);
+            const files_path: SavedFileList = await update_files(tx, files, JSON.parse(article_.attach_files?.toString() ?? '[]'), attach_files);
             if (files_path.length > 0) update_data['attach_files'] = files_path;
             if (article_.attach_files && article_.attach_files != files_path) update_data['attach_files'] = files_path;
 
@@ -348,7 +347,7 @@ export async function PATCH(req: NextRequest) {
                 .set(update_data)
                 .where(eq(schema.boards.id, article_id))
 
-            return NextResponse.json({ success: true });
+            return NextResponse.json({success: true});
         });
     } catch (e) {
         console.error(e);
@@ -402,17 +401,17 @@ export async function DELETE(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
             const token = req.cookies.get("token")?.value ?? '';
-            let decoded: DecodedToken | false = verifyToken(token);
+            const decoded: DecodedToken | false = verifyToken(token);
             if (!decoded) return return_not_logged_in();
 
             const data = await req.json();
             const article_id = parseInt(data.article_id ?? '');
             if (Number.isNaN(article_id)) return return_400("article_id is required");
 
-            let user_id = decoded.user_id;
-            let user_type = decoded.user_type;
+            const user_id = decoded.user_id;
+            const user_type = decoded.user_type;
 
-            let [article] =
+            const [article] =
                 await tx.select()
                     .from(schema.boards)
                     .where(eq(schema.boards.id, article_id))
@@ -424,7 +423,7 @@ export async function DELETE(req: NextRequest) {
             await tx.delete(schema.boards)
                 .where(eq(schema.boards.id, article_id))
 
-            return NextResponse.json({ success: true });
+            return NextResponse.json({success: true});
         });
     } catch (e) {
         console.error(e);
@@ -567,7 +566,7 @@ export async function DELETE(req: NextRequest) {
 export async function GET(req: NextRequest) {
     try {
         const token = req.cookies.get("token")?.value ?? '';
-        let decoded: DecodedToken | false = verifyToken(token);
+        const decoded: DecodedToken | false = verifyToken(token);
         if (!decoded) return return_not_logged_in();
 
         const data = req.nextUrl.searchParams;
@@ -585,11 +584,11 @@ export async function GET(req: NextRequest) {
         if (Number.isNaN(limit) || limit < 1) return return_400("Invalid limit number");
         if (Number.isNaN(class_id) || class_id < 1) return return_400("Invalid class_id");
 
-        let user_id = decoded.user_id;
-        let user_type = decoded.user_type;
+        const user_id = decoded.user_id;
+        const user_type = decoded.user_type;
 
         // check permission
-        let [class_] =
+        const [class_] =
             await db.select({
                 class_count: count(schema.classes.id),
                 user_count: count(schema.users.uid)
@@ -610,25 +609,30 @@ export async function GET(req: NextRequest) {
         if (class_.class_count === 0) return return_400("Class not found");
         if (class_.user_count === 0 && user_type !== UserType.ADMIN) return return_permission_denied();
 
-        let queryBuilder: QueryBuilder = new QueryBuilder();
+        const queryBuilder: QueryBuilder = new QueryBuilder();
         let query = queryBuilder.select({
             id: schema.boards.id,
             title: schema.boards.title,
             content: schema.boards.content,
             create_time: schema.boards.create_time,
             update_time: schema.boards.update_time,
-            attach_files_exist: sql`IF(attach_files IS NULL, 0, 1) as attach_files_exist`,
+            attach_files_exist: sql`IF
+            (attach_files IS NULL, 0, 1) as attach_files_exist`,
             category: schema.boards.category,
             notice: schema.boards.notice,
             due_date: schema.boards.due_date,
             comment_count: schema.boards.comment_count,
             user: {
-                id: sql`${schema.users.uid} as user_id`,
-                name: sql`${schema.users.name} as user_name`,
+                id: sql`${schema.users.uid}
+                as user_id`,
+                name: sql`${schema.users.name}
+                as user_name`,
             },
             subject: {
-                id: sql`${schema.subjects.id} as subject_id`,
-                name: sql`${schema.subjects.name} as subject_name`,
+                id: sql`${schema.subjects.id}
+                as subject_id`,
+                name: sql`${schema.subjects.name}
+                as subject_name`,
             }
         })
             .from(schema.boards)
@@ -652,8 +656,7 @@ export async function GET(req: NextRequest) {
                     like(schema.boards.title, `%${search_string}%`),
                     like(schema.boards.content, `%${search_string}%`)
                 ));
-            }
-            else if (search_by === 'author') where_clause = and(where_clause, like(schema.users.name, `%${search_string}%`));
+            } else if (search_by === 'author') where_clause = and(where_clause, like(schema.users.name, `%${search_string}%`));
             else return return_400("Invalid search_by");
         }
         query = query.where(where_clause);
@@ -662,27 +665,23 @@ export async function GET(req: NextRequest) {
             let order_func = asc;
             if (order == 'ASC') {
                 order_func = asc;
-            }
-            else if (order == 'DESC') {
+            } else if (order == 'DESC') {
                 order_func = desc;
-            }
-            else {
+            } else {
                 return return_400('Invalid order');
             }
 
             if (order_by === 'created_at') {
                 query = query.orderBy(order_func(schema.boards.create_time));
-            }
-            else if (order_by === 'updated_at') {
+            } else if (order_by === 'updated_at') {
                 query = query.orderBy(order_func(schema.boards.update_time));
-            }
-            else {
+            } else {
                 return return_400('Invalid order_by');
             }
         }
         query = query.limit(limit).offset((page - 1) * limit);
 
-        let [articles] = await db.execute(query);
+        const [articles] = await db.execute(query);
         console.log(articles);
         return NextResponse.json({
             success: true,

@@ -33,11 +33,11 @@ export default function Desktop() {
     }
 
     const [articles, setArticles] = useState<IArticle[]>([]);
-    const [selectedArticle, setSelectedArticle] = useState<IArticle>({
+    const initArticle: IArticle = {
         attach_files_exist: 0,
         category: 0,
         comment_count: 0,
-        content: "게시물을 선택하지 않았습니다.",
+        content: "",
         create_time: "",
         due_date: null,
         id: 0,
@@ -52,7 +52,8 @@ export default function Desktop() {
             id: 0,
             name: ""
         }
-    });
+    }
+    const [selectedArticle, setSelectedArticle] = useState<IArticle>(initArticle);
 
     interface IClass {
         id: number;
@@ -89,6 +90,7 @@ export default function Desktop() {
                 if (resArticle.success) {
                     setArticles(resArticle.articles);
                 }
+                setSelectedArticle(initArticle);
             }
         })();
     }, [selectedClass]);
@@ -101,6 +103,63 @@ export default function Desktop() {
         content: "1월 10일에 겨울학기가 시작합니다.",
     };
 
+    function Category({category}: { category: number }) {
+        const text = [
+            "일반",
+            "숙제",
+            "질문",
+            "Data"
+        ]
+        const color = [
+            "bg-green-500 text-white",
+            "bg-red-500 text-white",
+            "bg-blue-500 text-white",
+            "bg-black text-white",
+        ]
+        return (
+            <div className={cn("p-1 rounded  font-bold text-lg", color[category])}>
+                {text[category]}
+            </div>
+        );
+    }
+
+    function Title({title}: { title: string }) {
+        return (
+            <div className="flex-1 text-2xl">
+                {title}
+            </div>
+        );
+    }
+
+    function Time({create_time, update_time}: { create_time: string, update_time: string }) {
+        return (
+            <div className="flex flex-col text-sm justify-center items-end">
+                <div>
+                    작성 시간: {create_time}
+                </div>
+                <div>
+                    마지막 업데이트: {update_time}
+                </div>
+            </div>
+        );
+    }
+
+    function Subject({subject}: { subject: string }) {
+        return (
+            <div className="flex flex-col text-lg border-2 border-green p-1 rounded justify-center items-end">
+                {subject}
+            </div>
+        );
+    }
+
+    function Hr() {
+        return (
+            <div className="w-full">
+                <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 w-full"/>
+            </div>
+        );
+    }
+
     return (
         <>
             <div className="h-full flex flex-col">
@@ -112,13 +171,29 @@ export default function Desktop() {
                 {isInfo ? (
                     <div className="flex-1 grid grid-cols-3 overflow-hidden bg-gray-100"> {/* hear */}
                         <div className="col-span-2 bg-white mt-2 mx-4 rounded-lg border">
-                            <div className="flex flex-col gap-5 h-full w-full items-center justify-center">
-                                <div className="text-center text-4xl">
-                                    {selectedArticle.content}
-                                </div>
-                                <div>
-                                    여기에는 상세 내용이 자세하게 보이게 하고싶다
-                                </div>
+                            <div className="flex flex-col gap-4 h-full w-full items-center justify-center p-4">
+                                {(selectedArticle.id !== 0) && (
+                                    <>
+                                        <div className="flex flex-row gap-4 w-full justify-between items-center">
+                                            <Subject subject={selectedArticle.subject.name || ""}/>
+                                            <Category category={selectedArticle.category}/>
+                                            <Title title={selectedArticle.title}/>
+                                        </div>
+                                        <Hr/>
+                                        <div className="text-center text-4xl flex-1 items-center flex">
+                                            {selectedArticle.content}
+                                        </div>
+                                        <Hr/>
+                                        <div className="flex flex-row gap-4 w-full justify-end items-center">
+                                            <Time create_time={selectedArticle.create_time} update_time={selectedArticle.update_time}/>
+                                        </div>
+                                    </>
+                                )}
+                                {(selectedArticle.id === 0) && (
+                                    <div className="text-center text-4xl flex-1 items-center flex">
+                                        공지가 선택되지 않았습니다.
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <Scrollbars
@@ -126,7 +201,7 @@ export default function Desktop() {
                             universal
                             autoHide
                         >
-                            <div className="p-2 space-y-2">
+                            <div className="p-2 space-y-2 flex flex-col h-full">
                                 {articles.map((article) => (
                                     <button
                                         key={article.id}
@@ -141,6 +216,16 @@ export default function Desktop() {
                                         </div>
                                     </button>
                                 ))}
+                                {(selectedClass === "") && (
+                                    <div className="w-full flex justify-center h-full items-center">
+                                        반이 선택되지 않았습니다.
+                                    </div>
+                                )}
+                                {(selectedClass && articles.length === 0) && (
+                                    <div className="w-full flex justify-center h-full items-center">
+                                        선택한 반에 공지가 없습니다.
+                                    </div>
+                                )}
                             </div>
                         </Scrollbars>
                     </div>

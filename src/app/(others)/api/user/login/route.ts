@@ -106,9 +106,9 @@ export async function POST(req: NextRequest) {
         }
 
         // set token
-        let new_token = generateToken(user.uid, user.user_type);
+        const new_token = generateToken(user.uid, user.user_type);
 
-        let res = NextResponse.json({
+        const res = NextResponse.json({
             success: true,
             message: "Login successful"
         })
