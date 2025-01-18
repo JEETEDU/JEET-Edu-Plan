@@ -20,7 +20,7 @@ import {ArticleCategory} from "@/app/(others)/api/board/tools";
 
 /**
  * @swagger
- * /api/user/todo:
+ * /api/user/to_do:
  *   post:
  *     summary: Create a new to-do item.
  *     description: This API endpoint allows a user to create a new to-do item by providing its content and an optional due date. Due date is not required.
@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
 
 /**
  * @swagger
- * /api/user/todo:
+ * /api/user/to_do:
  *   patch:
  *     summary: Update an existing to-do item.
  *     description: This API endpoint allows a user to update an existing to-do item by providing its ID and updated values such as content or due date. At least one field (content or due_date) must be provided. Give -1 as the due_date to remove it.
@@ -196,7 +196,7 @@ export async function PATCH(req: NextRequest) {
 
 /**
  * @swagger
- * /api/user/todo:
+ * /api/user/to_do:
  *   delete:
  *     summary: Delete an existing to-do item.
  *     description: This API endpoint allows a user to delete an existing to-do item by providing its ID.
@@ -264,7 +264,7 @@ export async function DELETE(req: NextRequest) {
 
 /**
  * @swagger
- * /api/user/todo:
+ * /api/user/to_do:
  *   get:
  *     summary: Retrieve to-do items for a student.
  *     description: This API endpoint allows a student to retrieve their to-do items, with optional filters and pagination.

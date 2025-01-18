@@ -20,10 +20,10 @@ import {ArticleCategory} from "@/app/(others)/api/board/tools";
 
 /**
  * @swagger
- * /api/user/todo/done:
+ * /api/user/to_do/undone:
  *   put:
- *     summary: Updates a user's tdod status to "done".
- *     description: Marks a tdod item as "done" for a student based on the given `tdod_ig`. The user must be logged in and have permission to update it.
+ *     summary: Updates a user's tdod status to "incomplete".
+ *     description: Marks a tdod item as "incomplete" for a student based on the given `tdod_ig`. The user must be logged in and have permission to update it.
  *     tags:
  *       - To-Do
  *     requestBody:
@@ -37,7 +37,7 @@ import {ArticleCategory} from "@/app/(others)/api/board/tools";
  *             properties:
  *               todo_id:
  *                 type: integer
- *                 description: The ID of the todo to mark as done.
+ *                 description: The ID of the to_do to mark as done.
  *                 example: 123
  *     responses:
  *       200:
@@ -74,7 +74,7 @@ export async function PUT(req: NextRequest) {
             if (!homework) return return_400('Homework not found')
 
             await tx.update(schema.todoes)
-                .set({done: 1})
+                .set({done: 0})
                 .where(and(eq(schema.todoes.id, todo_id),
                     eq(schema.todoes.user_id, user_id)));
 
