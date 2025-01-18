@@ -475,6 +475,12 @@ export async function DELETE(req: NextRequest) {
  *           type: integer
  *           description: Filter articles by their category (-1 or empty means no filter).
  *       - in: query
+ *         name: notice
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           description: Filter articles by notice status.
+ *       - in: query
  *         name: search_by
  *         required: false
  *         schema:
@@ -502,6 +508,12 @@ export async function DELETE(req: NextRequest) {
  *           enum: [ASC, DESC]
  *           default: DESC
  *           description: Sort order for the articles.
+ *       - in: query
+ *         name: notice_first
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           description: If 1, notice articles will be shown first.
  *     responses:
  *       200:
  *         description: Successfully retrieved articles.
@@ -521,8 +533,6 @@ export async function DELETE(req: NextRequest) {
  *                       id:
  *                         type: integer
  *                       title:
- *                         type: string
- *                       content:
  *                         type: string
  *                       create_time:
  *                         type: string
@@ -576,6 +586,8 @@ export async function GET(req: NextRequest) {
         const class_id = parseInt(data.get("class_id") ?? '0');
         const subject_id = parseInt(data.get("subject_id") ?? '0');
         const category = parseInt(data.get("category") ?? '-1');
+        const notice = parseInt(data.get("notice") ?? '0');
+        const notice_first = parseInt(data.get("notice_first") ?? '0');
         const search_by = data.get("search_by") ?? '';
         const search_string = data.get("search_string") ?? '';
         const order_by = data.get("order_by") ?? 'created_at';
@@ -584,6 +596,10 @@ export async function GET(req: NextRequest) {
         if (Number.isNaN(page) || page < 1) return return_400("Invalid page number");
         if (Number.isNaN(limit) || limit < 1) return return_400("Invalid limit number");
         if (Number.isNaN(class_id) || class_id < 1) return return_400("Invalid class_id");
+        if (Number.isNaN(subject_id) || subject_id < 0) return return_400("Invalid subject_id");
+        if (ArticleCategory[category] === undefined && category != -1) return return_400("Invalid category");
+        if (Number.isNaN(notice) || notice !== 0 && notice !== 1) return return_400("Invalid notice");
+        if (Number.isNaN(notice_first) || notice_first !== 0 && notice_first !== 1) return return_400("Invalid notice_first");
 
         let user_id = decoded.user_id;
         let user_type = decoded.user_type;
@@ -614,21 +630,20 @@ export async function GET(req: NextRequest) {
         let query = queryBuilder.select({
             id: schema.boards.id,
             title: schema.boards.title,
-            content: schema.boards.content,
             create_time: schema.boards.create_time,
             update_time: schema.boards.update_time,
-            attach_files_exist: sql`IF(attach_files IS NULL, 0, 1) as attach_files_exist`,
+            attach_files: schema.boards.attach_files,
             category: schema.boards.category,
             notice: schema.boards.notice,
             due_date: schema.boards.due_date,
             comment_count: schema.boards.comment_count,
             user: {
-                id: sql`${schema.users.uid} as user_id`,
-                name: sql`${schema.users.name} as user_name`,
+                id: sql`${schema.users.uid}`.as('user_id'),
+                name: sql`${schema.users.name}`.as('user_name'),
             },
             subject: {
-                id: sql`${schema.subjects.id} as subject_id`,
-                name: sql`${schema.subjects.name} as subject_name`,
+                id: sql`${schema.subjects.id}`.as('subject_id'),
+                name: sql`${schema.subjects.name}`.as('subject_name'),
             }
         })
             .from(schema.boards)
@@ -644,6 +659,7 @@ export async function GET(req: NextRequest) {
 
         let where_clause: SQL | undefined = eq(schema.boards.class_id, class_id);
         if (subject_id) where_clause = and(where_clause, eq(schema.boards.subject_id, subject_id));
+        if (notice) where_clause = and(where_clause, eq(schema.boards.notice, notice));
         if (category !== -1) where_clause = and(where_clause, eq(schema.boards.category, category));
         if (search_by && search_string) {
             if (search_by === 'title') where_clause = and(where_clause, like(schema.boards.title, `%${search_string}%`));
@@ -658,28 +674,20 @@ export async function GET(req: NextRequest) {
         }
         query = query.where(where_clause);
 
+        let orders = [];
+        if (notice_first === 1) orders.push(desc(schema.boards.notice));
         if (order_by && order) {
             let order_func = asc;
-            if (order == 'ASC') {
-                order_func = asc;
-            }
-            else if (order == 'DESC') {
-                order_func = desc;
-            }
-            else {
-                return return_400('Invalid order');
-            }
+            if (order == 'ASC') order_func = asc;
+            else if (order == 'DESC') order_func = desc;
+            else return return_400('Invalid order');
 
-            if (order_by === 'created_at') {
-                query = query.orderBy(order_func(schema.boards.create_time));
-            }
-            else if (order_by === 'updated_at') {
-                query = query.orderBy(order_func(schema.boards.update_time));
-            }
-            else {
-                return return_400('Invalid order_by');
-            }
+            if (order_by === 'created_at') orders.push(order_func(schema.boards.create_time));
+            else if (order_by === 'updated_at') orders.push(order_func(schema.boards.update_time));
+
+            else return return_400('Invalid order_by');
         }
+        query = query.orderBy(...orders);
         query = query.limit(limit).offset((page - 1) * limit);
 
         let [articles] = await db.execute(query);
@@ -691,7 +699,6 @@ export async function GET(req: NextRequest) {
                 return {
                     id: article.id,
                     title: article.title,
-                    content: article.content,
                     create_time: article.create_time,
                     update_time: article.update_time,
                     attach_files_exist: article.attach_files_exist,
