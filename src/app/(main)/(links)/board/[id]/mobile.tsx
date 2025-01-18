@@ -1,7 +1,7 @@
 "use client";
 
 import TextareaAutosize from "react-textarea-autosize";
-import {ChangeEvent, useEffect, useState} from "react";
+import {ChangeEvent, useEffect, useRef, useState} from "react";
 import {cn, PATCH} from "@/app/(main)/components/functions";
 import Scrollbars from "react-custom-scrollbars-2";
 import {IArticle, IComment, initArticle, loadArticleInfo} from "@/app/(main)/(links)/board/component";
@@ -12,8 +12,10 @@ import Link from "next/link";
 export default function Chatting({id, uid}: { id: number; uid: number }) {
     const [selectedArticle, setSelectedArticle] = useState<IArticle>(initArticle);
     const [comments, setComments] = useState<IComment[]>([]);
-    const [editComment, setEditComment] = useState<IComment>();
+    const [editComment, setEditComment] = useState<IComment | null>(null);
     const [fileList, setFileList] = useState<File[]>([]);
+
+    const scrollbars = useRef<Scrollbars>(null);
 
     function reload() {
         (async () => {
@@ -25,8 +27,18 @@ export default function Chatting({id, uid}: { id: number; uid: number }) {
             setSelectedArticle(articleInfo.article);
             setComments(articleInfo.comments);
             setFileList([]);
-        })();
+        })().then();
     }
+
+    useEffect(() => {
+        if (editComment) {
+            setNewComments(editComment.content);
+        }
+    }, [editComment]);
+
+    useEffect(() => {
+        scrollbars.current!.scrollToBottom();
+    }, [comments.length]);
 
     useEffect(() => {
         reload();
@@ -52,7 +64,32 @@ export default function Chatting({id, uid}: { id: number; uid: number }) {
             reload();
         });
         setNewComments(""); // 입력란 초기화
+        setFileList([]);
     };
+
+    const updateComment = () => {
+        if (!newComments.trim()) return; // 빈 댓글 방지
+        if (!editComment) return;
+        const formData = new FormData();
+        formData.append("comment_id", String(editComment.id));
+        formData.append("comment", JSON.stringify({
+            content: newComments,
+            attach_files: editComment.attach_files
+        }));
+        fileList.map((file: File) => {
+            formData.append("files", file);
+        })
+        fetch('/api/board/comment', {
+            method: "PATCH",
+            body: formData
+        }).then(r => r.blob()).then(r => {
+            console.log(r);
+            reload();
+        });
+        setNewComments(""); // 입력란 초기화
+        setFileList([]);
+        setEditComment(null);
+    }
 
     const [screen, setScreen] = useState(1);
 
@@ -108,12 +145,16 @@ export default function Chatting({id, uid}: { id: number; uid: number }) {
                         className="w-full h-full"
                         universal
                         autoHide
+                        ref={scrollbars}
                     >
-                        <div className="flex flex-col space-y-2 w-full">
+                        <div className="flex flex-col space-y-2 w-full mb-2">
                             {comments.map((comment, index) => (
                                 <div
                                     key={index}
-                                    className="p-3 bg-white border rounded-lg flex flex-col items-center gap-2"
+                                    className={cn(
+                                        "p-3 bg-white border-2 rounded-lg flex flex-col items-center gap-2",
+                                        {"border-black": ((editComment !== null) && (comment.id === editComment.id))}
+                                    )}
                                 >
                                     <div className="flex flex-row justify-between items-center gap-4 w-full text-sm">
                                         <div className={cn(
@@ -124,7 +165,20 @@ export default function Chatting({id, uid}: { id: number; uid: number }) {
                                         </div>
                                         <div>
                                             {(comment.user_id === uid) && (
-                                                <div className="p-1 border-2 border-blue rounded h-full cursor-pointer hover:bg-blue hover:text-white duration-200">
+                                                <div
+                                                    className={cn(
+                                                        "p-1 border-2 border-blue rounded h-full cursor-pointer duration-200",
+                                                        ((editComment === null) || (comment.id !== editComment.id)) ? "hover:bg-blue hover:text-white" : "hover:bg-white hover:text-black bg-blue text-white"
+                                                    )}
+                                                    onClick={() => {
+                                                        if (editComment === null) {
+                                                            setEditComment(comment);
+                                                        } else {
+                                                            setEditComment(null);
+                                                            setNewComments("");
+                                                        }
+                                                    }}
+                                                >
                                                     <div className="i-system-uicons-write"/>
                                                 </div>
                                             )}
@@ -157,7 +211,6 @@ export default function Chatting({id, uid}: { id: number; uid: number }) {
                                                 (new Date(comment.create_time)).toLocaleString()
                                             ) : (
                                                 `${(new Date(comment.update_time)).toLocaleString()} 에 업데이트됨`
-
                                             )}
                                         </div>
                                     </div>
@@ -180,10 +233,14 @@ export default function Chatting({id, uid}: { id: number; uid: number }) {
                             value={newComments}
                         />
                         <div
-                            className="h-full bg-blue-300 rounded-lg content-center hover:bg-blue-500 p-1"
-                            onClick={addComment}
+                            className="h-full bg-blue-300 rounded-lg items-center flex flex-col justify-center content-center hover:bg-blue-500 p-1"
+                            onClick={(editComment === null) ? addComment : updateComment}
                         >
-                            <div className="i-system-uicons-arrow-up-circle"/>
+                            {(editComment === null) ? (
+                                <div className="i-system-uicons-arrow-up-circle"/>
+                            ) : (
+                                <div className="i-system-uicons-floppy"/>
+                            )}
                         </div>
                     </div>
                     <hr/>
