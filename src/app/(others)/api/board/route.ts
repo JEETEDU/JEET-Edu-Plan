@@ -632,7 +632,7 @@ export async function GET(req: NextRequest) {
             title: schema.boards.title,
             create_time: schema.boards.create_time,
             update_time: schema.boards.update_time,
-            attach_files: schema.boards.attach_files,
+            attach_files_exist: sql`IF(attach_files IS NULL, 0, 1)`.as('attach_files_exist'),
             category: schema.boards.category,
             notice: schema.boards.notice,
             due_date: schema.boards.due_date,
