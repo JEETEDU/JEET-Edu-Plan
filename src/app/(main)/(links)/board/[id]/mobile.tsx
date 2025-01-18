@@ -33,14 +33,14 @@ export default function Chatting({id}: { id: number }) {
     const addComment = () => {
         if (!newComments.trim()) return; // 빈 댓글 방지
         const formData = new FormData();
-        formData.append("comment", new Blob([JSON.stringify({
+        formData.append("comment", JSON.stringify({
             article_id: selectedArticle.id,
             content: newComments
-        })], {type: "application/json"}));
+        }));
         fetch('/api/board/comment', {
             method: "POST",
             body: formData
-        }).then(r => /*r.json()).then(r => */ {
+        }).then(r => r.blob()).then(r => {
             console.log(r);
             reload();
         });
