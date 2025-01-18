@@ -12,7 +12,7 @@ import {generateToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  * /api/user/login:
  *  post:
  *      tags:
- *          - User
+ *          - User/Account
  *      description: Login
  *      requestBody:
  *          required: true

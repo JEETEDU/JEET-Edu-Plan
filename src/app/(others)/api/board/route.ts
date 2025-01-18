@@ -220,9 +220,6 @@ export async function POST(req: NextRequest) {
  *                   content:
  *                     type: string
  *                     example: "This is the content of the article."
- *                   is_notice:
- *                     type: integer
- *                     example: 0
  *                   category:
  *                     type: integer
  *                     example: 2
@@ -291,15 +288,12 @@ export async function PATCH(req: NextRequest) {
 
             let title: string = article_json.title?.toString() ?? '';
             let content: string = article_json.content?.toString() ?? '';
-            let is_notice: number = parseInt(article_json.is_notice ?? -1);
             let category: number = parseInt(article_json.category ?? -1);
             let subject_id: number = parseInt(article_json.subject_id ?? -1);
             let attach_files: SavedFileList = article_json.attach_files ?? [];
 
             if (!article_id) return return_400("article_id is required");
             if (title && title.length > 255) return return_400("title is too long");
-            if (Number.isNaN(is_notice) || is_notice !== 1 && is_notice !== 0 && is_notice !== -1) return return_400("is_notice should be 0 or 1");
-            if (is_notice === 1 && user_type < UserType.TEACHER) return return_permission_denied();
             if (Number.isNaN(category)) return return_400("category should be a number");
             if (ArticleCategory[category] === undefined) return return_400("Invalid category");
             if (category === ArticleCategory.HOMEWORK) return return_400("Cannot update into homework category");
@@ -316,7 +310,6 @@ export async function PATCH(req: NextRequest) {
             let update_data: any = {}
             if (title) update_data['title'] = title;
             if (content) update_data['content'] = content;
-            if (is_notice !== -1) update_data['notice'] = is_notice;
             if (category !== -1) update_data['category'] = category;
             if (subject_id !== -1) {
                 console.log(article_.class_id);
@@ -365,17 +358,13 @@ export async function PATCH(req: NextRequest) {
  *     description: Deletes an existing article. Only the user who created the article or a teacher can delete it. You cannot delete homework articles. If you want to delete a homework article, use the homework API.
  *     tags:
  *       - Board
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               article_id:
- *                 type: integer
- *                 description: The ID of the article to be deleted.
- *                 example: 123
+ *     parameters:
+ *       - in: query
+ *         name: article_id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the article to delete.
  *     responses:
  *       200:
  *         description: Article successfully deleted.
@@ -405,8 +394,8 @@ export async function DELETE(req: NextRequest) {
             let decoded: DecodedToken | false = verifyToken(token);
             if (!decoded) return return_not_logged_in();
 
-            const data = await req.json();
-            const article_id = parseInt(data.article_id ?? '');
+            const data = req.nextUrl.searchParams;
+            const article_id = parseInt(data.get('article_id') ?? '');
             if (Number.isNaN(article_id)) return return_400("article_id is required");
 
             let user_id = decoded.user_id;
@@ -691,7 +680,7 @@ export async function GET(req: NextRequest) {
         query = query.limit(limit).offset((page - 1) * limit);
 
         let [articles] = await db.execute(query);
-        console.log(articles);
+
         return NextResponse.json({
             success: true,
             // @ts-ignore
