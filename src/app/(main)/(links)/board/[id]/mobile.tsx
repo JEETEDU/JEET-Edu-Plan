@@ -1,16 +1,19 @@
 "use client";
 
 import TextareaAutosize from "react-textarea-autosize";
-import {useEffect, useState} from "react";
-import {cn, getStoreData, POST} from "@/app/(main)/components/functions";
+import {ChangeEvent, useEffect, useState} from "react";
+import {cn, PATCH} from "@/app/(main)/components/functions";
 import Scrollbars from "react-custom-scrollbars-2";
 import {IArticle, IComment, initArticle, loadArticleInfo} from "@/app/(main)/(links)/board/component";
 import {Category, Subject} from "@/app/(main)/(links)/home/(pages)/desktop";
+import Link from "next/link";
 
 // eslint-disable-next-line @next/next/no-async-client-component
-export default function Chatting({id}: { id: number }) {
+export default function Chatting({id, uid}: { id: number; uid: number }) {
     const [selectedArticle, setSelectedArticle] = useState<IArticle>(initArticle);
-    const [comments, setComments] = useState<IComment[]>([])
+    const [comments, setComments] = useState<IComment[]>([]);
+    const [editComment, setEditComment] = useState<IComment>();
+    const [fileList, setFileList] = useState<File[]>([]);
 
     function reload() {
         (async () => {
@@ -21,6 +24,7 @@ export default function Chatting({id}: { id: number }) {
 
             setSelectedArticle(articleInfo.article);
             setComments(articleInfo.comments);
+            setFileList([]);
         })();
     }
 
@@ -37,6 +41,9 @@ export default function Chatting({id}: { id: number }) {
             article_id: selectedArticle.id,
             content: newComments
         }));
+        fileList.map((file: File) => {
+            formData.append("files", file);
+        })
         fetch('/api/board/comment', {
             method: "POST",
             body: formData
@@ -48,6 +55,10 @@ export default function Chatting({id}: { id: number }) {
     };
 
     const [screen, setScreen] = useState(1);
+
+    const fileInput = () => {
+        document.getElementById("fileUpload")!.click();
+    }
 
     return (
         <div className="bg-gray-100 px-4 flex flex-col gap-4 h-full">
@@ -90,61 +101,135 @@ export default function Chatting({id}: { id: number }) {
             </div>
 
             {/* Comments Section */}
-            {(screen < 2) && (
-                <>
-                    <div className="flex-1 w-full overflow-hidden flex flex-col">
-                        {/*<h3 className="text-lg font-semibold text-gray-800 mb-4">댓글</h3>*/}
-                        <Scrollbars
-                            className="w-full h-full"
-                            universal
-                            autoHide
-                        >
+            {screen < 2 && <>
+                <div className="flex-1 w-full overflow-hidden flex flex-col">
+                    {/*<h3 className="text-lg font-semibold text-gray-800 mb-4">댓글</h3>*/}
+                    <Scrollbars
+                        className="w-full h-full"
+                        universal
+                        autoHide
+                    >
+                        <div className="flex flex-col space-y-2 w-full">
                             {comments.map((comment, index) => (
                                 <div
                                     key={index}
-                                    className="p-4 bg-white border rounded-lg flex items-start gap-4 my-2"
+                                    className="p-3 bg-white border rounded-lg flex flex-col items-center gap-2"
                                 >
-                                    {/*<div className="flex-shrink-0 bg-blue-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold">*/}
-                                    {/*    {comment.name.charAt(0)}*/}
-                                    {/*</div>*/}
-                                    <div className="flex-grow">
-                                        <div className="flex justify-between items-center">
-                                            <h4 className="font-semibold text-gray-700">{comment.name}</h4>
-                                            {comment.attach_files.length > 0 && (
-                                                <a
-                                                    href="#"
-                                                    className="text-sm text-blue-500 hover:underline"
-                                                >
-                                                    {/*{comment.attach_files} 다운로드*/}
-                                                </a>
+                                    <div className="flex flex-row justify-between items-center gap-4 w-full text-sm">
+                                        <div className={cn(
+                                            "p-1 border-2 border-green rounded h-full text-black",
+                                            {'bg-green font-bold': (comment.user_id === uid)}
+                                        )}>
+                                            {comment.user_name}
+                                        </div>
+                                        <div>
+                                            {(comment.user_id === uid) && (
+                                                <div className="p-1 border-2 border-blue rounded h-full cursor-pointer hover:bg-blue hover:text-white duration-200">
+                                                    <div className="i-system-uicons-write"/>
+                                                </div>
                                             )}
                                         </div>
-                                        <div className="mt-1 w-full break-all">{comment.content}</div>
+                                    </div>
+                                    <div className="whitespace-break-spaces w-full justify-start border rounded p-1">
+                                        {comment.content}
+                                    </div>
+                                    <div className="flex flex-row justify-end items-center gap-4 w-full text-sm">
+                                        <Scrollbars
+                                            className="flex-1 h-full"
+                                            universal
+                                            autoHide
+                                            autoHeight
+                                        >
+                                            <div className="flex flex-row gap-2 text-sm mb-2 items-center">
+                                                {comment.attach_files.map((file, index) => (
+                                                    <Link
+                                                        key={index}
+                                                        className="flex items-center border rounded whitespace-nowrap p-1"
+                                                        href={file.path}
+                                                    >
+                                                        {file.name}
+                                                    </Link>
+                                                ))}
+                                            </div>
+                                        </Scrollbars>
+                                        <div className="text-gray-600">
+                                            {(comment.create_time === comment.update_time) ? (
+                                                (new Date(comment.create_time)).toLocaleString()
+                                            ) : (
+                                                `${(new Date(comment.update_time)).toLocaleString()} 에 업데이트됨`
+
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             ))}
-                        </Scrollbars>
-                    </div>
+                        </div>
+                    </Scrollbars>
+                </div>
 
-                    <div className="bg-white shadow rounded-lg w-full flex p-1 justify-between items-center">
+                <div className="bg-white shadow rounded-lg w-full p-2 space-y-1">
+                    {/*<div>*/}
+                    <div className="grid grid-cols-2 gap-1" style={{gridTemplateColumns: "1fr auto"}}>
                         <TextareaAutosize
                             cacheMeasurements={true}
-                            className="mx-3 w-full overflow-hidden resize-none m-1"
+                            className="flex-grow overflow-hidden resize-none outline-none"
                             placeholder="댓글을 입력해 주세요"
                             onChange={(e) => {
                                 setNewComments(e.target.value)
                             }}
                             value={newComments}
                         />
-                        <button
-                            className="h-full bg-blue-300 rounded-lg content-center hover:bg-blue-500"
+                        <div
+                            className="h-full bg-blue-300 rounded-lg content-center hover:bg-blue-500 p-1"
                             onClick={addComment}
                         >
-                            <div className="i-system-uicons-arrow-up-circle text-xl m-1"/>
+                            <div className="i-system-uicons-arrow-up-circle"/>
+                        </div>
+                    </div>
+                    <hr/>
+                    <div
+                        className="grid justify-between w-full items-center h-fit gap-2"
+                        style={{gridTemplateColumns: "1fr auto"}}
+                    >
+                        <Scrollbars
+                            className="w-full h-full"
+                            universal
+                            autoHide
+                            autoHeight
+                        >
+                            <div className="flex flex-row gap-2 text-sm mb-2 items-center">
+                                {(fileList.length === 0) && (
+                                    <div className="text-gray-500">
+                                        {"파일이 선택되지 않았습니다."}
+                                    </div>
+                                )}
+                                {fileList.map((file, index) => (
+                                    <div key={index} className="flex items-center border rounded whitespace-nowrap p-1">
+                                        {file.name}
+                                    </div>
+                                ))}
+                            </div>
+                        </Scrollbars>
+                        <button
+                            className="h-full bg-blue-300 rounded-lg content-center hover:bg-blue-500 p-1"
+                            onClick={fileInput}
+                        >
+                            <div className="i-system-uicons-files-stack"/>
                         </button>
                     </div>
-                </>
-            )}
+                </div>
+                <input
+                    type="file"
+                    style={{display: "none"}}
+                    id="fileUpload"
+                    onChange={(e) => {
+                        if (e.target.files) {
+                            setFileList(Array.from(e.target.files));
+                        }
+                    }}
+                    multiple
+                />
+            </>}
         </div>
     );
 }
