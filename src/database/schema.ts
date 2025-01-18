@@ -149,10 +149,9 @@ export const todayAnswers = mysqlTable('today_answer', {
 export const todoes = mysqlTable('todo', {
     id: int().autoincrement().primaryKey(),
     user_id: int().notNull().references(() => users.uid, { onDelete: 'cascade' }),
-    due_date: date().notNull(),
+    due_date: date(),
     content: text().notNull(),
-    done: tinyint().default(0),
-    article_id: int().references(() => homeworks.article_id, { onDelete: 'cascade' }),
+    done: tinyint().default(0)
 });
 
 // Timetable table
