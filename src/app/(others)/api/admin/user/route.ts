@@ -503,7 +503,7 @@ export async function GET(req: NextRequest) {
         const limit = parseInt(data.get('limit') ?? '10');
         const search_by = data.get('search_by') ?? '';
         const search_string = data.get('search_string') ?? '';
-        const user_type = parseInt(data.get('user_type') ?? '');
+        const user_type = parseInt(data.get('user_type') ?? '-1');
         const order_by = data.get('order_by') ?? 'name';
         const order = (data.get('order') ?? 'ASC').toUpperCase();
 
@@ -528,7 +528,7 @@ export async function GET(req: NextRequest) {
             else if (search_by == 'joined_term') where_clause = like(schema.users.joined_term, `%${search_string}%`);
             else return return_400('Invalid search_by');
         }
-        if (user_type) {
+        if (user_type !== -1) {
             if (isNaN(user_type)) return return_400('Invalid user_type');
             where_clause = and(
                 eq(schema.users.user_type, user_type),

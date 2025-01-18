@@ -63,16 +63,22 @@ import {save_files} from "@/app/(others)/api/(tools)/files";
  *                       type: string
  *                     comment_count:
  *                       type: integer
- *                     user_id:
- *                       type: integer
- *                     user_name:
- *                       type: string
- *                     user_type:
- *                       type: integer
- *                     subject_id:
- *                       type: integer
- *                     subject_name:
- *                       type: string
+ *                     user:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: integer
+ *                         name:
+ *                           type: string
+ *                         user_type:
+ *                           type: integer
+ *                     subject:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: integer
+ *                         name:
+ *                           type: string
  *                     attach_files:
  *                       type: array
  *                       items:
@@ -183,7 +189,27 @@ export async function GET(req: NextRequest, { params }: { params: { article_id: 
 
         return NextResponse.json({
             success: true,
-            article: article,
+            article: {
+                id: article.id,
+                title: article.title,
+                content: article.content,
+                create_time: article.create_time,
+                update_time: article.update_time,
+                attach_files_exist: article.attach_files_exist,
+                category: article.category,
+                notice: article.notice,
+                due_date: article.due_date,
+                comment_count: article.comment_count,
+                user: {
+                    id: article.user_id,
+                    name: article.user_name,
+                    user_type: article.user_type
+                },
+                subject: {
+                    id: article.subject_id,
+                    name: article.subject_name
+                }
+            },
             comments: comments.map((comment) => {
                 // @ts-ignore
                 comment.attach_files = comment.attach_files ? JSON.parse(comment.attach_files) : [];
