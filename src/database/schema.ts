@@ -217,6 +217,6 @@ export const studentClassesRelations = relations(
 );
 
 export const file = mysqlTable('file', {
-    id: char({length: 11}).primaryKey(),
+    id: char({length: 12}).primaryKey(),
     name: varchar({length: 255}).notNull(),
 });
