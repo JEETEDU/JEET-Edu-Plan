@@ -28,8 +28,6 @@ export async function middleware(req: NextRequest) {
         res = NextResponse.redirect(new URL('/', req.nextUrl.origin));
     }
 
-    // console.log(res);
-
     res.cookies.set("isMobile", isMobile);
 
     return res;

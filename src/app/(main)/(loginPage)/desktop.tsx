@@ -17,7 +17,7 @@ export default function Desktop() {
         }).then(res => {
             if (res.success) {
                 console.log(res);
-                // router.replace('/home');
+                router.push('/home');
             } else {
                 setError({message: res.message, color: "text-red-600"});
             }
@@ -143,8 +143,8 @@ export default function Desktop() {
                             <div className={cn('font-bold', error.color)}>
                                 {error.message}
                             </div>
-                            <button
-                                className="component-button"
+                            <div
+                                className="component-button cursor-pointer"
                                 onClick={
                                     isLogin ? (
                                         () => {
@@ -160,7 +160,7 @@ export default function Desktop() {
                                 }
                             >
                                 {isLogin ? "로그인" : "회원가입"}
-                            </button>
+                            </div>
                         </div>
                     </form>
                 </div>
