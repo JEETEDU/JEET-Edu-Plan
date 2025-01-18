@@ -7,7 +7,7 @@ import {
     return_400,
     return_500,
     return_not_logged_in,
-    return_permission_denied, to_date_string, to_time_string,
+    return_permission_denied, to_date_string, to_time_string, todayString,
     UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {verifyToken} from "@/app/(others)/api/(tools)/auth";
@@ -213,7 +213,7 @@ export async function GET(req: NextRequest) {
                 return return_400('Invalid date format');
             }
         }
-        else date = sql`CURDATE()`;
+        else date = todayString();
 
         let queryBuilder = new QueryBuilder();
         let query =
@@ -289,7 +289,7 @@ export async function GET(req: NextRequest) {
                 .from(schema.todayQuestions)
                 .where(
                     // @ts-ignore
-                    eq(schema.todayQuestions.date, date ? date : sql`CURDATE()`)
+                    eq(schema.todayQuestions.date, date ? date : todayString())
                 );
 
         return NextResponse.json({
@@ -306,8 +306,8 @@ export async function GET(req: NextRequest) {
                         joined_term: user.joined_term
                     },
                     sleep: {
-                        sleep: (user.sleep ? to_time_string(new Date(user.sleep)) : null),
-                        wakeup: (user.wakeup ? to_time_string(new Date(user.wakeup)) : null)
+                        sleep: new Date(user.sleep),
+                        wakeup: new Date(user.wakeup)
                     },
                     answers: {
                         answer_1: user.answer_1,

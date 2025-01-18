@@ -12,7 +12,7 @@ import {
     date,
     time,
     mysqlEnum,
-    primaryKey
+    primaryKey, text
 } from "drizzle-orm/mysql-core";
 import {relations, sql} from "drizzle-orm";
 
@@ -124,21 +124,21 @@ export const sleeps = mysqlTable('sleep', {
 // Today Question table
 export const todayQuestions = mysqlTable('today_question', {
     date: date().notNull().primaryKey(),
-    question_1: longtext(),
-    question_2: longtext(),
-    question_3: longtext()
+    question_1: text(),
+    question_2: text(),
+    question_3: text()
 });
 
 // Today Answer table
 export const todayAnswers = mysqlTable('today_answer', {
     date: date().notNull(),
     user_id: int().notNull().references(() => users.uid, { onDelete: 'cascade' }),
-    answer_1: longtext(),
-    answer_2: longtext(),
-    answer_3: longtext(),
-    answer_lastday: longtext(),
-    answer_school: longtext(),
-    answer_academy: longtext()
+    answer_1: text(),
+    answer_2: text(),
+    answer_3: text(),
+    answer_lastday: text(),
+    answer_school: text(),
+    answer_academy: text()
 }, (table) => {
     return {
         pk: primaryKey(table.date, table.user_id)
@@ -149,9 +149,9 @@ export const todayAnswers = mysqlTable('today_answer', {
 export const todoes = mysqlTable('todo', {
     id: int().autoincrement().primaryKey(),
     user_id: int().notNull().references(() => users.uid, { onDelete: 'cascade' }),
-    date: date().notNull(),
-    content: varchar({ length: 255 }).notNull(),
-    done: tinyint(),
+    due_date: date().notNull(),
+    content: text().notNull(),
+    done: tinyint().default(0),
     article_id: int().references(() => homeworks.article_id, { onDelete: 'cascade' }),
 });
 
@@ -179,7 +179,7 @@ export const comments = mysqlTable('comment', {
     user_id: int().notNull().references(() => users.uid),
     create_time: datetime().notNull().default(sql`CURRENT_TIMESTAMP()`),
     update_time: datetime().notNull().default(sql`CURRENT_TIMESTAMP()`),
-    content: longtext().notNull(),
+    content: text().notNull(),
     attach_files: json(),
 });
 
@@ -197,7 +197,7 @@ export const alerts = mysqlTable('alert', {
 export const logs = mysqlTable('log', {
     id: int().autoincrement().primaryKey(),
     user_id: int().notNull().references(() => users.uid),
-    detail: longtext().notNull(),
+    detail: text().notNull(),
     time: datetime().notNull().default(sql`CURRENT_TIMESTAMP()`),
 });
 

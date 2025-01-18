@@ -57,8 +57,19 @@ export function to_date_string(date: Date): string {
 }
 
 export function to_time_string(date: Date): string {
-    date.setHours(date.getHours() + 9);
+    date.setHours(date.getHours() + date.getTimezoneOffset());
     return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+}
+
+export function parseTime(time: string): Date {
+    const [hour, minute] = time.split(":").map(Number);
+    const date = new Date();
+    date.setHours(hour - date.getTimezoneOffset(), minute, 0, 0);
+    return date;
+}
+
+export function todayString(): string {
+    return to_date_string(new Date());
 }
 
 export function check_date_string(date: string): boolean {
