@@ -49,13 +49,13 @@ import {ArticleCategory} from "@/app/(others)/api/board/tools";
  *           enum: [0, 1]
  *         description: Filter by homework completion status. -1 for all, 0 for incomplete, 1 for completed.
  *       - in: query
- *         name: date_after
+ *         name: start_due_date
  *         schema:
  *           type: string
  *           format: date
  *         description: Filter by homeworks due after the specified date.
  *       - in: query
- *         name: date_before
+ *         name: end_due_date
  *         schema:
  *           type: string
  *           format: date
@@ -142,14 +142,14 @@ export async function GET(req: NextRequest) {
         const page = parseInt(data.get('page') ?? '1');
         const limit = parseInt(data.get('limit') ?? '10');
         const done = parseInt(data.get('done') ?? '-1');
-        const date_before = data.get('date_before') ?? '';
-        const date_after = data.get('date_after') ?? '';
+        const end_due_date = data.get('end_due_date') ?? '';
+        const start_due_date = data.get('start_due_date') ?? '';
         const class_id = parseInt(data.get('class_id') ?? '0');
         const subject_id = parseInt(data.get('subject_id') ?? '0');
 
         if(Number.isNaN(done) || done < -1 || done > 1) return return_400("Invalid value for 'done'.");
-        if(date_after && !check_date_string(date_after)) return return_400("Invalid date format for 'date_after'.");
-        if(date_before && !check_date_string(date_before)) return return_400("Invalid date format for 'date_before'.");
+        if(start_due_date && !check_date_string(start_due_date)) return return_400("Invalid date format for 'start_due_date'.");
+        if(end_due_date && !check_date_string(end_due_date)) return return_400("Invalid date format for 'end_due_date'.");
         if(Number.isNaN(class_id) || class_id < 0) return return_400("Invalid value for 'class_id'.");
         if(Number.isNaN(subject_id) || subject_id < 0) return return_400("Invalid value for 'subject_id'.");
 
@@ -180,8 +180,8 @@ export async function GET(req: NextRequest) {
             .$dynamic();
         let where_clause: SQL<any> | undefined = eq(schema.homeworks.user_id, user_id);
         if(done !== -1) where_clause = and(where_clause, eq(schema.homeworks.done, done));
-        if(date_after) where_clause = and(where_clause, gte(schema.homeworks.due_date, new Date(date_after)));
-        if(date_before) where_clause = and(where_clause, lte(schema.homeworks.due_date, new Date(date_before)));
+        if(start_due_date) where_clause = and(where_clause, gte(schema.homeworks.due_date, new Date(start_due_date)));
+        if(end_due_date) where_clause = and(where_clause, lte(schema.homeworks.due_date, new Date(end_due_date)));
         if(class_id) where_clause = and(where_clause, eq(schema.homeworks.class_id, class_id));
         if(subject_id) where_clause = and(where_clause, eq(schema.homeworks.subject_id, subject_id));
         query = query.where(where_clause).limit(limit).offset((page - 1) * limit);
