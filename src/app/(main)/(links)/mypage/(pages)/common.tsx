@@ -7,6 +7,7 @@ import {TimeInput} from "@/app/(main)/components/common";
 import Select from "react-select";
 import Scrollbars from "react-custom-scrollbars-2";
 import UserDetail from "@/app/(main)/(links)/mypage/(pages)/userDetail";
+import Log from "@/app/(main)/(links)/mypage/(pages)/component/log";
 
 export function IsStudent(
     {
@@ -321,7 +322,8 @@ export function IsAdmin(
     const tabList = [
         "오늘의 질문",
         "유저 목록",
-        "신규 유저 승인"
+        "신규 유저 승인",
+        "Log List"
     ];
 
     useEffect(() => {
@@ -364,10 +366,10 @@ export function IsAdmin(
 
     return (
         <div className="w-full h-full flex flex-col gap-4">
-            <div className={cn(
-                "grid text-xl font-bold gap-2 items-center h-fit",
-                `grid-cols-${tabList.length}`
-            )}>
+            <div
+                className="grid text-xl font-bold gap-2 items-center h-fit grid-cols-4"
+                style={{gridTemplateColumns: `repeat(${tabList.length}, minmax(0, 1fr))`}}
+            >
                 {tabList.map((t, i) => {
                     return (
                         <button
@@ -662,6 +664,9 @@ export function IsAdmin(
                         </div>
                     </Scrollbars>
                 </>
+            )}
+            {(tab === 3) && (
+                <Log/>
             )}
         </div>
         //     </Scrollbars>
