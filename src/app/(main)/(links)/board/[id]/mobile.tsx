@@ -2,40 +2,49 @@
 
 import TextareaAutosize from "react-textarea-autosize";
 import {useEffect, useState} from "react";
-import {cn, getStoreData} from "@/app/(main)/components/functions";
+import {cn, getStoreData, POST} from "@/app/(main)/components/functions";
 import Scrollbars from "react-custom-scrollbars-2";
+import {IArticle, IComment, initArticle, loadArticleInfo} from "@/app/(main)/(links)/board/component";
+import {Category, Subject} from "@/app/(main)/(links)/home/(pages)/desktop";
 
 // eslint-disable-next-line @next/next/no-async-client-component
 export default function Chatting({id}: { id: number }) {
-    const [classInfo, setClassInfo] = useState({});
+    const [selectedArticle, setSelectedArticle] = useState<IArticle>(initArticle);
+    const [comments, setComments] = useState<IComment[]>([])
+
+    function reload() {
+        (async () => {
+            const articleInfo: {
+                article: IArticle,
+                comments: IComment[]
+            } = await loadArticleInfo(id);
+
+            setSelectedArticle(articleInfo.article);
+            setComments(articleInfo.comments);
+        })();
+    }
 
     useEffect(() => {
-        (async () => {
-            const _class = (await getStoreData(`/api/class/${id}`, `class-info-${id}`)).response.class;
-            setClassInfo(_class);
-            console.log(_class)
-        })();
-    }, [id,]);
+        reload();
+    }, [id]);
 
-    const chat = {
-        title: `${id}번 게시물 제목`,
-        content: "내용11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111내용11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111내용11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111내용11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111내용11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111내용11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111내용11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111내용11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111내용11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111내용11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111내용11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111내용11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111내용11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111내용11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111내용11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111내용11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111내용11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111내용11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111내용11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111내용11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111내용11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
-        category: "과제", // 질문, 일반, 공지, 자료, 과제, 등등등
-        due_date: "1월 10일",
-        view_count: 10,
-        comment_count: 10,
-    };
-
-    const [comments, newComments] = useState([{name: "나태양", content: "I am SUN", attach_files: ["1.jpg"]}]);
+    const [newComments, setNewComments] = useState<string>("");
 
     const addComment = () => {
-        const contents = (document.getElementById("comment-contents") as HTMLTextAreaElement).value;
-        if (!contents.trim()) return; // 빈 댓글 방지
-        newComments((prevComments) => [
-            ...prevComments,
-            {name: "나태양", content: contents, attach_files: ["1.jpg"]},
-        ]);
-        (document.getElementById("comment-contents") as HTMLTextAreaElement).value = ""; // 입력란 초기화
+        if (!newComments.trim()) return; // 빈 댓글 방지
+        const formData = new FormData();
+        formData.append("comment", JSON.stringify({
+            article_id: selectedArticle.id,
+            content: newComments
+        }));
+        fetch('/api/board/comment', {
+            method: "POST",
+            body: formData
+        }).then(r => r.blob()).then(r => {
+            console.log(r);
+            reload();
+        });
+        setNewComments(""); // 입력란 초기화
     };
 
     const [screen, setScreen] = useState(1);
@@ -50,7 +59,7 @@ export default function Chatting({id}: { id: number }) {
             )}>
                 <div className="flex items-start justify-between">
                     <h2 className="text-xl font-bold text-gray-800 mb-2 break-all">
-                        {classInfo.name || ""}
+                        {selectedArticle.title || ""}
                     </h2>
                     <div className="flex gap-1 w-fit">
                         <button className="i-system-uicons-scale" onClick={() => setScreen(1)}/>
@@ -66,14 +75,14 @@ export default function Chatting({id}: { id: number }) {
                                 {"overflow-hidden truncate": screen < 2}
                             )}
                         >
-                            {chat.content}
+                            {selectedArticle.content}
                         </div>
-                        <div className="flex items-center justify-between text-sm text-gray-500 mt-4">
-                            <span className="bg-blue-100 text-blue-500 px-2 py-1 rounded">{chat.category}</span>
-                            <div className="flex gap-4">
-                                <span>조회수: {chat.view_count}</span>
-                                <span>댓글: {chat.comment_count}</span>
-                                <span>마감일: {chat.due_date}</span>
+                        <div className="flex items-center justify-between text-sm text-gray-500 mt-4 gap-2">
+                            <Category category={selectedArticle.category}/>
+                            <Subject subject={selectedArticle.subject.name || ""}/>
+                            <div className="flex gap-4 flex-1 justify-end">
+                                <span>댓글: {comments.length}</span>
+                                <span>마감일: {selectedArticle.due_date}</span>
                             </div>
                         </div>
                     </>
@@ -106,11 +115,11 @@ export default function Chatting({id}: { id: number }) {
                                                     href="#"
                                                     className="text-sm text-blue-500 hover:underline"
                                                 >
-                                                    {comment.attach_files} 다운로드
+                                                    {/*{comment.attach_files} 다운로드*/}
                                                 </a>
                                             )}
                                         </div>
-                                        <div className="text-gray-600 mt-1 w-full break-all">{comment.content}</div>
+                                        <div className="mt-1 w-full break-all">{comment.content}</div>
                                     </div>
                                 </div>
                             ))}
@@ -122,7 +131,10 @@ export default function Chatting({id}: { id: number }) {
                             cacheMeasurements={true}
                             className="mx-3 w-full overflow-hidden resize-none m-1"
                             placeholder="댓글을 입력해 주세요"
-                            id={"comment-contents"}
+                            onChange={(e) => {
+                                setNewComments(e.target.value)
+                            }}
+                            value={newComments}
                         />
                         <button
                             className="h-full bg-blue-300 rounded-lg content-center hover:bg-blue-500"
