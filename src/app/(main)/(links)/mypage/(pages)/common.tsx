@@ -126,7 +126,7 @@ export function IsStudent(
                         <div className="font-bold text-red-600 items-center">
                             {error}
                         </div>
-                        <div
+                        <button
                             className={cn(
                                 "text-white rounded-lg font-semibold p-1",
                                 {"bg-blue hover:bg-blue-700": !editAnswer},
@@ -136,7 +136,7 @@ export function IsStudent(
                             onClick={update}
                         >
                             {(editAnswer) ? "응답 저장하기" : "응답 수정하기"}
-                        </div>
+                        </button>
                     </div>
                 )}
             </div>
@@ -370,7 +370,7 @@ export function IsAdmin(
             )}>
                 {tabList.map((t, i) => {
                     return (
-                        <div
+                        <button
                             key={i}
                             className={cn(
                                 "flex justify-center hover:bg-gray-300 p-1 rounded",
@@ -379,7 +379,7 @@ export function IsAdmin(
                             onClick={() => setTab(i)}
                         >
                             {t}
-                        </div>
+                        </button>
                     )
                 })}
             </div>
@@ -390,7 +390,7 @@ export function IsAdmin(
                             오늘의 질문 목록 ({date.toLocaleDateString()})
                         </div>
                         {(today.getDate() === date.getDate()) && (
-                            <div
+                            <button
                                 className={cn(
                                     "px-3 py-1 text-white text-lg font-bold rounded w-fit",
                                     {"bg-blue hover:bg-blue-700": !editQuestion},
@@ -409,7 +409,7 @@ export function IsAdmin(
                                 ) : (
                                     "등록하기"
                                 )}
-                            </div>
+                            </button>
                         )}
                     </div>
                     <Scrollbars
@@ -522,17 +522,17 @@ export function IsAdmin(
                                     })
                                 }}
                             />
-                            <div
+                            <button
                                 className="i-heroicons-outline-search"
                                 onClick={refreshUser}
                             />
                         </div>
-                        <div
+                        <button
                             className="px-3 py-1 bg-blue-500 text-white text-lg font-bold rounded hover:bg-blue-600 w-fit"
                             onClick={refreshUser}
                         >
                             새로고침
-                        </div>
+                        </button>
                     </div>
                     <div className="grid grid-cols-3 gap-6 h-full">
                         <Scrollbars
@@ -597,12 +597,12 @@ export function IsAdmin(
                         <div className="text-3xl text-gray-800 font-semibold">
                             신규 학생/선생님 목록
                         </div>
-                        <div
+                        <button
                             className="px-3 py-1 bg-blue-500 text-white text-lg font-bold rounded hover:bg-blue-600 w-fit"
                             onClick={refreshNewUser}
                         >
                             새로고침
-                        </div>
+                        </button>
                     </div>
                     <Scrollbars
                         className="w-full flex-1"
@@ -622,7 +622,7 @@ export function IsAdmin(
                                             </div>
                                         </div>
                                         <div className="flex flex-row gap-2">
-                                            <div
+                                            <button
                                                 className={cn(
                                                     "px-3 py-1 text-white text-lg font-bold rounded",
                                                     (u.reject) ? "bg-black" : "bg-red-500 hover:bg-red-600 w-fit"
@@ -637,8 +637,8 @@ export function IsAdmin(
                                                 }}
                                             >
                                                 {u.reject ? "거절완료" : "거절하기"}
-                                            </div>
-                                            <div
+                                            </button>
+                                            <button
                                                 className={cn(
                                                     "px-3 py-1 text-white text-lg font-bold rounded",
                                                     (u.reject) ? "bg-gray-500" : (u.accept) ? "bg-blue-500" : "bg-green-500 hover:bg-green-600 w-fit",
@@ -654,7 +654,7 @@ export function IsAdmin(
                                                 }}
                                             >
                                                 {u.accept ? "승인완료" : "승인하기"}
-                                            </div>
+                                            </button>
                                         </div>
                                     </div>
                                 )

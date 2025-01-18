@@ -1,5 +1,4 @@
 import {NextRequest, NextResponse} from "next/server";
-import {getStoreData} from "@/app/(main)/components/functions";
 
 export async function middleware(req: NextRequest) {
     const userAgent = req.headers.get('user-agent') || '';
@@ -23,14 +22,11 @@ export async function middleware(req: NextRequest) {
 
     let res = NextResponse.next();
 
-    if (!hasToken && req.nextUrl.pathname !== '/') {
-        res = NextResponse.redirect(new URL('/', req.nextUrl.origin));
-    } else if (hasToken && req.nextUrl.pathname === '/') {
+    if (hasToken && req.nextUrl.pathname === '/') {
         res = NextResponse.redirect(new URL('/home', req.nextUrl.origin));
+    } else if (!hasToken && req.nextUrl.pathname !== '/') {
+        res = NextResponse.redirect(new URL('/', req.nextUrl.origin));
     }
-    // else if (hasToken && userInfo.response.user.user_type === 0) {
-    //     res = NextResponse.redirect(new URL('/new', req.nextUrl.origin));
-    // }
 
     res.cookies.set("isMobile", isMobile);
 
