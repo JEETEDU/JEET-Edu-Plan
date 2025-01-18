@@ -100,9 +100,9 @@ export const homeworks = mysqlTable('homework', {
     user_id: int().notNull().references(() => users.uid, { onDelete: 'cascade' }),
     due_date: date(),
     done: tinyint(),
-    cid: int().notNull().references(() => classes.id, { onDelete: 'cascade' }),
+    class_id: int().notNull().references(() => classes.id, { onDelete: 'cascade' }),
     title: varchar({ length: 255 }).notNull(),
-    subject_id: int().notNull().references(() => subjects.id, { onDelete: 'cascade' }),
+    subject_id: int().references(() => subjects.id, { onDelete: 'cascade' }),
 }, (table) => {
     return {
         pk: primaryKey(table.article_id, table.user_id)
