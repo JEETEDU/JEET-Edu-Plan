@@ -448,58 +448,58 @@ export async function DELETE(req: NextRequest) {
  *         schema:
  *           type: integer
  *           default: 1
- *           description: The page number for pagination.
+ *         description: The page number for pagination.
  *       - in: query
  *         name: limit
  *         required: false
  *         schema:
  *           type: integer
  *           default: 10
- *           description: The number of articles per page.
+ *         description: The number of articles per page.
  *       - in: query
  *         name: class_id
  *         required: true
  *         schema:
  *           type: integer
- *           description: The ID of the class to retrieve articles for.
+ *         description: The ID of the class to retrieve articles for.
  *       - in: query
  *         name: subject_id
  *         required: false
  *         schema:
  *           type: integer
- *           description: Filter articles by the subject ID.
+ *         description: Filter articles by the subject ID.
  *       - in: query
  *         name: category
  *         required: false
  *         schema:
  *           type: integer
- *           description: Filter articles by their category (-1 or empty means no filter).
+ *         description: Filter articles by their category (-1 or empty means no filter).
  *       - in: query
  *         name: notice
  *         required: false
  *         schema:
  *           type: integer
- *           description: Filter articles by notice status.
+ *         description: Filter articles by notice status.
  *       - in: query
  *         name: search_by
  *         required: false
  *         schema:
  *           type: string
  *           enum: [title, title_content, author]
- *           description: Search criteria.
+ *         description: Search criteria.
  *       - in: query
  *         name: search_string
  *         required: false
  *         schema:
  *           type: string
- *           description: The search string to match with the given search criterion.
+ *         description: The search string to match with the given search criterion.
  *       - in: query
  *         name: order_by
  *         required: false
  *         schema:
  *           type: string
  *           enum: [created_at, updated_at]
- *           description: Field to order the articles by.
+ *         description: Field to order the articles by.
  *       - in: query
  *         name: order
  *         required: false
@@ -507,13 +507,13 @@ export async function DELETE(req: NextRequest) {
  *           type: string
  *           enum: [ASC, DESC]
  *           default: DESC
- *           description: Sort order for the articles.
+ *         description: Sort order for the articles.
  *       - in: query
  *         name: notice_first
  *         required: false
  *         schema:
  *           type: integer
- *           description: If 1, notice articles will be shown first.
+ *         description: If 1, notice articles will be shown first.
  *     responses:
  *       200:
  *         description: Successfully retrieved articles.
