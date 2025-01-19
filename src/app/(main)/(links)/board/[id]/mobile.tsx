@@ -255,11 +255,30 @@ export default function Chatting({id, uid}: { id: number; uid: number }) {
                             autoHeight
                         >
                             <div className="flex flex-row gap-2 text-sm mb-2 items-center">
-                                {(fileList.length === 0) && (
+                                {((fileList.length === 0) && (editComment == null)) && (
                                     <div className="text-gray-500">
                                         {"파일이 선택되지 않았습니다."}
                                     </div>
                                 )}
+                                {(editComment !== null) && editComment.attach_files.map((file, index) => (
+                                    <div key={index} className="flex gap-1 items-center border rounded whitespace-nowrap pl-1">
+                                        {file.name}
+                                        <div
+                                            className="hover:bg-red p-1 rounded hover:text-white duration-200"
+                                            onClick={() => {
+                                                setEditComment((prev) => {
+                                                    if (prev === null) return;
+                                                    const obj = {...prev};
+                                                    obj.attach_files = obj.attach_files.filter((e) => e.path !== file.path);
+                                                    // console.log(arr);
+                                                    return obj;
+                                                });
+                                            }}
+                                        >
+                                            <div className="i-system-uicons-cross-circle"/>
+                                        </div>
+                                    </div>
+                                ))}
                                 {fileList.map((file, index) => (
                                     <div key={index} className="flex items-center border rounded whitespace-nowrap p-1">
                                         {file.name}
