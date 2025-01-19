@@ -7,6 +7,10 @@ import Scrollbars from "react-custom-scrollbars-2";
 import {IArticle, IComment, initArticle, loadArticleInfo} from "@/app/(main)/(links)/board/component";
 import {Category, Subject} from "@/app/(main)/(links)/home/(pages)/desktop";
 import Link from "next/link";
+import 'react-quill-new/dist/quill.snow.css';
+import dynamic from "next/dynamic";
+
+const ReactQuill = dynamic(() => import('react-quill-new'), {ssr: false})
 
 // eslint-disable-next-line @next/next/no-async-client-component
 export default function Chatting({id}: { id: number }) {
@@ -68,7 +72,7 @@ export default function Chatting({id}: { id: number }) {
         fetch('/api/board/comment', {
             method: "POST",
             body: formData
-        }).then(r => r.blob()).then(r => {
+        }).then(r => r.json()).then(r => {
             console.log(r);
             reload();
         });
@@ -125,15 +129,16 @@ export default function Chatting({id}: { id: number }) {
                     </div>
                 </div>
                 {(screen > 0) && (<>
-                        <div
+                        <ReactQuill
                             className={cn(
                                 "text-gray-600 break-all",
                                 {"grow overflow-y-auto": screen === 2},
                                 {"overflow-hidden truncate": screen < 2}
                             )}
-                        >
-                            {selectedArticle.content}
-                        </div>
+                            value={selectedArticle.content}
+                            readOnly
+                            theme={'bubble'}
+                        />
                         <Scrollbars
                             className="w-full h-fit mt-2"
                             universal

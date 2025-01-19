@@ -2,20 +2,17 @@
 
 import React, {useEffect, useState} from "react";
 import {cn, DELETE, GET} from "@/app/(main)/components/functions";
-import Link from "next/link";
 import Scrollbars from "react-custom-scrollbars-2";
-import {IArticle, initArticle, loadArticle, loadArticleInfo} from "@/app/(main)/(links)/board/component";
+import {IArticle, loadArticle} from "@/app/(main)/(links)/board/component";
 import {ArticleItem} from "@/app/(main)/(links)/board/(pages)/desktop";
 import Notice from "@/app/(main)/(links)/home/[id]/mobile";
-import {toKeyAlias} from "@babel/types";
-import uid = toKeyAlias.uid;
 
 export function Category({category}: { category: number }) {
     const text = [
         "일반",
         "숙제",
         "질문",
-        "Data"
+        "자료"
     ]
     const color = [
         "bg-green-500 text-white border-green-500",
@@ -127,9 +124,12 @@ export default function Desktop() {
         }
 
         (async () => {
-            const resClass: IResponseNotices = await GET('/api/user/notice');
-            if (resClass.success) {
-                setNotices(resClass.notices);
+            const res: IResponseNotices = await GET('/api/user/notice');
+            if (res.success) {
+                setNotices(res.notices);
+                if (res.notices.length > 0) {
+                    setHead(res.notices[0].id);
+                }
             }
         })();
     }, [])
