@@ -118,7 +118,7 @@ export default function Chatting({id}: { id: number }) {
                 {"h-full": screen === 2},
                 // {"max-h-1/4": screen < 2}
             )}>
-                <div className="flex justify-between items-center">
+                <div className="flex items-start justify-between">
                     <h2 className="text-xl font-bold text-gray-800 mb-2 break-all">
                         {selectedArticle.title || ""}
                     </h2>
@@ -173,7 +173,7 @@ export default function Chatting({id}: { id: number }) {
                             <Subject subject={selectedArticle.subject.name || ""}/>
                             <div className="flex gap-4 flex-1 justify-end">
                                 <span>댓글: {comments.length}</span>
-                                <span>마감일: {(new Date(selectedArticle.due_date!)).toLocaleString()}</span>
+                                {/*<span>마감일: {selectedArticle.due_date}</span>*/}
                             </div>
                         </div>
                     </>
