@@ -1,16 +1,15 @@
 "use client";
 
 import React, {useEffect, useState} from "react";
-import {cn, GET, getStoreData} from "@/app/(main)/components/functions";
+import {cn, getStoreData} from "@/app/(main)/components/functions";
 import Link from "next/link";
 import Chatting from "@/app/(main)/(links)/board/[id]/mobile";
 import Scrollbars from "react-custom-scrollbars-2";
-import {b} from "@unocss/preset-web-fonts/shared/preset-web-fonts.TGEYFvVV";
-import {IArticle, IComment, initArticle, loadArticle, loadArticleInfo} from "@/app/(main)/(links)/board/component";
+import {IArticle, loadArticle} from "@/app/(main)/(links)/board/component";
 import Select from "react-select";
 import {Category, Subject} from "@/app/(main)/(links)/home/(pages)/desktop";
 
-export function ArticleItem({article, head = 0, setHead = null}: { article: IArticle, head?: number | null; setHead?: (() => void) | null }) {
+export function ArticleItem({article, head = 0, setHead = null}: { article: IArticle, head?: number | null; setHead?: ((id: number) => void) | null }) {
     return (
         <button
             key={article.id}
@@ -18,20 +17,22 @@ export function ArticleItem({article, head = 0, setHead = null}: { article: IArt
                 "p-4 block bg-white rounded-lg border border-gray-200 w-full",
                 (article.id === head) ? "border-2 border-black" : ""
             )}
-            onClick={() => setHead(article.id)}
+            onClick={() => {
+                if (setHead) setHead(article.id);
+            }}
         >
             <div className={cn(
                 "flex justify-between items-center",
             )}>
                 <span className="font-semibold text-gray-800 text-lg">{article.title}</span>
-                <span className="text-sm text-gray-500">{article.update_time}</span>
+                <span className="text-sm text-gray-500">{(new Date(article.update_time)).toLocaleString()}</span>
             </div>
             <hr className="my-2 border-gray-300"/>
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center justify-start gap-2">
                 <Category category={article.category}/>
                 <Subject subject={article.subject.name}/>
-                <p className="ml-3 text-gray-500 flex-1 flex justify-end">
-                    여기엔 뭐넣지
+                <p className="ml-3 text-black flex-1 flex justify-end">
+                    {article.user.name} 선생님
                 </p>
             </div>
         </button>
@@ -41,7 +42,6 @@ export function ArticleItem({article, head = 0, setHead = null}: { article: IArt
 export default function Desktop() {
     const [head, setHead] = useState<number>(0);
     // const [userType, setUserType] = useState(0);
-    const [uid, setUid] = useState<number>(0);
 
     const [articles, setArticles] = useState<IArticle[]>([]);
 
@@ -61,24 +61,11 @@ export default function Desktop() {
         }
 
         (async () => {
-            const userInfo = (await getStoreData('/api/user/info', 'user-info')).response.user;
-            // setUserType(userInfo.user_type);
-            setUid(userInfo.uid);
-
-            if (userInfo.user_type === 1) {
-                const classList = (await getStoreData("/api/user/class", 'class-list')).response.classes;
-                setClasses(classList);
-                setHead(classList[0].class_id)
-            } else if (userInfo.user_type >= 2) {
-                const classList = (await getStoreData("/api/user/class", 'class-list')).response.classes;
-                setClasses(classList);
-                setHead(classList[0].class_id)
-            }
-
-            const resClass: IResponseClasses = await GET('/api/user/class');
+            const resClass: IResponseClasses = (await getStoreData("/api/user/class", 'class-list')).response;
             if (resClass.success) {
                 setClasses(resClass.classes);
                 const c = resClass.classes[0];
+                console.log(resClass.classes)
                 setSelectedClass(`${c.id}/${c.name} | ${c.description}`);
             }
         })();
@@ -103,7 +90,7 @@ export default function Desktop() {
                 <div className="grid grid-cols-3 overflow-hidden flex-grow">
                     <div className="col-span-2 flex flex-col">
                         <div className="flex-grow w-full">
-                            {(head !== 0) && <Chatting id={head} uid={uid}/>}
+                            {(head !== 0) && <Chatting id={head}/>}
                             {(head === 0) && (
                                 <div className="w-full h-full bg-gray-100 flex justify-center items-center text-xl font-bold text-gray-700">
                                     게시글을 선택해 주세요
@@ -144,11 +131,7 @@ export default function Desktop() {
                         onChange={(e) => setSelectedClass(e.value)}
                     />
 
-                    <div className="flex justify-center">
-                        <div className="p-0 rounded-2xl shadow-2xl pointer-events-auto grid grid-cols-2 component-form">
-
-                        </div>
-                    </div>
+                    <div></div>
 
                     <div className="flex justify-end">
                         <Link
