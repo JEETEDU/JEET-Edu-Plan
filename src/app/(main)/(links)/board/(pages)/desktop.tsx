@@ -55,12 +55,12 @@ export default function Desktop() {
     const [classes, setClasses] = useState<IClass[]>([]);
     const [selectedClass, setSelectedClass] = useState<string>("/로딩중...");
 
-    useEffect(() => {
-        interface IResponseClasses {
-            success: boolean;
-            classes: IClass[];
-        }
+    interface IResponseClasses {
+        success: boolean;
+        classes: IClass[];
+    }
 
+    function reloadClasses() {
         (async () => {
             const resClass: IResponseClasses = (await getStoreData("/api/user/class", 'class-list')).response;
             if (resClass.success) {
@@ -70,6 +70,10 @@ export default function Desktop() {
                 setSelectedClass(`${c.id}/${c.name} | ${c.description}`);
             }
         })();
+    }
+
+    useEffect(() => {
+        reloadClasses();
     }, []);
 
     useEffect(() => {

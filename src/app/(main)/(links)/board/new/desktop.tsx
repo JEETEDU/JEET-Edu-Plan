@@ -175,7 +175,7 @@ export default function HtmlEditor() {
 
     useEffect(() => {
         console.log(content);
-        if (content.title !== JSON.parse(prev).title) router.refresh();
+        // if (content.title !== JSON.parse(prev).title) router.refresh();
     }, [content]);
 
     useEffect(() => {
