@@ -2,20 +2,17 @@
 
 import React, {useEffect, useState} from "react";
 import {cn, DELETE, GET} from "@/app/(main)/components/functions";
-import Link from "next/link";
 import Scrollbars from "react-custom-scrollbars-2";
-import {IArticle, initArticle, loadArticle, loadArticleInfo} from "@/app/(main)/(links)/board/component";
+import {IArticle, loadArticle} from "@/app/(main)/(links)/board/component";
 import {ArticleItem} from "@/app/(main)/(links)/board/(pages)/desktop";
 import Notice from "@/app/(main)/(links)/home/[id]/mobile";
-import {toKeyAlias} from "@babel/types";
-import uid = toKeyAlias.uid;
 
 export function Category({category}: { category: number }) {
     const text = [
         "일반",
         "숙제",
         "질문",
-        "Data"
+        "자료"
     ]
     const color = [
         "bg-green-500 text-white border-green-500",
@@ -127,9 +124,12 @@ export default function Desktop() {
         }
 
         (async () => {
-            const resClass: IResponseNotices = await GET('/api/user/notice');
-            if (resClass.success) {
-                setNotices(resClass.notices);
+            const res: IResponseNotices = await GET('/api/user/notice');
+            if (res.success) {
+                setNotices(res.notices);
+                if (res.notices.length > 0) {
+                    setHead(res.notices[0].id);
+                }
             }
         })();
     }, [])
@@ -140,10 +140,10 @@ export default function Desktop() {
                 {isInfo ? (
                     <div className="flex-1 grid grid-cols-3 overflow-hidden bg-gray-100"> {/* hear */}
                         <div className="col-span-2 bg-white mt-2 mx-4 rounded-lg border">
-                            <div className="flex flex-col gap-4 h-full w-full items-center justify-center p-4">
-                                {(head !== 0) && (
-                                    <Notice id={head}/>
-                                )}
+                            {(head !== 0) && (
+                                <Notice id={head}/>
+                            )}
+                            <div className="flex flex-col gap-4 h-full w-full items-center justify-between p-4">
                                 {(head === 0) && (
                                     <div className="text-center text-4xl flex-1 items-center flex">
                                         공지가 선택되지 않았습니다.

@@ -5,6 +5,9 @@ import Scrollbars from "react-custom-scrollbars-2";
 import {IArticle, initArticle, loadArticleInfo} from "@/app/(main)/(links)/board/component";
 import {Author, Category, Class_, Delete, Hr, Subject, Time, Title, Update} from "@/app/(main)/(links)/home/(pages)/desktop";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+
+const ReactQuill = dynamic(() => import('react-quill-new'), {ssr: false})
 
 // eslint-disable-next-line @next/next/no-async-client-component
 export default function Notice({id}: { id: number }) {
@@ -18,42 +21,49 @@ export default function Notice({id}: { id: number }) {
     }, [id]);
 
     return (
-        <>
-            <div className="flex flex-row gap-4 w-full justify-between items-center">
-                <Class_ class_={selectedNotice.class_?.name || ""}/>
-                <Subject subject={selectedNotice.subject.name || ""}/>
-                <Category category={selectedNotice.category}/>
-                <Title title={selectedNotice.title}/>
-                <Author name={selectedNotice.user.name}/>
-            </div>
-            <Hr/>
-            <Scrollbars
-                className="w-full h-fit"
-                universal
-                autoHide
-                autoHeight
-            >
-                <div className="flex flex-row gap-2 text-sm mb-2 items-center">
-                    {selectedNotice.attach_files!.map((file, index) => (
-                        <Link
-                            key={index}
-                            className="flex items-center border rounded whitespace-nowrap p-1"
-                            href={file.path}
-                        >
-                            {file.name}
-                        </Link>
-                    ))}
+        <div className="flex flex-col gap-4 h-full w-full justify-between p-4">
+            <>
+                <div className="flex flex-row gap-4 w-full justify-between items-center">
+                    <Class_ class_={selectedNotice.class_?.name || ""}/>
+                    <Subject subject={selectedNotice.subject.name || ""}/>
+                    <Category category={selectedNotice.category}/>
+                    <Title title={selectedNotice.title}/>
+                    <Author name={selectedNotice.user.name}/>
                 </div>
-            </Scrollbars>
-            <div className="text-center text-2xl flex-1 items-center flex w-full justify-center rounded">
-                {selectedNotice.content}
-            </div>
-            <Hr/>
-            <div className="flex flex-row gap-4 w-full justify-between items-center">
-                <Update id={selectedNotice.id}/>
-                <Delete id={selectedNotice.id}/>
-                <Time create_time={selectedNotice.create_time} update_time={selectedNotice.update_time}/>
-            </div>
-        </>
+                <Hr/>
+                <Scrollbars
+                    className="w-full h-fit"
+                    universal
+                    autoHide
+                    autoHeight
+                >
+                    <div className="flex flex-row gap-2 text-sm mb-2 items-center">
+                        {selectedNotice.attach_files!.map((file, index) => (
+                            <Link
+                                key={index}
+                                className="flex items-center border rounded whitespace-nowrap p-1"
+                                href={file.path}
+                            >
+                                {file.name}
+                            </Link>
+                        ))}
+                    </div>
+                </Scrollbars>
+            </>
+            <ReactQuill
+                className="text-gray-600 break-all grow"
+                value={selectedNotice.content}
+                readOnly
+                theme={'bubble'}
+            />
+            <>
+                <Hr/>
+                <div className="flex flex-row gap-4 w-full justify-between items-center">
+                    <Update id={selectedNotice.id}/>
+                    <Delete id={selectedNotice.id}/>
+                    <Time create_time={selectedNotice.create_time} update_time={selectedNotice.update_time}/>
+                </div>
+            </>
+        </div>
     );
 }
