@@ -1,8 +1,11 @@
 "use client";
 
-import React, {useState} from "react";
-import {cn} from "@/app/(main)/components/functions";
+import React, {useEffect, useState} from "react";
+import {cn, GET} from "@/app/(main)/components/functions";
 import Link from "next/link";
+import {IArticle, initArticle, loadArticleInfo} from "@/app/(main)/(links)/board/component";
+import Scrollbars from "react-custom-scrollbars-2";
+import {Author, Category, Class_, Delete, Hr, Subject, Time, Title, Update} from "@/app/(main)/(links)/home/(pages)/desktop";
 
 // 더 할 작업
 // 1. 공지사항은 종류에 따라 색으로 구분, 기한 표시 등등
@@ -10,57 +13,23 @@ import Link from "next/link";
 // 3.1. 지금도 나쁘지 않을지도..?
 
 export default function Mobile() {
-    const notifications = [
-        "이 알림은 테스트 메시지입니다.",
-        "새로운 알림이 도착했습니다!",
-        "오늘 할 일을 체크하세요.",
-        "이벤트 참여 기회를 놓치지 마세요.",
-        "보안 업데이트가 필요합니다.",
-        "새로운 메시지가 있습니다.",
-        "친구 요청을 확인하세요.",
-        "업데이트 알림: 새로운 기능이 추가되었습니다.",
-        "건강 체크를 위한 알림입니다.",
-        "계정 설정을 확인하세요.",
-        "새로운 알림이 도착했습니다!",
-        "오늘 할 일을 체크하세요.",
-        "이벤트 참여 기회를 놓치지 마세요.",
-        "보안 업데이트가 필요합니다.",
-        "새로운 메시지가 있습니다.",
-        "친구 요청을 확인하세요.",
-        "업데이트 알림: 새로운 기능이 추가되었습니다.",
-        "건강 체크를 위한 알림입니다.",
-        "계정 설정을 확인하세요.",
-        "이 알림은 테스트 메시지입니다.",
-    ];
-
-    const todo = [
-        {text: "할 일 목록은 만들기 귀찮아요", completed: true},
-        {text: "할 일 목록은 만들기 귀찮아요", completed: false},
-        {text: "할 일 목록은 만들기 귀찮아요", completed: true},
-        {text: "할 일 목록은 만들기 귀찮아요", completed: false},
-        {text: "할 일 목록은 만들기 귀찮아요", completed: true},
-        {text: "할 일 목록은 만들기 귀찮아요", completed: false},
-        {text: "할 일 목록은 만들기 귀찮아요", completed: true},
-        {text: "할 일 목록은 만들기 귀찮아요", completed: false},
-        {text: "할 일 목록은 만들기 귀찮아요", completed: true},
-        {text: "할 일 목록은 만들기 귀찮아요", completed: false},
-    ];
-
     const [isInfo, setIsInfo] = useState(true);
-    const [showCompletedTasks, setShowCompletedTasks] = useState(true);
 
-    // 완료된 할 일의 개수 계산
-    const completedTasks = todo.filter(task => task.completed).length;
-    const totalTasks = todo.length;
-    const progress = (completedTasks / totalTasks) * 100;
+    const [notices, setNotices] = useState<IArticle[]>([]);
 
-    const filteredTasks = showCompletedTasks
-        ? todo
-        : todo.filter(task => !task.completed);  // 완료된 할 일을 숨기면 완료되지 않은 할 일만 필터링
+    useEffect(() => {
+        interface IResponseNotices {
+            success: boolean;
+            notices: IArticle[];
+        }
 
-    const headNotification = {
-        content: "1월 10일에 겨울학기가 시작합니다.",
-    };
+        (async () => {
+            const resClass: IResponseNotices = await GET('/api/user/notice');
+            if (resClass.success) {
+                setNotices(resClass.notices);
+            }
+        })();
+    }, [])
 
     return (
         <div className="flex flex-col h-full">
@@ -87,97 +56,103 @@ export default function Mobile() {
                 </div>
             </div>
 
-            <div className={cn(
-                "text-center text-xl font-bold py-2 bg-gray-100 border-red-600 border-8 h-fit"
-            )}>
-                {headNotification.content}
-            </div>
-
             <div className="flex-grow overflow-hidden">
                 {isInfo ? (
-                    <div className="flex flex-col h-full">
-                        <div className="flex-grow overflow-y-auto p-4 bg-gray-100">
-                            {notifications.map((notification, index) => (
+                    <Scrollbars
+                        className="w-full h-full" // bg-gray-100
+                        universal
+                        autoHide
+                    >
+                        <div className="p-2 space-y-2 flex flex-col h-full">
+                            {notices.map((notice) => (
                                 <Link
-                                    href={`/notifications/${index}`}
-                                    key={index}
-                                    className="block w-full"
+                                    key={notice.id}
+                                    className="p-4 block bg-white rounded-lg border border-gray-200 w-full"
+                                    href={`/home/${notice.id}`}
                                 >
-                                    <div className="p-3 mb-2 bg-white rounded-lg shadow-lg border border-gray-200 w-full">
-                                        {notification}
+                                    <div className={cn(
+                                        "flex justify-between items-center",
+                                    )}>
+                                        <span className="font-semibold text-gray-800 text-lg">{notice.title}</span>
+                                        <span className="text-sm text-gray-500">{(new Date(notice.update_time)).toLocaleString()}</span>
+                                    </div>
+                                    <hr className="my-2 border-gray-300"/>
+                                    <div className="flex items-center justify-between gap-2">
+                                        <Category category={notice.category}/>
+                                        <Subject subject={notice.subject.name}/>
+                                        <p className="ml-3 text-gray-500 flex-1 flex justify-end">
+                                            여기엔 뭐넣지
+                                        </p>
                                     </div>
                                 </Link>
                             ))}
+                            {(notices.length === 0) && (
+                                <div className="w-full flex justify-center h-full items-center">
+                                    공지가 없습니다.
+                                </div>
+                            )}
                         </div>
-                        <div className="h-fit mx-1 pb-1 text-center flex items-center justify-center">
-                            <Link
-                                className="component-button mx-1"
-                                href={'/notifications'}
-                            >
-                                공지사항 보러가기
-                            </Link>
-                        </div>
-                    </div>
+                    </Scrollbars>
                 ) : (
                     <div className="flex flex-col h-full">
-                        <div className="my-4 mx-6">
-                            {/* 진행 상황 표시 */}
-                            <div className="h-fit mx-1 pb-1 text-center flex items-center justify-center">
-                                <span className="font-semibold text-gray-800">
-                                    오늘의 할 일 {completedTasks}/{totalTasks}개 완료
-                                </span>
-                            </div>
+                        {/*<div className="my-4 mx-6">*/}
+                        {/*    /!* 진행 상황 표시 *!/*/}
+                        {/*    <div className="h-fit mx-1 pb-1 text-center flex items-center justify-center">*/}
+                        {/*        <span className="font-semibold text-gray-800">*/}
+                        {/*            오늘의 할 일 {completedTasks}/{totalTasks}개 완료*/}
+                        {/*        </span>*/}
+                        {/*    </div>*/}
 
-                            {/* 진행률 표시 */}
-                            <div className="w-full h-1 bg-gray-200 rounded-full my-4">
-                                <div
-                                    className="h-full bg-blue-500 rounded-full"
-                                    style={{width: `${progress}%`}}
-                                />
-                            </div>
+                        {/*    /!* 진행률 표시 *!/*/}
+                        {/*    <div className="w-full h-1 bg-gray-200 rounded-full my-4">*/}
+                        {/*        <div*/}
+                        {/*            className="h-full bg-blue-500 rounded-full"*/}
+                        {/*            style={{width: `${progress}%`}}*/}
+                        {/*        />*/}
+                        {/*    </div>*/}
 
-                            <div className="flex justify-end w-full">
-                                <button
-                                    className="mx-1 text-gray-600"
-                                    onClick={() => setShowCompletedTasks(!showCompletedTasks)}
-                                >
-                                    {showCompletedTasks ? "완료한 일 숨기기" : "완료한 일 보이기"}
-                                </button>
-                            </div>
-                        </div>
+                        {/*    <div className="flex justify-end w-full">*/}
+                        {/*        <button*/}
+                        {/*            className="mx-1 text-gray-600"*/}
+                        {/*            onClick={() => setShowCompletedTasks(!showCompletedTasks)}*/}
+                        {/*        >*/}
+                        {/*            {showCompletedTasks ? "완료한 일 숨기기" : "완료한 일 보이기"}*/}
+                        {/*        </button>*/}
+                        {/*    </div>*/}
+                        {/*</div>*/}
 
-                        <div className="flex-grow overflow-y-auto p-4 bg-gray-100">
-                            {filteredTasks.map((task, index) => (
-                                <Link
-                                    href={`/homeworks/${index}`}
-                                    key={index}
-                                    className="block w-full"
-                                >
-                                    <div className={`px-4 py-3 mb-4 bg-white rounded-lg shadow-md border-2 ${task.completed ? "border-green-400 bg-green-50" : "border-gray-300"}`}>
-                                        <div className="flex items-center">
-                                        <span className={`${task.completed ? "text-green-600" : "text-gray-700"}`}>
-                                            {task.text}
-                                        </span>
-                                            {task.completed && <div className="i-system-uicons-check"/>}
-                                        </div>
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
-                        <div className="h-fit mx-1 pb-1 text-center flex items-center justify-center">
-                            <Link
-                                className="component-button mx-1"
-                                href={'/homeworks'}
-                            >
-                                숙제 보러가기
-                            </Link>
-                            <Link
-                                className="component-button mx-1"
-                                href={'/home'}
-                            >
-                                할 일 추가하기
-                            </Link>
-                        </div>
+                        {/*<div className="flex-grow overflow-y-auto p-4 bg-gray-100">*/}
+                        {/*    {filteredTasks.map((task, index) => (*/}
+                        {/*        <Link*/}
+                        {/*            href={`/homeworks/${index}`}*/}
+                        {/*            key={index}*/}
+                        {/*            className="block w-full"*/}
+                        {/*        >*/}
+                        {/*            <div className={`px-4 py-3 mb-4 bg-white rounded-lg shadow-md border-2 ${task.completed ? "border-green-400 bg-green-50" : "border-gray-300"}`}>*/}
+                        {/*                <div className="flex items-center">*/}
+                        {/*                <span className={`${task.completed ? "text-green-600" : "text-gray-700"}`}>*/}
+                        {/*                    {task.text}*/}
+                        {/*                </span>*/}
+                        {/*                    {task.completed && <div className="i-system-uicons-check"/>}*/}
+                        {/*                </div>*/}
+                        {/*            </div>*/}
+                        {/*        </Link>*/}
+                        {/*    ))}*/}
+                        {/*</div>*/}
+                        {/*<div className="h-fit mx-1 pb-1 text-center flex items-center justify-center">*/}
+                        {/*    <Link*/}
+                        {/*        className="component-button mx-1"*/}
+                        {/*        href={'/homeworks'}*/}
+                        {/*    >*/}
+                        {/*        숙제 보러가기*/}
+                        {/*    </Link>*/}
+                        {/*    <Link*/}
+                        {/*        className="component-button mx-1"*/}
+                        {/*        href={'/home'}*/}
+                        {/*    >*/}
+                        {/*        할 일 추가하기*/}
+                        {/*    </Link>*/}
+                        {/*</div>*/}
                     </div>
                 )}
             </div>
