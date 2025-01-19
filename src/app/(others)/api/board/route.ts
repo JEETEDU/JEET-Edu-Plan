@@ -45,7 +45,7 @@ import {ArticleCategory} from "@/app/(others)/api/board/tools";
  *                   content:
  *                     type: string
  *                     example: "This is a test article."
- *                   notice:
+ *                   is_notice:
  *                     type: number
  *                     example: 0
  *                   category:
@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
             const token = req.cookies.get("token")?.value ?? '';
-            let decoded: DecodedToken | false = verifyToken(token);
+            const decoded: DecodedToken | false = verifyToken(token);
             if (!decoded) return return_not_logged_in();
 
             const data = await req.formData();
@@ -102,28 +102,28 @@ export async function POST(req: NextRequest) {
             if (!article) return return_400("article is required");
             const article_json = JSON.parse(article.toString());
 
-            let user_id = decoded.user_id;
-            let user_type = decoded.user_type;
+            const user_id = decoded.user_id;
+            const user_type = decoded.user_type;
 
-            let class_id: number = parseInt(article_json.class_id) ?? 0;
-            let title: string = article_json.title.toString() ?? '';
-            let content: string = article_json.content.toString() ?? '';
-            let notice: number = parseInt(article_json.notice ?? 0);
-            let category: number = parseInt(article_json.category ?? 0);
-            let subject_id: number = parseInt(article_json.subject_id ?? 0);
+            const class_id: number = parseInt(article_json.class_id) ?? 0;
+            const title: string = article_json.title.toString() ?? '';
+            const content: string = article_json.content.toString() ?? '';
+            const is_notice: number = parseInt(article_json.is_notice ?? 0);
+            const category: number = parseInt(article_json.category ?? 0);
+            const subject_id: number = parseInt(article_json.subject_id ?? 0);
 
             if (!class_id) return return_400("class_id is required");
             if (!title) return return_400("title is required");
             if (title.length > 255) return return_400("title is too long");
             if (!content) return return_400("content is required");
-            if (Number.isNaN(notice) || notice !== 1 && notice !== 0) return return_400("notice is required(0 or 1)");
-            if (notice === 1 && user_type < UserType.TEACHER) return return_permission_denied();
+            if (Number.isNaN(is_notice) || is_notice !== 1 && is_notice !== 0) return return_400("is_notice is required(0 or 1)");
+            if (is_notice === 1 && user_type < UserType.TEACHER) return return_permission_denied();
             if (Number.isNaN(category)) return return_400("category is required");
             if (ArticleCategory[category] === undefined) return return_400("Invalid category");
             if (category === ArticleCategory.HOMEWORK) return return_400("Cannot create homework article");
             if (Number.isNaN(subject_id)) return return_400("subject_id is required(number)");
 
-            let [class_] =
+            const [class_] =
                 await tx.select({
                     class_count: count(schema.classes.id),
                     user_count: count(schema.users.uid),
@@ -150,15 +150,15 @@ export async function POST(req: NextRequest) {
             if (class_.user_count === 0 && user_type !== UserType.ADMIN) return return_permission_denied();
             if (subject_id && class_.subject_count === 0) return return_400("Subject not found");
 
-            let files_path: SavedFileList = await save_files(tx, files);
+            const files_path: SavedFileList = await save_files(tx, files);
 
-            let [article_id] = await tx.insert(schema.boards).values({
+            const [article_id] = await tx.insert(schema.boards).values({
                     class_id: class_id,
                     user_id: user_id,
                     title: title,
                     content: content,
                     category: category,
-                    notice: notice,
+                    notice: is_notice,
                     subject_id: subject_id === 0 ? null : subject_id,
                     comment_count: 0,
                     attach_files: files_path.length === 0 ? null : files_path
@@ -166,7 +166,7 @@ export async function POST(req: NextRequest) {
             ).$returningId();
 
             if (category === ArticleCategory.QUESTION && subject_id) {
-                let [subject_] =
+                const [subject_] =
                     await tx.select({
                         teacher_id: schema.teacherClasses.user_id
                     })
@@ -179,7 +179,7 @@ export async function POST(req: NextRequest) {
                 await register_alert(tx, subject_.teacher_id, `새 질문이 등록되었습니다.\n${title}`, AlertType.NORMAL, article_id.id);
             }
 
-            if (notice === 1) {
+            if (is_notice === 1) {
                 await register_alert_for_class(tx, class_id, `새 공지사항이 등록되었습니다.\n${title}`, AlertType.NOTICE, article_id.id);
             }
 
@@ -273,7 +273,7 @@ export async function PATCH(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
             const token = req.cookies.get("token")?.value ?? '';
-            let decoded: DecodedToken | false = verifyToken(token);
+            const decoded: DecodedToken | false = verifyToken(token);
             if (!decoded) return return_not_logged_in();
 
             const data = await req.formData();
@@ -283,14 +283,14 @@ export async function PATCH(req: NextRequest) {
             // @ts-ignore
             const files = data.getAll("files") as FileList;
 
-            let user_id = decoded.user_id;
-            let user_type = decoded.user_type;
+            const user_id = decoded.user_id;
+            const user_type = decoded.user_type;
 
-            let title: string = article_json.title?.toString() ?? '';
-            let content: string = article_json.content?.toString() ?? '';
-            let category: number = parseInt(article_json.category ?? -1);
-            let subject_id: number = parseInt(article_json.subject_id ?? -1);
-            let attach_files: SavedFileList = article_json.attach_files ?? [];
+            const title: string = article_json.title?.toString() ?? '';
+            const content: string = article_json.content?.toString() ?? '';
+            const category: number = parseInt(article_json.category ?? -1);
+            const subject_id: number = parseInt(article_json.subject_id ?? -1);
+            const attach_files: SavedFileList = article_json.attach_files ?? [];
 
             if (!article_id) return return_400("article_id is required");
             if (title && title.length > 255) return return_400("title is too long");
@@ -299,7 +299,7 @@ export async function PATCH(req: NextRequest) {
             if (category === ArticleCategory.HOMEWORK) return return_400("Cannot update into homework category");
             if (Number.isNaN(subject_id)) return return_400("subject_id should be a number");
 
-            let [article_] =
+            const [article_] =
                 await tx.select()
                     .from(schema.boards)
                     .where(eq(schema.boards.id, article_id));
@@ -307,13 +307,13 @@ export async function PATCH(req: NextRequest) {
             if (article_.user_id !== user_id && user_type < UserType.TEACHER) return return_permission_denied();
             if (article_.category === ArticleCategory.HOMEWORK) return return_400("Cannot update homework article");
 
-            let update_data: any = {}
+            const update_data: any = {}
             if (title) update_data['title'] = title;
             if (content) update_data['content'] = content;
             if (category !== -1) update_data['category'] = category;
             if (subject_id !== -1) {
                 console.log(article_.class_id);
-                let [subject_] =
+                const [subject_] =
                     await tx.select({
                         subject_id: schema.subjects.id,
                         teacher_id: schema.teacherClasses.user_id
@@ -333,7 +333,7 @@ export async function PATCH(req: NextRequest) {
                     await register_alert(tx, subject_.teacher_id, `새 질문이 등록되었습니다.\n${title}`, AlertType.NORMAL, article_id);
                 }
             }
-            let files_path: SavedFileList = await update_files(tx, files, JSON.parse(article_.attach_files?.toString() ?? '[]'), attach_files);
+            const files_path: SavedFileList = await update_files(tx, files, JSON.parse(article_.attach_files?.toString() ?? '[]'), attach_files);
             if (files_path.length > 0) update_data['attach_files'] = files_path;
             if (article_.attach_files && article_.attach_files != files_path) update_data['attach_files'] = files_path;
 
@@ -391,17 +391,17 @@ export async function DELETE(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
             const token = req.cookies.get("token")?.value ?? '';
-            let decoded: DecodedToken | false = verifyToken(token);
+            const decoded: DecodedToken | false = verifyToken(token);
             if (!decoded) return return_not_logged_in();
 
             const data = req.nextUrl.searchParams;
             const article_id = parseInt(data.get('article_id') ?? '');
             if (Number.isNaN(article_id)) return return_400("article_id is required");
 
-            let user_id = decoded.user_id;
-            let user_type = decoded.user_type;
+            const user_id = decoded.user_id;
+            const user_type = decoded.user_type;
 
-            let [article] =
+            const [article] =
                 await tx.select()
                     .from(schema.boards)
                     .where(eq(schema.boards.id, article_id))
@@ -547,8 +547,6 @@ export async function DELETE(req: NextRequest) {
  *                             type: integer
  *                           name:
  *                             type: string
- *                           user_type:
- *                             type: integer
  *                       subject:
  *                         type: object
  *                         properties:
@@ -568,7 +566,7 @@ export async function DELETE(req: NextRequest) {
 export async function GET(req: NextRequest) {
     try {
         const token = req.cookies.get("token")?.value ?? '';
-        let decoded: DecodedToken | false = verifyToken(token);
+        const decoded: DecodedToken | false = verifyToken(token);
         if (!decoded) return return_not_logged_in();
 
         const data = req.nextUrl.searchParams;
@@ -592,11 +590,11 @@ export async function GET(req: NextRequest) {
         if (Number.isNaN(notice) || notice !== 0 && notice !== 1) return return_400("Invalid notice");
         if (Number.isNaN(notice_first) || notice_first !== 0 && notice_first !== 1) return return_400("Invalid notice_first");
 
-        let user_id = decoded.user_id;
-        let user_type = decoded.user_type;
+        const user_id = decoded.user_id;
+        const user_type = decoded.user_type;
 
         // check permission
-        let [class_] =
+        const [class_] =
             await db.select({
                 class_count: count(schema.classes.id),
                 user_count: count(schema.users.uid)
@@ -617,7 +615,7 @@ export async function GET(req: NextRequest) {
         if (class_.class_count === 0) return return_400("Class not found");
         if (class_.user_count === 0 && user_type !== UserType.ADMIN) return return_permission_denied();
 
-        let queryBuilder: QueryBuilder = new QueryBuilder();
+        const queryBuilder: QueryBuilder = new QueryBuilder();
         let query = queryBuilder.select({
             id: schema.boards.id,
             title: schema.boards.title,
@@ -631,7 +629,6 @@ export async function GET(req: NextRequest) {
             user: {
                 id: sql`${schema.users.uid}`.as('user_id'),
                 name: sql`${schema.users.name}`.as('user_name'),
-                user_type: sql`${schema.users.user_type}`.as('user_type')
             },
             subject: {
                 id: sql`${schema.subjects.id}`.as('subject_id'),
@@ -666,7 +663,7 @@ export async function GET(req: NextRequest) {
         }
         query = query.where(where_clause);
 
-        let orders = [];
+        const orders = [];
         if (notice_first === 1) orders.push(desc(schema.boards.notice));
         if (order_by && order) {
             let order_func = asc;
@@ -682,7 +679,7 @@ export async function GET(req: NextRequest) {
         query = query.orderBy(...orders);
         query = query.limit(limit).offset((page - 1) * limit);
 
-        let [articles] = await db.execute(query);
+        const [articles] = await db.execute(query);
 
         return NextResponse.json({
             success: true,
@@ -701,7 +698,6 @@ export async function GET(req: NextRequest) {
                     user: {
                         id: article.user_id,
                         name: article.user_name,
-                        user_type: article.user_type
                     },
                     subject: {
                         id: article.subject_id,

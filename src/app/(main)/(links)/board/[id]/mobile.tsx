@@ -118,14 +118,25 @@ export default function Chatting({id}: { id: number }) {
                 {"h-full": screen === 2},
                 // {"max-h-1/4": screen < 2}
             )}>
-                <div className="flex items-start justify-between">
+                <div className="flex justify-between items-center">
                     <h2 className="text-xl font-bold text-gray-800 mb-2 break-all">
                         {selectedArticle.title || ""}
                     </h2>
-                    <div className="flex gap-1 w-fit">
+                    <div className="flex gap-1 w-fit items-center">
                         <button className="i-system-uicons-scale" onClick={() => setScreen(1)}/>
                         <button className="i-system-uicons-scale-contract" onClick={() => setScreen(0)}/>
                         <button className="i-system-uicons-scale-extend" onClick={() => setScreen(2)}/>
+                        {(selectedArticle.user.id === uid) && (
+                            <Link
+                                href={{
+                                    pathname: "/board/new",
+                                    query: {prev: JSON.stringify(selectedArticle)}
+                                }}
+                                // as={`/board/new`}
+                            >
+                                수정하기
+                            </Link>
+                        )}
                     </div>
                 </div>
                 {(screen > 0) && (<>
@@ -162,7 +173,7 @@ export default function Chatting({id}: { id: number }) {
                             <Subject subject={selectedArticle.subject.name || ""}/>
                             <div className="flex gap-4 flex-1 justify-end">
                                 <span>댓글: {comments.length}</span>
-                                <span>마감일: {selectedArticle.due_date}</span>
+                                <span>마감일: {(new Date(selectedArticle.due_date!)).toLocaleString()}</span>
                             </div>
                         </div>
                     </>
