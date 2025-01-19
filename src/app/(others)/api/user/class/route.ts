@@ -109,8 +109,8 @@ export async function GET(req: NextRequest) {
                 );
         } else {
             classes = await db.select({
-                class_id: schema.classes.id,
-                class_name: schema.classes.name,
+                id: schema.classes.id,
+                name: schema.classes.name,
                 description: schema.classes.description,
             })
                 .from(schema.classes)

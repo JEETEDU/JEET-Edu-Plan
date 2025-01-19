@@ -9,9 +9,7 @@ export default async function showPage({params}: { params: Promise<{ id: number 
 
     return (
         <Suspense fallback={<h1>Loading...</h1>}>
-            <div className="flex flex-col gap-4 h-full w-full items-center justify-center p-4 bg-white">
-                <Notice id={id}/>
-            </div>
+            <Notice id={id}/>
         </Suspense>
     )
 }

@@ -140,10 +140,10 @@ export default function Desktop() {
                 {isInfo ? (
                     <div className="flex-1 grid grid-cols-3 overflow-hidden bg-gray-100"> {/* hear */}
                         <div className="col-span-2 bg-white mt-2 mx-4 rounded-lg border">
-                            <div className="flex flex-col gap-4 h-full w-full items-center justify-center p-4">
-                                {(head !== 0) && (
-                                    <Notice id={head}/>
-                                )}
+                            {(head !== 0) && (
+                                <Notice id={head}/>
+                            )}
+                            <div className="flex flex-col gap-4 h-full w-full items-center justify-between p-4">
                                 {(head === 0) && (
                                     <div className="text-center text-4xl flex-1 items-center flex">
                                         공지가 선택되지 않았습니다.
