@@ -8,8 +8,9 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 // import {useEffectAsync} from "@/app/(main)/hooks";
 
-export default function Page({isMobile}) {
-    const [error, setError] = useState("");
+export default function Page({isMobile}: { isMobile: boolean }) {
+    const [error, setError] = useState<string>("");
+    const [message, setMessage] = useState<string>("");
     const router = useRouter();
 
     const [name, setName] = useState("Loading...");
@@ -68,12 +69,37 @@ export default function Page({isMobile}) {
 
     const [showCalendar, setShowCalendar] = useState(!isMobile);
 
+    const newPassword = async () => {
+        const newPw = prompt("새로운 비밀번호를 입력하세요");
+        const res = await POST("/api/user/reset_password", {
+            new_password: newPw,
+        });
+        if (res.success) {
+            setMessage(`비밀번호가 [${newPw}]로 변경되었습니다.\n새로고침하면 로그아웃되니 다시 로그인하시길 바랍니다.`);
+        }
+    }
+
+    function Buttons() {
+        return (
+            <div className="flex flex-row gap-4">
+                <button
+                    className="px-3 py-1 bg-red-500 text-white font-bold rounded hover:bg-red-600 w-fit"
+                    onClick={logout}
+                >
+                    로그아웃
+                </button>
+                <button
+                    className="px-3 py-1 bg-red-500 text-white font-bold rounded hover:bg-red-600 w-fit"
+                    onClick={newPassword}
+                >
+                    비밀번호 변경
+                </button>
+            </div>
+        );
+    }
+
     return (
         <>
-            <div className='text-red-600 font-bold'>
-                {error}
-            </div>
-
             <div className="w-full h-full flex flex-col items-center bg-gray-100">
                 <div className="w-full flex flex-row justify-between items-center py-3 px-6">
                     <div className="flex items-center gap-4">
@@ -107,6 +133,12 @@ export default function Page({isMobile}) {
                         </div>
                     </div>
                     <div className="flex flex-row gap-8 items-center">
+                        <div className='text-red-600 font-bold whitespace-break-spaces flex justify-end text-right'>
+                            {error}
+                        </div>
+                        <div className='text-green-600 font-bold whitespace-break-spaces flex justify-end text-right'>
+                            {message}
+                        </div>
                         {(userType === 1) && (
                             <div className="w-fit flex flex-col items-end">
                                 <div className="text-left text-xl font-bold text-gray-800">
@@ -117,14 +149,7 @@ export default function Page({isMobile}) {
                                 </div>
                             </div>
                         )}
-                        {!isMobile && (
-                            <button
-                                className="px-3 py-1 bg-red-500 text-white text-lg font-bold rounded hover:bg-red-600 w-fit"
-                                onClick={logout}
-                            >
-                                로그아웃
-                            </button>
-                        )}
+                        {!isMobile && <Buttons/>}
                     </div>
                 </div>
                 {isMobile && (
@@ -216,14 +241,7 @@ export default function Page({isMobile}) {
                                 date={calendarValue}
                             />
                         )}
-                        {isMobile && (
-                            <button
-                                className="m-6 px-4 py-2 bg-red-500 text-white font-bold rounded hover:bg-red-600 w-fit"
-                                onClick={logout}
-                            >
-                                로그아웃
-                            </button>
-                        )}
+                        {isMobile && <Buttons/>}
                     </div>
                 </div>
             </div>

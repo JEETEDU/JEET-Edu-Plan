@@ -1,19 +1,28 @@
 "use client";
 
 import TextareaAutosize from "react-textarea-autosize";
-import {ChangeEvent, useEffect, useRef, useState} from "react";
-import {cn, PATCH} from "@/app/(main)/components/functions";
+import React, {useEffect, useRef, useState} from "react";
+import {cn, getStoreData} from "@/app/(main)/components/functions";
 import Scrollbars from "react-custom-scrollbars-2";
 import {IArticle, IComment, initArticle, loadArticleInfo} from "@/app/(main)/(links)/board/component";
 import {Category, Subject} from "@/app/(main)/(links)/home/(pages)/desktop";
 import Link from "next/link";
 
 // eslint-disable-next-line @next/next/no-async-client-component
-export default function Chatting({id, uid}: { id: number; uid: number }) {
+export default function Chatting({id}: { id: number }) {
     const [selectedArticle, setSelectedArticle] = useState<IArticle>(initArticle);
     const [comments, setComments] = useState<IComment[]>([]);
     const [editComment, setEditComment] = useState<IComment | null>(null);
     const [fileList, setFileList] = useState<File[]>([]);
+
+    const [uid, setUid] = useState<number>(0);
+
+    useEffect(() => {
+        (async () => {
+            const userInfo = (await getStoreData('/api/user/info', 'user-info')).response.user;
+            setUid(userInfo.uid);
+        })();
+    }, []);
 
     const scrollbars = useRef<Scrollbars>(null);
 
@@ -125,6 +134,24 @@ export default function Chatting({id, uid}: { id: number; uid: number }) {
                         >
                             {selectedArticle.content}
                         </div>
+                        <Scrollbars
+                            className="w-full h-fit mt-2"
+                            universal
+                            autoHide
+                            autoHeight
+                        >
+                            <div className="flex flex-row gap-2 text-sm mb-2 items-center">
+                                {selectedArticle.attach_files!.map((file, index) => (
+                                    <Link
+                                        key={index}
+                                        className="flex items-center border rounded whitespace-nowrap p-1"
+                                        href={file.path}
+                                    >
+                                        {file.name}
+                                    </Link>
+                                ))}
+                            </div>
+                        </Scrollbars>
                         <div className="flex items-center justify-between text-sm text-gray-500 mt-4 gap-2">
                             <Category category={selectedArticle.category}/>
                             <Subject subject={selectedArticle.subject.name || ""}/>

@@ -7,12 +7,7 @@ export interface IArticle {
     create_time: string;
     update_time: string;
     attach_files_exist: number;
-    attach_files?: [
-        {
-            name: string;
-            path: string;
-        }
-    ] | [];
+    attach_files?: { name: string; path: string; }[];
     category: number;
     notice: number;
     due_date: string | null;
@@ -20,12 +15,16 @@ export interface IArticle {
     user: {
         id: number;
         name: string;
-        user_type: number;
+        user_type?: number;
     };
     subject: {
         id: number | null;
         name: string | null;
     };
+    class_?: {
+        id: number;
+        name: string;
+    }
 }
 
 export const initArticle: IArticle = {
@@ -48,6 +47,10 @@ export const initArticle: IArticle = {
         id: 0,
         name: "",
         user_type: 0
+    },
+    class_: {
+        id: 0,
+        name: "",
     }
 }
 

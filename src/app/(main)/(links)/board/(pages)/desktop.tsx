@@ -10,9 +10,37 @@ import {IArticle, IComment, initArticle, loadArticle, loadArticleInfo} from "@/a
 import Select from "react-select";
 import {Category, Subject} from "@/app/(main)/(links)/home/(pages)/desktop";
 
+export function ArticleItem({article, head = 0, setHead = null}: { article: IArticle, head?: number | null; setHead?: (() => void) | null }) {
+    return (
+        <button
+            key={article.id}
+            className={cn(
+                "p-4 block bg-white rounded-lg border border-gray-200 w-full",
+                (article.id === head) ? "border-2 border-black" : ""
+            )}
+            onClick={() => setHead(article.id)}
+        >
+            <div className={cn(
+                "flex justify-between items-center",
+            )}>
+                <span className="font-semibold text-gray-800 text-lg">{article.title}</span>
+                <span className="text-sm text-gray-500">{article.update_time}</span>
+            </div>
+            <hr className="my-2 border-gray-300"/>
+            <div className="flex items-center justify-between gap-2">
+                <Category category={article.category}/>
+                <Subject subject={article.subject.name}/>
+                <p className="ml-3 text-gray-500 flex-1 flex justify-end">
+                    여기엔 뭐넣지
+                </p>
+            </div>
+        </button>
+    );
+}
+
 export default function Desktop() {
     const [head, setHead] = useState<number>(0);
-    const [userType, setUserType] = useState(0);
+    // const [userType, setUserType] = useState(0);
     const [uid, setUid] = useState<number>(0);
 
     const [articles, setArticles] = useState<IArticle[]>([]);
@@ -24,7 +52,7 @@ export default function Desktop() {
     }
 
     const [classes, setClasses] = useState<IClass[]>([]);
-    const [selectedClass, setSelectedClass] = useState<string>(".반을 선택해 주세요");
+    const [selectedClass, setSelectedClass] = useState<string>("/로딩중...");
 
     useEffect(() => {
         interface IResponseClasses {
@@ -34,7 +62,7 @@ export default function Desktop() {
 
         (async () => {
             const userInfo = (await getStoreData('/api/user/info', 'user-info')).response.user;
-            setUserType(userInfo.user_type);
+            // setUserType(userInfo.user_type);
             setUid(userInfo.uid);
 
             if (userInfo.user_type === 1) {
@@ -72,7 +100,7 @@ export default function Desktop() {
     return (
         <>
             <div className="h-full flex flex-col">
-                <div className="grid grid-cols-3 overflow-hidden flex-grow"> {/* hear */}
+                <div className="grid grid-cols-3 overflow-hidden flex-grow">
                     <div className="col-span-2 flex flex-col">
                         <div className="flex-grow w-full">
                             {(head !== 0) && <Chatting id={head} uid={uid}/>}
@@ -89,31 +117,14 @@ export default function Desktop() {
                             universal
                             autoHide
                         >
-                            <div className="px-4">
+                            <div className="flex flex-col space-y-2">
                                 {articles.map((article: IArticle) => (
-                                    <button
+                                    <ArticleItem
+                                        article={article}
                                         key={article.id}
-                                        className={cn(
-                                            "p-4 block mb-2 bg-white rounded-lg border border-gray-200 w-full",
-                                            (article.id === head) ? "border-2 border-black" : ""
-                                        )}
-                                        onClick={() => setHead(article.id)}
-                                    >
-                                        <div className={cn(
-                                            "flex justify-between items-center",
-                                        )}>
-                                            <span className="font-semibold text-gray-800 text-lg">{article.title}</span>
-                                            <span className="text-sm text-gray-500">{article.update_time}</span>
-                                        </div>
-                                        <hr className="my-2 border-gray-300"/>
-                                        <div className="flex items-center justify-between gap-2">
-                                            <Category category={article.category}/>
-                                            <Subject subject={article.subject.name}/>
-                                            <p className="ml-3 text-gray-500 flex-1 flex justify-end">
-                                                여기엔 뭐넣지
-                                            </p>
-                                        </div>
-                                    </button>
+                                        head={head}
+                                        setHead={setHead}
+                                    />
                                 ))}
                             </div>
                         </Scrollbars>
@@ -140,17 +151,12 @@ export default function Desktop() {
                     </div>
 
                     <div className="flex justify-end">
-                        <button
-                            className={cn(
-                                "bg-white hover:bg-gray-200 transition duration-200 h-fit rounded-lg text-center py-2 px-5",
-                            )}
-                            onClick={() => {
-                                // setIsTeacher(!isTeacher);
-                                alert('게시글 추가 창으로 연결해야됨')
-                            }}
+                        <Link
+                            className="bg-white hover:bg-gray-200 transition duration-200 h-fit rounded-lg text-center py-2 px-5"
+                            href={'/board/new'}
                         >
                             게시글 추가하기
-                        </button>
+                        </Link>
                     </div>
                 </div>
 

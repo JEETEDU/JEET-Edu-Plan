@@ -26,7 +26,7 @@ export default function ManageUser(
         }).then((res) => {
             if (res.success) {
                 setMessage((prev) => [
-                        `새로운 비밀번호는 ${res.message.split(':')[1]} 입니다. (복사하세요)`,
+                        `새로운 비밀번호는 ${res.message.split(':')[1]} 입니다.\n(복사하세요)`,
                         prev[1]
                     ]
                 );
@@ -64,7 +64,7 @@ export default function ManageUser(
             </div>
             <div className="flex flex-col w-full gap-4 items-end justify-between">
                 <div className="flex items-center w-full justify-end gap-4">
-                    <div className="flex items-center text-lg text-green-700 font-bold">
+                    <div className="flex items-center text-lg text-green-700 font-bold whitespace-break-spaces text-right">
                         {message[0]}
                     </div>
                     <button
