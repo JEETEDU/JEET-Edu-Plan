@@ -67,6 +67,11 @@ export async function loadArticle(selectedClass: string): Promise<IArticle[]> {
     return [];
 }
 
+interface IAttachFile {
+    name: string;
+    path: string;
+}
+
 export interface IComment {
     id: number;
     user_id: number;
@@ -74,12 +79,7 @@ export interface IComment {
     content: string;
     create_time: string;
     update_time: string;
-    attach_files: [
-        {
-            name: string;
-            path: string;
-        }
-    ]
+    attach_files: IAttachFile[];
 }
 
 export async function loadArticleInfo(id: number) {
