@@ -1,12 +1,11 @@
 "use client";
 
 import React, {useEffect, useState} from "react";
-import {cn, GET, getStoreData} from "@/app/(main)/components/functions";
+import {cn, getStoreData} from "@/app/(main)/components/functions";
 import Link from "next/link";
 import Chatting from "@/app/(main)/(links)/board/[id]/mobile";
 import Scrollbars from "react-custom-scrollbars-2";
-import {b} from "@unocss/preset-web-fonts/shared/preset-web-fonts.TGEYFvVV";
-import {IArticle, IComment, initArticle, loadArticle, loadArticleInfo} from "@/app/(main)/(links)/board/component";
+import {IArticle, loadArticle} from "@/app/(main)/(links)/board/component";
 import Select from "react-select";
 import {Category, Subject} from "@/app/(main)/(links)/home/(pages)/desktop";
 
@@ -26,14 +25,14 @@ export function ArticleItem({article, head = 0, setHead = null}: { article: IArt
                 "flex justify-between items-center",
             )}>
                 <span className="font-semibold text-gray-800 text-lg">{article.title}</span>
-                <span className="text-sm text-gray-500">{article.update_time}</span>
+                <span className="text-sm text-gray-500">{(new Date(article.update_time)).toLocaleString()}</span>
             </div>
             <hr className="my-2 border-gray-300"/>
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center justify-start gap-2">
                 <Category category={article.category}/>
                 <Subject subject={article.subject.name}/>
-                <p className="ml-3 text-gray-500 flex-1 flex justify-end">
-                    여기엔 뭐넣지
+                <p className="ml-3 text-black flex-1 flex justify-end">
+                    {article.user.name} 선생님
                 </p>
             </div>
         </button>
@@ -62,24 +61,11 @@ export default function Desktop() {
         }
 
         (async () => {
-            // const userInfo = (await getStoreData('/api/user/info', 'user-info')).response.user;
-            // setUserType(userInfo.user_type);
-            // setUid(userInfo.uid);
-
-            // if (userInfo.user_type === 1) {
-            //     const classList = (await getStoreData("/api/user/class", 'class-list')).response.classes;
-            //     setClasses(classList);
-            //     setHead(classList[0].class_id)
-            // } else if (userInfo.user_type >= 2) {
-            //     const classList = (await getStoreData("/api/user/class", 'class-list')).response.classes;
-            //     setClasses(classList);
-            //     setHead(classList[0].class_id)
-            // }
-
             const resClass: IResponseClasses = (await getStoreData("/api/user/class", 'class-list')).response;
             if (resClass.success) {
                 setClasses(resClass.classes);
                 const c = resClass.classes[0];
+                console.log(resClass.classes)
                 setSelectedClass(`${c.id}/${c.name} | ${c.description}`);
             }
         })();

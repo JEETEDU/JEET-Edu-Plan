@@ -5,6 +5,7 @@ import 'react-quill-new/dist/quill.snow.css';
 import dynamic from "next/dynamic";
 import {GET, getStoreData} from "@/app/(main)/components/functions";
 import Select from "react-select";
+import Scrollbars from "react-custom-scrollbars-2";
 
 const ReactQuill = dynamic(() => import('react-quill-new'), {ssr: false})
 
@@ -92,6 +93,7 @@ export default function HtmlEditor() {
     const [subjects, setSubjects] = useState<{ id: number; name: string }[]>([]);
     const [selectedSubject, setSelectedSubject] = useState<{ label: string; value: string }>({label: "로딩중...", value: ""});
     const [notice, setNotice] = useState<{ label: string; value: string }>({label: "공지 등록 안함", value: "0"});
+    const [fileList, setFileList] = useState<File[]>([]);
 
     useEffect(() => {
         (async () => {
@@ -162,6 +164,9 @@ export default function HtmlEditor() {
         if (!content.content.trim()) return;
         const formData = new FormData();
         formData.append("article", JSON.stringify(content));
+        fileList.map((file: File) => {
+            formData.append("files", file);
+        })
         fetch('/api/board', {
             method: 'POST',
             body: formData
@@ -170,6 +175,10 @@ export default function HtmlEditor() {
         })
         alert("게시물이 업로드되었습니다!");
     };
+
+    const fileInput = () => {
+        document.getElementById("fileUpload")!.click();
+    }
 
     return (
         <div className="p-6 space-y-4 h-screen flex flex-col bg-white">
@@ -182,7 +191,13 @@ export default function HtmlEditor() {
                     value={content.title}
                     onChange={(e) => setContent({...content, title: e.target.value})}
                 />
-                <div className="flex flex-row gap-2 h-full">
+                <div className="flex flex-row gap-2 h-full font-bold text-lg">
+                    <button
+                        onClick={fileInput}
+                        className="px-3  rounded-lg hover:bg-gray-100 border-x-2 transition"
+                    >
+                        첨부파일 추가
+                    </button>
                     <button
                         onClick={save}
                         className="px-3 bg-yellow-400 rounded-lg hover:bg-yellow-500 transition"
@@ -297,7 +312,22 @@ export default function HtmlEditor() {
                 </div>
 
             </div>
-
+            <div className="flex flex-row w-full justify-between items-center gap-4">
+                <Scrollbars
+                    className="w-full h-full"
+                    universal
+                    autoHide
+                    autoHeight
+                >
+                    <div className="flex flex-row gap-2 text-sm mb-2 items-center">
+                        {fileList.map((file, index) => (
+                            <div key={index} className="flex items-center border rounded whitespace-nowrap p-1">
+                                {file.name}
+                            </div>
+                        ))}
+                    </div>
+                </Scrollbars>
+            </div>
             {/* 에디터 */}
             <div className="flex-1 flex flex-col">
                 <ReactQuill
@@ -337,6 +367,17 @@ export default function HtmlEditor() {
                     value={content.content}
                 />
             </div>
+            <input
+                type="file"
+                style={{display: "none"}}
+                id="fileUpload"
+                onChange={(e) => {
+                    if (e.target.files) {
+                        setFileList(Array.from(e.target.files));
+                    }
+                }}
+                multiple
+            />
         </div>
     );
 }
