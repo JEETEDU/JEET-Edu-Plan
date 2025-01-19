@@ -10,6 +10,7 @@ import Select from "react-select";
 import {Category, Subject} from "@/app/(main)/(links)/home/(pages)/desktop";
 
 export function ArticleItem({article, head = 0, setHead = null}: { article: IArticle, head?: number | null; setHead?: ((id: number) => void) | null }) {
+    // console.log(article)
     return (
         <button
             key={article.id}
@@ -32,7 +33,7 @@ export function ArticleItem({article, head = 0, setHead = null}: { article: IArt
                 <Category category={article.category}/>
                 <Subject subject={article.subject.name}/>
                 <p className="ml-3 text-black flex-1 flex justify-end">
-                    {article.user.name} 선생님
+                    {article.user.name} {(article.user.user_type > 1) && "선생님"}
                 </p>
             </div>
         </button>
