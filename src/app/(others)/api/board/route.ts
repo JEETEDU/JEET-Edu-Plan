@@ -45,7 +45,7 @@ import {ArticleCategory} from "@/app/(others)/api/board/tools";
  *                   content:
  *                     type: string
  *                     example: "This is a test article."
- *                   is_notice:
+ *                   notice:
  *                     type: number
  *                     example: 0
  *                   category:
@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
             let class_id: number = parseInt(article_json.class_id) ?? 0;
             let title: string = article_json.title.toString() ?? '';
             let content: string = article_json.content.toString() ?? '';
-            let is_notice: number = parseInt(article_json.is_notice ?? 0);
+            let notice: number = parseInt(article_json.notice ?? 0);
             let category: number = parseInt(article_json.category ?? 0);
             let subject_id: number = parseInt(article_json.subject_id ?? 0);
 
@@ -116,8 +116,8 @@ export async function POST(req: NextRequest) {
             if (!title) return return_400("title is required");
             if (title.length > 255) return return_400("title is too long");
             if (!content) return return_400("content is required");
-            if (Number.isNaN(is_notice) || is_notice !== 1 && is_notice !== 0) return return_400("is_notice is required(0 or 1)");
-            if (is_notice === 1 && user_type < UserType.TEACHER) return return_permission_denied();
+            if (Number.isNaN(notice) || notice !== 1 && notice !== 0) return return_400("notice is required(0 or 1)");
+            if (notice === 1 && user_type < UserType.TEACHER) return return_permission_denied();
             if (Number.isNaN(category)) return return_400("category is required");
             if (ArticleCategory[category] === undefined) return return_400("Invalid category");
             if (category === ArticleCategory.HOMEWORK) return return_400("Cannot create homework article");
@@ -158,7 +158,7 @@ export async function POST(req: NextRequest) {
                     title: title,
                     content: content,
                     category: category,
-                    notice: is_notice,
+                    notice: notice,
                     subject_id: subject_id === 0 ? null : subject_id,
                     comment_count: 0,
                     attach_files: files_path.length === 0 ? null : files_path
@@ -179,7 +179,7 @@ export async function POST(req: NextRequest) {
                 await register_alert(tx, subject_.teacher_id, `새 질문이 등록되었습니다.\n${title}`, AlertType.NORMAL, article_id.id);
             }
 
-            if (is_notice === 1) {
+            if (notice === 1) {
                 await register_alert_for_class(tx, class_id, `새 공지사항이 등록되었습니다.\n${title}`, AlertType.NOTICE, article_id.id);
             }
 
@@ -547,6 +547,8 @@ export async function DELETE(req: NextRequest) {
  *                             type: integer
  *                           name:
  *                             type: string
+ *                           user_type:
+ *                             type: integer
  *                       subject:
  *                         type: object
  *                         properties:
@@ -629,6 +631,7 @@ export async function GET(req: NextRequest) {
             user: {
                 id: sql`${schema.users.uid}`.as('user_id'),
                 name: sql`${schema.users.name}`.as('user_name'),
+                user_type: sql`${schema.users.user_type}`.as('user_type')
             },
             subject: {
                 id: sql`${schema.subjects.id}`.as('subject_id'),
@@ -698,6 +701,7 @@ export async function GET(req: NextRequest) {
                     user: {
                         id: article.user_id,
                         name: article.user_name,
+                        user_type: article.user_type
                     },
                     subject: {
                         id: article.subject_id,
