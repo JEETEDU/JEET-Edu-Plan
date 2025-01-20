@@ -2,17 +2,32 @@
 
 import Scrollbars from "react-custom-scrollbars-2";
 import React, {useEffect, useState} from "react";
-import {cn, DELETE, GET, PUT} from "@/app/(main)/components/functions";
+import {cn, DELETE, GET, POST, PUT} from "@/app/(main)/components/functions";
 import {Hr} from "@/app/(main)/(links)/home/(pages)/desktop";
 import Select from "react-select";
 import TextareaAutosize from "react-textarea-autosize";
-import {Boolean} from "ts-toolbelt";
 
 interface IClass {
     id: number;
     name: string;
     display: number;
     description: string;
+}
+
+interface IStudent {
+    uid: number;
+    user_type: number;
+    name: string;
+    first_year: number;
+    school: string;
+    joined_term: string;
+    login_id: string;
+}
+
+interface ITeacher extends IStudent {
+    subject: {
+        id: number;
+    };
 }
 
 interface IClassInfo {
@@ -24,27 +39,8 @@ interface IClassInfo {
         id: number;
         name: string;
     }[];
-    students: {
-        uid: number;
-        user_type: number;
-        name: string;
-        first_year: number;
-        school: string;
-        joined_term: string;
-        login_id: string;
-    }[];
-    teachers: {
-        uid: number;
-        user_type: number;
-        name: string;
-        first_year: number;
-        school: string;
-        joined_term: string;
-        login_id: string;
-        subject: {
-            id: number;
-        };
-    }[];
+    students: IStudent[];
+    teachers: ITeacher[];
 }
 
 export default function ClassSetting() {
@@ -71,13 +67,17 @@ export default function ClassSetting() {
         refreshClasses();
     }, [search]);
 
-    useEffect(() => {
+    function refreshClass() {
         (async () => {
             const res: { success: boolean; class: IClassInfo } = await GET(`/api/class/${head}`);
             if (res.success) {
                 setSelectedClass(res.class);
             }
         })();
+    }
+
+    useEffect(() => {
+        refreshClass();
     }, [head]);
 
     const updateClassInfo = async () => {
@@ -278,6 +278,156 @@ export default function ClassSetting() {
                                     });
                                 }}
                             />
+                        </div>
+                    </div>
+                    <Hr/>
+                    <div className="flex items-center w-full justify-between">
+                        <div className="text-2xl text-gray-800 font-semibold">
+                            유저 목록
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="flex flex-col items-start w-full justify-between gap-1">
+                            <label className="text-lg flex items-center justify-center font-bold">
+                                학생
+                            </label>
+                            {selectedClass.students.map((s) => {
+                                return (
+                                    <div
+                                        key={s.uid}
+                                        className="border-2 rounded flex w-full justify-between p-2 cursor-pointer hover:bg-white"
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <div>
+                                                <div className="text-xl font-bold">
+                                                    {s.name as string}
+                                                </div>
+                                                <div className="text-sm text-gray-500">
+                                                    {s.login_id as string}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2 flex-1 justify-end">
+                                            <div className="flex flex-col justify-center">
+                                                <div className="flex items-center justify-end">
+                                                    {String(s.first_year)} {s.joined_term as string}
+                                                </div>
+                                                <div className="flex items-center justify-end">
+                                                    {s.school as string}
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={async () => {
+                                                    const res = confirm(`${s.name} 학생을 반에서 제외하시겠습니까?`);
+                                                    if (res) {
+                                                        POST('/api/admin/class/quit/student', {
+                                                            class_id: selectedClass.id,
+                                                            user_id: s.uid
+                                                        }).then(refreshClass);
+                                                    }
+                                                }}
+                                                className="p-1 border-2 border-red rounded hover:bg-red hover:text-white duration-200"
+                                            >
+                                                <div className="i-system-uicons-exit-right"/>
+                                            </button>
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                        <div className="flex flex-col items-start w-full justify-start gap-1">
+                            <label className="text-lg flex items-center justify-center font-bold">
+                                선생님
+                            </label>
+                            {selectedClass.teachers.map((t) => {
+                                return (
+                                    <div
+                                        key={t.uid}
+                                        className="border-2 rounded flex w-full justify-between p-2 gap-8 cursor-pointer hover:bg-white"
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <div>
+                                                <div className="text-xl font-bold">
+                                                    {t.name as string}
+                                                </div>
+                                                <div className="text-sm text-gray-500">
+                                                    {t.login_id as string}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={async () => {
+                                                const res = confirm(`${t.name} 선생님을 반에서 제외하시겠습니까?`);
+                                                if (res) {
+                                                    POST('/api/admin/class/quit/teacher', {
+                                                        class_id: selectedClass.id,
+                                                        user_id: t.uid
+                                                    }).then(refreshClass);
+                                                }
+                                            }}
+                                            className="p-1 border-2 border-red rounded hover:bg-red hover:text-white duration-200"
+                                        >
+                                            <div className="i-system-uicons-exit-right"/>
+                                        </button>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </div>
+                    <Hr/>
+                    <div className="flex items-center w-full justify-between">
+                        <div className="text-2xl text-gray-800 font-semibold">
+                            과목 목록
+                        </div>
+                    </div>
+                    <div className="">
+                        <div className="flex flex-col items-start w-full justify-between gap-1">
+                            <label className="text-lg flex items-center justify-center font-bold">
+                                학생
+                            </label>
+                            {selectedClass.students.map((s) => {
+                                return (
+                                    <div
+                                        key={s.uid}
+                                        className="border-2 rounded flex w-full justify-between p-2 cursor-pointer hover:bg-white"
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <div>
+                                                <div className="text-xl font-bold">
+                                                    {s.name as string}
+                                                </div>
+                                                <div className="text-sm text-gray-500">
+                                                    {s.login_id as string}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2 flex-1 justify-end">
+                                            <div className="flex flex-col justify-center">
+                                                <div className="flex items-center justify-end">
+                                                    {String(s.first_year)} {s.joined_term as string}
+                                                </div>
+                                                <div className="flex items-center justify-end">
+                                                    {s.school as string}
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={async () => {
+                                                    const res = confirm(`${s.name} 학생을 반에서 제외하시겠습니까?`);
+                                                    if (res) {
+                                                        POST('/api/admin/class/quit/student', {
+                                                            class_id: selectedClass.id,
+                                                            user_id: s.uid
+                                                        }).then(refreshClass);
+                                                    }
+                                                }}
+                                                className="p-1 border-2 border-red rounded hover:bg-red hover:text-white duration-200"
+                                            >
+                                                <div className="i-system-uicons-exit-right"/>
+                                            </button>
+                                        </div>
+                                    </div>
+                                )
+                            })}
                         </div>
                     </div>
                 </div>
