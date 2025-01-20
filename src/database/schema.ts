@@ -74,8 +74,8 @@ export const teacherClasses = mysqlTable('teacher_class', {
 // Board table
 export const boards = mysqlTable('board', {
     id: int().autoincrement().primaryKey(),
-    class_id: int().notNull().references(() => classes.id),
-    user_id: int().notNull().references(() => users.uid),
+    class_id: int().notNull().references(() => classes.id, { onDelete: 'set null' }),
+    user_id: int().notNull().references(() => users.uid, { onDelete: 'set null' }),
     title: varchar({ length: 255 }).notNull(),
     content: longtext().notNull(),
     create_time: datetime().notNull().default(sql`CURRENT_TIMESTAMP()`),
