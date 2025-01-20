@@ -155,8 +155,6 @@ export async function GET(req: NextRequest) {
         if (end_date) where_clause = and(where_clause, lte(sql`sub_table.date`, end_date));
         query = query.where(where_clause);
 
-        console.debug(query.toSQL());
-
         let [result] = await db.execute(query);
 
         let workbook = new Workbook();
