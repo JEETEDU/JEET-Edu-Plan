@@ -10,6 +10,7 @@ import Select from "react-select";
 import {Category, Subject} from "@/app/(main)/(links)/home/(pages)/desktop";
 
 export function ArticleItem({article, head = 0, setHead = null}: { article: IArticle, head?: number | null; setHead?: ((id: number) => void) | null }) {
+    // console.log(article)
     return (
         <button
             key={article.id}
@@ -32,7 +33,7 @@ export function ArticleItem({article, head = 0, setHead = null}: { article: IArt
                 <Category category={article.category}/>
                 <Subject subject={article.subject.name}/>
                 <p className="ml-3 text-black flex-1 flex justify-end">
-                    {article.user.name} 선생님
+                    {article.user.name} {(article.user.user_type > 1) && "선생님"}
                 </p>
             </div>
         </button>
@@ -54,12 +55,12 @@ export default function Desktop() {
     const [classes, setClasses] = useState<IClass[]>([]);
     const [selectedClass, setSelectedClass] = useState<string>("/로딩중...");
 
-    useEffect(() => {
-        interface IResponseClasses {
-            success: boolean;
-            classes: IClass[];
-        }
+    interface IResponseClasses {
+        success: boolean;
+        classes: IClass[];
+    }
 
+    function reloadClasses() {
         (async () => {
             const resClass: IResponseClasses = (await getStoreData("/api/user/class", 'class-list')).response;
             if (resClass.success) {
@@ -69,6 +70,10 @@ export default function Desktop() {
                 setSelectedClass(`${c.id}/${c.name} | ${c.description}`);
             }
         })();
+    }
+
+    useEffect(() => {
+        reloadClasses();
     }, []);
 
     useEffect(() => {

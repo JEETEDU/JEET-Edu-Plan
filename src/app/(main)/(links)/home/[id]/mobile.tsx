@@ -2,10 +2,11 @@
 
 import React, {useEffect, useState} from "react";
 import Scrollbars from "react-custom-scrollbars-2";
-import {IArticle, initArticle, loadArticleInfo} from "@/app/(main)/(links)/board/component";
+import {IArticle, initArticle, loadArticle, loadArticleInfo} from "@/app/(main)/(links)/board/component";
 import {Author, Category, Class_, Delete, Hr, Subject, Time, Title, Update} from "@/app/(main)/(links)/home/(pages)/desktop";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import {DELETE} from "@/app/(main)/components/functions";
 
 const ReactQuill = dynamic(() => import('react-quill-new'), {ssr: false})
 
@@ -59,8 +60,12 @@ export default function Notice({id}: { id: number }) {
             <>
                 <Hr/>
                 <div className="flex flex-row gap-4 w-full justify-between items-center">
-                    <Update id={selectedNotice.id}/>
-                    <Delete id={selectedNotice.id}/>
+                    <Link
+                        className="p-1 rounded border-2 font-bold text-lg bg-blue-500 text-white border-blue-500"
+                        href={`/board/${selectedNotice.id}`}
+                    >
+                        게시물 바로가기
+                    </Link>
                     <Time create_time={selectedNotice.create_time} update_time={selectedNotice.update_time}/>
                 </div>
             </>

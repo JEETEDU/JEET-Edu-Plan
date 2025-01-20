@@ -2,7 +2,7 @@
 
 import TextareaAutosize from "react-textarea-autosize";
 import React, {useEffect, useRef, useState} from "react";
-import {cn, getStoreData} from "@/app/(main)/components/functions";
+import {cn, DELETE, getStoreData} from "@/app/(main)/components/functions";
 import Scrollbars from "react-custom-scrollbars-2";
 import {IArticle, IComment, initArticle, loadArticleInfo} from "@/app/(main)/(links)/board/component";
 import {Category, Subject} from "@/app/(main)/(links)/home/(pages)/desktop";
@@ -14,6 +14,7 @@ const ReactQuill = dynamic(() => import('react-quill-new'), {ssr: false})
 
 // eslint-disable-next-line @next/next/no-async-client-component
 export default function Chatting({id}: { id: number }) {
+
     const [selectedArticle, setSelectedArticle] = useState<IArticle>(initArticle);
     const [comments, setComments] = useState<IComment[]>([]);
     const [editComment, setEditComment] = useState<IComment | null>(null);
@@ -110,6 +111,13 @@ export default function Chatting({id}: { id: number }) {
         document.getElementById("fileUpload")!.click();
     }
 
+    const delete_ = () => {
+        console.log(selectedArticle.id);
+        DELETE(`/api/board?article_id=${selectedArticle.id}`).then(r => {
+            console.log(r);
+        }).then(() => window.location.reload());
+    }
+
     return (
         <div className="bg-gray-100 px-4 flex flex-col gap-4 h-full">
             {/* Chat Header */}
@@ -122,10 +130,35 @@ export default function Chatting({id}: { id: number }) {
                     <h2 className="text-xl font-bold text-gray-800 mb-2 break-all">
                         {selectedArticle.title || ""}
                     </h2>
-                    <div className="flex gap-1 w-fit">
-                        <button className="i-system-uicons-scale" onClick={() => setScreen(1)}/>
-                        <button className="i-system-uicons-scale-contract" onClick={() => setScreen(0)}/>
-                        <button className="i-system-uicons-scale-extend" onClick={() => setScreen(2)}/>
+                    <div className="flex gap-1 w-fit items-center">
+                        <button className="p-1 border-2 rounded" onClick={() => setScreen(0)}>
+                            <div className="i-system-uicons-scale-contract"/>
+                        </button>
+                        <button className="p-1 border-2 rounded" onClick={() => setScreen(1)}>
+                            <div className="i-system-uicons-scale"/>
+                        </button>
+                        <button className="p-1 border-2 rounded" onClick={() => setScreen(2)}>
+                            <div className="i-system-uicons-scale-extend"/>
+                        </button>
+                        {(selectedArticle.user.id === uid) && (
+                            <>
+                                <Link
+                                    href={{
+                                        pathname: "/board/new",
+                                        query: {prev: JSON.stringify(selectedArticle)}
+                                    }}
+                                    className="p-1 border-2 border-blue rounded hover:bg-blue hover:text-white duration-200"
+                                >
+                                    <div className="i-system-uicons-write"/>
+                                </Link>
+                                <button
+                                    onClick={delete_}
+                                    className="p-1 border-2 border-red rounded hover:bg-red hover:text-white duration-200"
+                                >
+                                    <div className="i-system-uicons-trash"/>
+                                </button>
+                            </>
+                        )}
                     </div>
                 </div>
                 {(screen > 0) && (<>
@@ -162,7 +195,7 @@ export default function Chatting({id}: { id: number }) {
                             <Subject subject={selectedArticle.subject.name || ""}/>
                             <div className="flex gap-4 flex-1 justify-end">
                                 <span>댓글: {comments.length}</span>
-                                <span>마감일: {selectedArticle.due_date}</span>
+                                {/*<span>마감일: {selectedArticle.due_date}</span>*/}
                             </div>
                         </div>
                     </>
