@@ -33,12 +33,14 @@ export default function Notice({id}: { id: number }) {
                 </div>
                 <Hr/>
             </>
-            <ReactQuill
-                className="text-gray-600 break-all grow"
-                value={selectedNotice.content}
-                readOnly
-                theme={'bubble'}
-            />
+            <Scrollbars>
+                <ReactQuill
+                    className="text-gray-600 break-all grow"
+                    value={selectedNotice.content}
+                    readOnly
+                    theme={'bubble'}
+                />
+            </Scrollbars>
             <>
                 <Scrollbars
                     className="w-full h-fit"

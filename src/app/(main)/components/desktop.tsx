@@ -6,18 +6,22 @@ import {usePathname} from "next/navigation";
 import React from "react";
 import {Alert, TodayQuestion} from "@/app/(main)/components/common";
 
+import logo from "../../(others)/file/images/LOGO.png"
+import Image from "next/image";
+
 export default function Navigation() {
     const path = usePathname();
 
     return (
         <div className='nav'>
             {path !== '/' && <TodayQuestion device="desktop"/>}
-            <nav className="min-w-screen bg-gray-100 dark:bg-gray-800 flex items-center justify-between px-6 py-4">
+            <div className="bg-gray-100 dark:bg-gray-800 flex items-center justify-between px-6 py-4">
                 {/* 로고 자리 */}
                 <div className="flex items-center space-x-4">
-                    <div className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                        JEET Education
-                    </div>
+                    {/*<div className="text-xl font-bold text-blue-600 dark:text-blue-400">*/}
+                    {/*    JEET Education*/}
+                    {/*</div>*/}
+                    <Image src={logo} alt="" height={30}/>
                 </div>
                 <button
                     className="bg-red-600 p-2 rounded-xl text-white font-bold"
@@ -54,7 +58,7 @@ export default function Navigation() {
                     </div>
                     <Alert path={path} isMobile={false}/>
                 </div>
-            </nav>
+            </div>
         </div>
     );
 }
