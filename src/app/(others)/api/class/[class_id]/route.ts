@@ -267,6 +267,7 @@ export async function GET(req: NextRequest, {params}: {params: {class_id: number
             id: class_.id,
             name: class_.name,
             description: class_.description,
+            display: class_.display,
             students: students,
             teachers: teachers,
             subjects: subjects
