@@ -111,7 +111,8 @@ export async function GET(req: NextRequest) {
             )
             .leftJoin(
                 schema.teacherClasses,
-                eq(schema.teacherClasses.class_id, schema.classes.id)
+                and(eq(schema.teacherClasses.class_id, schema.classes.id),
+                    eq(schema.teacherClasses.subject_id, schema.subjects.id))
             )
             .leftJoin(
                 schema.users,
