@@ -457,7 +457,7 @@ export default function ClassSetting() {
                                                 autoHeight
                                             >
                                                 <div className="flex flex-row gap-2 items-center justify-end">
-                                                    {s.teachers.map((t) => {
+                                                    {(s.teachers.length > 0) && s.teachers.map((t) => {
                                                         return (
                                                             <div
                                                                 key={t.uid}
