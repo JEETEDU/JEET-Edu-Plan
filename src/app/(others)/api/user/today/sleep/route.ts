@@ -1,16 +1,15 @@
 import type { NextRequest } from 'next/server'
 import { db } from '@/database'
 import * as schema from '@/database/schema'
-import crypto from 'crypto'
 import {NextResponse} from "next/server";
-import {eq, and, sql, count} from "drizzle-orm";
-import {DecodedToken, generateToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
+import {eq, and, count} from "drizzle-orm";
+import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
 import {
     parseTime,
     return_400,
     return_500,
     return_not_logged_in,
-    return_permission_denied, to_time_string, todayString,
+    todayString,
     UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {QueryBuilder} from "drizzle-orm/mysql-core";
@@ -95,8 +94,8 @@ export async function PUT(req: NextRequest) {
             const user_id = decoded.user_id;
 
             const data = await req.json();
-            let sleep_time = data.sleep_time;
-            let wakeup_time = data.wakeup_time;
+            const sleep_time = data.sleep_time;
+            const wakeup_time = data.wakeup_time;
 
             // Check if sleep_time and wake_time are valid as HH:MM
             const timePattern = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
@@ -104,14 +103,14 @@ export async function PUT(req: NextRequest) {
                 return return_400("Invalid time format");
             }
 
-            let sleep_datetime = parseTime(sleep_time);
-            let wake_datetime = parseTime(wakeup_time);
+            const sleep_datetime = parseTime(sleep_time);
+            const wake_datetime = parseTime(wakeup_time);
 
             if (sleep_datetime > wake_datetime) {
                 sleep_datetime.setDate(sleep_datetime.getDate() - 1);
             }
 
-            let [sleep_info] =
+            const [sleep_info] =
                 await db.select({
                     count: count()
                 })

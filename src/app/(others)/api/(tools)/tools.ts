@@ -3,37 +3,37 @@ import * as schema from "@/database/schema";
 
 export function return_400(message: string): NextResponse {
     return NextResponse.json({
-                success: false,
-                message: message,
-            }, {status: 400});
+        success: false,
+        message: message,
+    }, {status: 400});
 }
 
 export function return_404(message: string): NextResponse {
     return NextResponse.json({
-                success: false,
-                message: message,
-            }, {status: 404});
+        success: false,
+        message: message,
+    }, {status: 404});
 }
 
 export function return_not_logged_in(): NextResponse {
     return NextResponse.json({
-                success: false,
-                message: "Not logged in"
-            }, {status: 401});
+        success: false,
+        message: "Not logged in"
+    }, {status: 401});
 }
 
 export function return_permission_denied(): NextResponse {
     return NextResponse.json({
-                success: false,
-                message: "Permission denied"
-            }, {status: 403});
+        success: false,
+        message: "Permission denied"
+    }, {status: 403});
 }
 
 export function return_500(message: string = "Internal server error"): NextResponse {
     return NextResponse.json({
-                success: false,
-                message: message
-            }, {status: 500});
+        success: false,
+        message: message
+    }, {status: 500});
 }
 
 export enum UserType {
