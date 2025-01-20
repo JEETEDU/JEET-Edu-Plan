@@ -5,7 +5,6 @@ import React, {useEffect, useState} from "react";
 import {cn, DELETE, GET, POST, PUT} from "@/app/(main)/components/functions";
 import {Hr} from "@/app/(main)/(links)/home/(pages)/desktop";
 import Select from "react-select";
-import TextareaAutosize from "react-textarea-autosize";
 
 interface IClass {
     id: number;
@@ -43,6 +42,19 @@ interface IClassInfo {
     teachers: ITeacher[];
 }
 
+interface ISubjectInfo {
+    id: number;
+    name: string;
+    class_: {
+        id: number;
+        name: string;
+    };
+    teachers: {
+        uid: number;
+        name: string;
+    }[];
+}
+
 export default function ClassSetting() {
     const [classList, setClassList] = useState<IClass[]>([]);
     const [search, setSearch] = useState<string>("");
@@ -50,8 +62,10 @@ export default function ClassSetting() {
     const [head, setHead] = useState<number>(0);
 
     const [selectedClass, setSelectedClass] = useState<IClassInfo>({display: 1, description: "", id: 0, name: "", students: [], subjects: [], teachers: []});
+    const [subjectList, setSubjectList] = useState<ISubjectInfo[]>([]);
 
     const [edit, setEdit] = useState<boolean>(false);
+    const [addSubject, setAddSubject] = useState<string | null>(null);
 
     function refreshClasses() {
         (async () => {
@@ -73,6 +87,10 @@ export default function ClassSetting() {
             if (res.success) {
                 setSelectedClass(res.class);
             }
+            const resSubject: { success: boolean; subjects: ISubjectInfo[] } = await GET(`/api/admin/class/subject?class_id=${head}`);
+            if (resSubject.success) {
+                setSubjectList(resSubject.subjects);
+            }
         })();
     }
 
@@ -92,8 +110,19 @@ export default function ClassSetting() {
         });
     };
 
+    const createSubject = async () => {
+        if (!addSubject?.trim()) return {success: false, message: "no data"};
+        return await POST(`/api/admin/class/subject`, {
+            class_id: selectedClass.id,
+            name: addSubject
+        }).then((res: { success: boolean; message: string }) => {
+            refreshClass();
+            setAddSubject(null);
+            return res;
+        });
+    }
 
-    return <div className="grid grid-cols-3 h-full gap-2">
+    return <div className="grid grid-cols-4 h-full gap-2 max-w-full">
         <div className="h-full flex flex-col space-y-4">
             <div
                 className={cn(
@@ -152,7 +181,7 @@ export default function ClassSetting() {
             </Scrollbars>
         </div>
         <Scrollbars
-            className="w-full flex-1 col-span-2"
+            className="w-full flex-1 col-span-3"
             universal
             autoHide
         >
@@ -198,12 +227,11 @@ export default function ClassSetting() {
                             <label htmlFor="name" className="component-button-info">
                                 아이디
                             </label>
-                            <TextareaAutosize
+                            <input
                                 readOnly={true}
                                 className={cn(
                                     "component-input resize-none"
                                 )}
-                                cacheMeasurements
                                 value={selectedClass.id}
                             />
                         </div>
@@ -211,13 +239,12 @@ export default function ClassSetting() {
                             <label htmlFor="name" className="component-button-info">
                                 이름
                             </label>
-                            <TextareaAutosize
+                            <input
                                 readOnly={!edit}
                                 className={cn(
                                     "component-input resize-none",
                                     {'bg-white': edit}
                                 )}
-                                cacheMeasurements
                                 value={selectedClass.name}
                                 onChange={(e) => {
                                     setSelectedClass((prev) => {
@@ -262,13 +289,12 @@ export default function ClassSetting() {
                             <label htmlFor="name" className="component-button-info">
                                 설명
                             </label>
-                            <TextareaAutosize
+                            <input
                                 readOnly={!edit}
                                 className={cn(
                                     "component-input resize-none",
                                     {'bg-white': edit}
                                 )}
-                                cacheMeasurements
                                 value={selectedClass.description || ""}
                                 onChange={(e) => {
                                     setSelectedClass((prev) => {
@@ -287,7 +313,7 @@ export default function ClassSetting() {
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="flex flex-col items-start w-full justify-between gap-1">
+                        <div className="flex flex-col items-start w-full justify-start gap-1">
                             <label className="text-lg flex items-center justify-center font-bold">
                                 학생
                             </label>
@@ -379,50 +405,104 @@ export default function ClassSetting() {
                         <div className="text-2xl text-gray-800 font-semibold">
                             과목 목록
                         </div>
+                        <div
+                            className="px-3 py-1 bg-green-500 text-white text-md font-bold rounded hover:bg-green-600 w-fit"
+                            onClick={() => {
+                                if (addSubject !== null) {
+                                    setAddSubject(null);
+                                    createSubject().then((r) => {
+                                        if (r.success) alert("과목이 추가되었습니다.");
+                                    });
+                                } else {
+                                    setAddSubject("");
+                                }
+                            }}
+                        >
+                            {(addSubject !== null) ? "저장하기" : "추가하기"}
+                        </div>
                     </div>
-                    <div className="">
-                        <div className="flex flex-col items-start w-full justify-between gap-1">
-                            <label className="text-lg flex items-center justify-center font-bold">
-                                학생
+                    {(addSubject !== null) && (
+                        <div className="flex flex-col items-start w-full justify-between">
+                            <label htmlFor="name" className="component-button-info">
+                                과목 이름
                             </label>
-                            {selectedClass.students.map((s) => {
+                            <input
+                                autoFocus
+                                className="component-input resize-none bg-white"
+                                value={addSubject}
+                                onChange={(e) => {
+                                    setAddSubject(e.target.value);
+                                }}
+                            />
+                        </div>
+                    )}
+                    <div>
+                        <div className="flex flex-col items-start w-full justify-between gap-1">
+                            {subjectList.map((s) => {
                                 return (
                                     <div
-                                        key={s.uid}
-                                        className="border-2 rounded flex w-full justify-between p-2 cursor-pointer hover:bg-white"
+                                        key={s.id}
+                                        className="border-2 rounded grid grid-cols-6 gap-4 w-full justify-between p-2 cursor-pointer hover:bg-white"
                                     >
                                         <div className="flex items-center gap-4">
-                                            <div>
-                                                <div className="text-xl font-bold">
-                                                    {s.name as string}
-                                                </div>
-                                                <div className="text-sm text-gray-500">
-                                                    {s.login_id as string}
-                                                </div>
+                                            <div className="text-xl font-bold whitespace-nowrap">
+                                                {s.name as string}
                                             </div>
                                         </div>
-                                        <div className="flex gap-2 flex-1 justify-end">
-                                            <div className="flex flex-col justify-center">
-                                                <div className="flex items-center justify-end">
-                                                    {String(s.first_year)} {s.joined_term as string}
+                                        <div className="flex flex-row col-span-5 gap-2 justify-end">
+                                            <Scrollbars
+                                                className="flex-grow h-full"
+                                                universal
+                                                autoHide
+                                                autoHeight
+                                            >
+                                                <div className="flex flex-row gap-2 items-center">
+                                                    {s.teachers.map((t) => {
+                                                        return (
+                                                            <div
+                                                                key={t.uid}
+                                                                className="border-2 rounded flex justify-between p-2 gap-4 cursor-pointer hover:bg-white"
+                                                            >
+                                                                <div className="flex items-center gap-4">
+                                                                    <div>
+                                                                        <div className="text-lg font-bold whitespace-nowrap">
+                                                                            {t.name as string}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <button
+                                                                    onClick={async () => {
+                                                                        const res = confirm(`${t.name} 선생님을 ${selectedClass.name} 반의 ${s.name} 과목에서 제외하시겠습니까?`);
+                                                                        if (res) {
+                                                                            POST('/api/admin/class/quit/teacher', {
+                                                                                class_id: selectedClass.id,
+                                                                                user_id: t.uid,
+                                                                                subject_id: s.id
+                                                                            }).then(refreshClass);
+                                                                        }
+                                                                    }}
+                                                                    className="p-1 border-2 border-red rounded hover:bg-red hover:text-white duration-200"
+                                                                >
+                                                                    <div className="i-system-uicons-exit-right"/>
+                                                                </button>
+                                                            </div>
+                                                        )
+                                                    })}
                                                 </div>
-                                                <div className="flex items-center justify-end">
-                                                    {s.school as string}
-                                                </div>
-                                            </div>
+                                            </Scrollbars>
+
                                             <button
                                                 onClick={async () => {
-                                                    const res = confirm(`${s.name} 학생을 반에서 제외하시겠습니까?`);
+                                                    const res = confirm(`${s.name} 과목을 제거하시겠습니까?`);
                                                     if (res) {
-                                                        POST('/api/admin/class/quit/student', {
-                                                            class_id: selectedClass.id,
-                                                            user_id: s.uid
+                                                        DELETE('/api/admin/class/subject', {
+                                                            subject_id: s.id
                                                         }).then(refreshClass);
                                                     }
                                                 }}
                                                 className="p-1 border-2 border-red rounded hover:bg-red hover:text-white duration-200"
                                             >
-                                                <div className="i-system-uicons-exit-right"/>
+                                                <div className="i-system-uicons-trash"/>
                                             </button>
                                         </div>
                                     </div>
