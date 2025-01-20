@@ -6,6 +6,7 @@ import {useRouter} from "next/navigation";
 import {IsAdmin, IsStudent} from "@/app/(main)/(links)/mypage/(pages)/common";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
+import {Hr} from "@/app/(main)/(links)/home/(pages)/desktop";
 // import {useEffectAsync} from "@/app/(main)/hooks";
 
 export default function Page({isMobile}: { isMobile: boolean }) {
@@ -198,6 +199,7 @@ export default function Page({isMobile}: { isMobile: boolean }) {
                         </div>
                     </div>
                 )}
+                <Hr/>
                 <div className="flex lg:flex-row flex-col w-full p-6 h-full gap-6">
                     {(!isMobile && showCalendar) && (
                         <div className="flex flex-row lg:flex-col gap-2">

@@ -230,21 +230,36 @@ export default function Chatting({id}: { id: number }) {
                                         </div>
                                         <div>
                                             {(comment.user_id === uid) && (
-                                                <div
-                                                    className={cn(
-                                                        "p-1 border-2 border-blue rounded h-full cursor-pointer duration-200",
-                                                        ((editComment === null) || (comment.id !== editComment.id)) ? "hover:bg-blue hover:text-white" : "hover:bg-white hover:text-black bg-blue text-white"
-                                                    )}
-                                                    onClick={() => {
-                                                        if (editComment === null) {
-                                                            setEditComment(comment);
-                                                        } else {
-                                                            setEditComment(null);
-                                                            setNewComments("");
-                                                        }
-                                                    }}
-                                                >
-                                                    <div className="i-system-uicons-write"/>
+                                                <div className="flex gap-1 w-fit items-center">
+                                                    <div
+                                                        className={cn(
+                                                            "p-1 border-2 border-blue rounded h-full cursor-pointer duration-200",
+                                                            ((editComment === null) || (comment.id !== editComment.id)) ? "hover:bg-blue hover:text-white" : "hover:bg-white hover:text-black bg-blue text-white"
+                                                        )}
+                                                        onClick={() => {
+                                                            if (editComment === null) {
+                                                                setEditComment(comment);
+                                                            } else {
+                                                                setEditComment(null);
+                                                                setNewComments("");
+                                                            }
+                                                        }}
+                                                    >
+                                                        <div className="i-system-uicons-write"/>
+                                                    </div>
+                                                    <button
+                                                        onClick={async () => {
+                                                            const res = confirm("댓글을 삭제하시겠습니까?");
+                                                            if (res) {
+                                                                DELETE('/api/board/comment', {
+                                                                    comment_id: comment.id,
+                                                                }).then(reload);
+                                                            }
+                                                        }}
+                                                        className="p-1 border-2 border-red rounded hover:bg-red hover:text-white duration-200"
+                                                    >
+                                                        <div className="i-system-uicons-trash"/>
+                                                    </button>
                                                 </div>
                                             )}
                                         </div>
