@@ -32,6 +32,14 @@ export default function Notice({id}: { id: number }) {
                     <Author name={selectedNotice.user.name}/>
                 </div>
                 <Hr/>
+            </>
+            <ReactQuill
+                className="text-gray-600 break-all grow"
+                value={selectedNotice.content}
+                readOnly
+                theme={'bubble'}
+            />
+            <>
                 <Scrollbars
                     className="w-full h-fit"
                     universal
@@ -50,14 +58,6 @@ export default function Notice({id}: { id: number }) {
                         ))}
                     </div>
                 </Scrollbars>
-            </>
-            <ReactQuill
-                className="text-gray-600 break-all grow"
-                value={selectedNotice.content}
-                readOnly
-                theme={'bubble'}
-            />
-            <>
                 <Hr/>
                 <div className="flex flex-row gap-4 w-full justify-between items-center">
                     <Link
