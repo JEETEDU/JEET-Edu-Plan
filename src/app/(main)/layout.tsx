@@ -18,26 +18,22 @@ export default async function RootLayout(
     const isMobile = cookieStore.get("isMobile") ?? {value: null};
 
     return (
-        <CookiesProvider>
-            <html lang="en">
-            <body className="flex flex-col h-screen min-h-screen max-h-screen">
-            <div className="static">
-                {isMobile?.value === 'true' ? <Navigation1/> : <Navigation/>}
-            </div>
-            <main className="flex-grow-1 overflow-hidden">
+        <html lang="en">
+        <body className="min-h-screen">
+        <div className="flex flex-col h-screen">
+            {isMobile?.value === 'true' ? <Navigation1/> : <Navigation/>}
+            <main className="flex-grow w-full h-full">
                 <Suspense fallback={
                     <div className="text-3xl font-bold w-full h-full flex justify-center items-center">
                         로딩중...
                     </div>
                 }>
-                    {children}
+                    <CookiesProvider>{children}</CookiesProvider>
                 </Suspense>
             </main>
-            <div className="static">
-                {isMobile?.value === 'true' ? <Navigation2/> : null}
-            </div>
-            </body>
-            </html>
-        </CookiesProvider>
+            {isMobile?.value === 'true' ? <Navigation2/> : null}
+        </div>
+        </body>
+        </html>
     );
 }

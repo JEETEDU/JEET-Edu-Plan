@@ -456,7 +456,7 @@ export default function ClassSetting() {
                                                 autoHide
                                                 autoHeight
                                             >
-                                                <div className="flex flex-row gap-2 items-center">
+                                                <div className="flex flex-row gap-2 items-center justify-end">
                                                     {s.teachers.map((t) => {
                                                         return (
                                                             <div
