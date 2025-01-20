@@ -9,7 +9,7 @@ import {
     return_400,
     return_500,
     return_not_logged_in,
-    return_permission_denied, to_time_string,
+    return_permission_denied, to_time_string, todayString,
     UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {QueryBuilder} from "drizzle-orm/mysql-core";
@@ -112,7 +112,7 @@ export async function GET(req: NextRequest) {
                 return return_400("Invalid date format");
             }
         }
-        else date = sql`CURDATE()`;
+        else date = todayString();
 
         let queryBuilder = new QueryBuilder();
         let query =
