@@ -91,8 +91,8 @@ export default function Desktop() {
 
     return (
         <>
-            <div className="h-full flex flex-col">
-                <div className="grid grid-cols-3 overflow-hidden flex-grow">
+            <div className="h-full flex flex-col bg-grap-100">
+                <div className="grid grid-cols-3 overflow-hidden flex-grow gap-4 px-4 bg-gray-100">
                     <div className="col-span-2 flex flex-col">
                         <div className="flex-grow w-full">
                             {(head !== 0) && <Chatting id={head}/>}

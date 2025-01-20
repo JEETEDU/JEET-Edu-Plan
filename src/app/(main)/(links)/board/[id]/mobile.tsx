@@ -119,7 +119,7 @@ export default function Chatting({id}: { id: number }) {
     }
 
     return (
-        <div className="bg-gray-100 px-4 flex flex-col gap-4 h-full">
+        <div className="bg-gray-100 flex flex-col gap-4 h-full">
             {/* Chat Header */}
             <div className={cn(
                 "bg-white flex flex-col shadow rounded-lg w-full p-4",
