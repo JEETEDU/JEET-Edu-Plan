@@ -8,6 +8,7 @@ import Select from "react-select";
 import Scrollbars from "react-custom-scrollbars-2";
 import UserDetail from "@/app/(main)/(links)/mypage/(pages)/userDetail";
 import Log from "@/app/(main)/(links)/mypage/(pages)/component/log";
+import ClassSetting from "@/app/(main)/(links)/mypage/(pages)/component/classSetting";
 
 export function IsStudent(
     {
@@ -323,6 +324,7 @@ export function IsAdmin(
         "오늘의 질문",
         "유저 목록",
         "신규 유저 승인",
+        "반 설정",
         "Log List"
     ];
 
@@ -548,7 +550,7 @@ export function IsAdmin(
                                         <div
                                             key={u.uid}
                                             className={cn(
-                                                "border-2 rounded flex w-full justify-between p-2 gap-8",
+                                                "border-2 rounded flex w-full justify-between p-2 gap-8 cursor-pointer hover:bg-white",
                                                 {"border-black": u.uid === head}
                                             )}
                                             onClick={() => setHead(u.uid)}
@@ -612,6 +614,11 @@ export function IsAdmin(
                         autoHide
                     >
                         <div className="flex flex-col w-full items-center space-y-4">
+                            {(newUserList.length === 0) && (
+                                <div className="flex w-full h-full items-center bg-gray-100 justify-center text-xl font-bold">
+                                    신규 유저가 없습니다.
+                                </div>
+                            )}
                             {newUserList.map((u, i) => {
                                 return (
                                     <div key={u.uid} className="flex flex-row w-full justify-between items-center gap-8">
@@ -666,6 +673,9 @@ export function IsAdmin(
                 </>
             )}
             {(tab === 3) && (
+                <ClassSetting/>
+            )}
+            {(tab === 4) && (
                 <Log/>
             )}
         </div>
