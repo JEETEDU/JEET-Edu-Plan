@@ -5,7 +5,6 @@ import {NextResponse} from "next/server";
 import {eq, and, count} from "drizzle-orm";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
 import {
-    parseTime,
     return_400,
     return_500,
     return_not_logged_in,
@@ -20,7 +19,7 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
  *  put:
  *      tags:
  *          - User/Today
- *      summary: Register today's sleep time of the logged in user
+ *      summary: Register today's sleep time of the logged-in user
  *      description: Register today's sleep time if not registered yet and update if already registered
  *      requestBody:
  *          required: true
@@ -29,17 +28,17 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
  *                  schema:
  *                      type: object
  *                      properties:
- *                          sleep_time:
+ *                          sleep:
  *                              type: string
  *                              description: User's sleep time
  *                              example: "2025-01-01T23:00:00.000Z"
- *                          wakeup_time:
+ *                          wakeup:
  *                              type: string
  *                              description: User's wakeup time
  *                              example: "2025-01-02T07:00:00.000Z"
  *                      required:
- *                          - sleep_time
- *                          - wakeup_time
+ *                          - sleep
+ *                          - wakeup
  *      responses:
  *          "200":
  *              description: Sleep time registered
@@ -94,24 +93,11 @@ export async function PUT(req: NextRequest) {
             const user_id = decoded.user_id;
 
             const data = await req.json();
-            const sleep_time = data.sleep_time;
-            const wakeup_time = data.wakeup_time;
+            const sleep = data.sleep;
+            const wakeup = data.wakeup;
 
-            // // Check if sleep_time and wake_time are valid as HH:MM
-            // const timePattern = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
-            // if (!timePattern.test(sleep_time) || !timePattern.test(wakeup_time)) {
-            //     let sleep_time_
-            //     return return_400("Invalid time format");
-            // }
-            //
-            // const sleep_datetime = parseTime(sleep_time);
-            // const wake_datetime = parseTime(wakeup_time);
-            //
-            // if (sleep_datetime > wake_datetime) {
-            //     sleep_datetime.setDate(sleep_datetime.getDate() - 1);
-            // }
             const isoTimePattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
-            if (!isoTimePattern.test(sleep_time) || !isoTimePattern.test(wakeup_time)) {
+            if (!isoTimePattern.test(sleep) || !isoTimePattern.test(wakeup)) {
                 return return_400("Invalid time format");
             }
 
@@ -128,8 +114,8 @@ export async function PUT(req: NextRequest) {
             if (sleep_info.count != 0) {
                 await tx.update(schema.sleeps)
                     .set({
-                        sleep: new Date(sleep_time),
-                        wakeup: new Date(wakeup_time)
+                        sleep: new Date(sleep),
+                        wakeup: new Date(wakeup)
                     })
                     .where(and(
                         eq(schema.sleeps.user_id, user_id),
@@ -148,8 +134,8 @@ export async function PUT(req: NextRequest) {
                 .values({
                     date: todayString(),
                     user_id: user_id,
-                    sleep: new Date(sleep_time),
-                    wakeup: new Date(wakeup_time),
+                    sleep: new Date(sleep),
+                    wakeup: new Date(wakeup),
                 });
 
             return NextResponse.json({

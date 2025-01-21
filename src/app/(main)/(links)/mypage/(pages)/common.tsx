@@ -10,15 +10,11 @@ import UserDetail from "@/app/(main)/(links)/mypage/(pages)/userDetail";
 import Log from "@/app/(main)/(links)/mypage/(pages)/component/log";
 import ClassSetting from "@/app/(main)/(links)/mypage/(pages)/component/classSetting";
 
-export function IsStudent(
-    {
-        timeData, setTimeData,
-        date,
-        isMobile,
-    }
-) {
+export function IsStudent({date, isMobile,}) {
     const [editAnswer, setEditAnswer] = useState(false);
     const [error, setError] = useState("");
+
+    const [timeData, setTimeData] = useState<{wakeup: string | null, sleep: string | null}>({wakeup: null, sleep: null});
 
     const _a = [
         "answer_1",
@@ -52,7 +48,7 @@ export function IsStudent(
                 const _q = Object.values(questions.response.answers[0].questions);
                 const qArr = _q.concat("오늘의 학원 과제는?", "어젯밤 공부한 내용은?", "오늘의 학교 과제는?");
                 const aArr = Object.values(questions.response.answers[0].answers);
-                const qaArr: Array = qArr.map((q, i) => {
+                const qaArr: [] = qArr.map((q, i) => {
                     return [q || "", aArr[i]];
                 });
                 console.log(qaArr)
@@ -68,7 +64,7 @@ export function IsStudent(
                 times = await getStoreData(`/api/user/today/sleep?${params}`, `sleep-time-${params}`, true);
             }
 
-            setTimeData(times.response.sleep_info[0] || {wakeup: "--:--", sleep: "--:--"});
+            setTimeData(times.response.sleep_info || {wakeup: null, sleep: null});
         })();
     }, [date,])
 
@@ -165,9 +161,8 @@ export function IsStudent(
                                     </div>
                                     <TimeInput
                                         className="w-fit p-1"
-                                        setState={setTimeData}
-                                        state={timeData}
-                                        stateKey={"sleep"}
+                                        date={timeData}
+                                        key={"sleep"}
                                         // onChange={() => setError("")}
                                         selectorPointerEventsNone={!editAnswer}
                                     />
@@ -181,9 +176,8 @@ export function IsStudent(
                                     </div>
                                     <TimeInput
                                         className="w-fit p-1"
-                                        setState={setTimeData}
-                                        state={timeData}
-                                        stateKey={"wakeup"}
+                                        date={timeData}
+                                        key={"wakeup"}
                                         // onChange={() => setError("")}
                                         selectorPointerEventsNone={!editAnswer}
                                     />

@@ -22,7 +22,6 @@ export default function Page({isMobile}: { isMobile: boolean }) {
     // const [answered, setAnswered] = useState(false);
 
     const [qList, setQList] = useState({});
-    const [timeData, setTimeData] = useState({wakeup: "", sleep: ""});
 
     // const [userList, setUserList] = useState([]);
     // const [newUserList, setNewUserList] = useState([]);
@@ -230,9 +229,7 @@ export default function Page({isMobile}: { isMobile: boolean }) {
 
                         {(userType === 1) && (
                             <IsStudent
-                                timeData={timeData}
                                 date={calendarValue}
-                                setTimeData={setTimeData}
                                 isMobile={isMobile}
                             />
                         )}

@@ -214,11 +214,17 @@ export function Alert({path, isMobile}: { path: string, isMobile: boolean }) {
 
 export function TimeInput(
     {
-        setState, state, stateKey, className,
-        onChange = (() => null),
-        selectorPointerEventsNone = false,
+        date, key,
+        className, onChange = () => null, selectorPointerEventsNone = false
+    }: {
+        date: { sleep: string | null; wakeup: string | null }; key: "sleep" | "wakeup"
+        className: string; onChange?: () => void; selectorPointerEventsNone: boolean;
     }
 ) {
+    const time = new Date(date[key]);
+    time.setHours(time.getHours(), 0, 0, 0);
+    date[key] = time.toISOString();
+
     return (
         <div className={className}>
             <div className="flex justify-around items-center h-full w-full">
@@ -239,7 +245,6 @@ export function TimeInput(
                     ))}
                     required
                     onChange={(e) => {
-                        // setHour(() => e.value);
                         setState((prev) => {
                             const obj = {...prev};
                             obj[stateKey] = `${e.value}:${prev[stateKey].split(':')[1]}`;
