@@ -14,7 +14,7 @@ export function IsStudent({date, isMobile,}) {
     const [editAnswer, setEditAnswer] = useState(false);
     const [error, setError] = useState("");
 
-    const [timeData, setTimeData] = useState<{wakeup: string | null, sleep: string | null}>({wakeup: null, sleep: null});
+    const [timeData, setTimeData] = useState<{ wakeup: Date, sleep: Date }>({ wakeup: new Date(), sleep: new Date() });
 
     const _a = [
         "answer_1",
@@ -59,12 +59,29 @@ export function IsStudent({date, isMobile,}) {
                 setQuestionOK(false);
             }
 
-            let times = await getStoreData(`/api/user/today/sleep?${params}`, `sleep-time-${params}`);
+            let times: {
+                last_update: Date;
+                response: {
+                    success: true;
+                    sleep_info: {
+                        sleep: string;
+                        wakeup: string;
+                    }
+                } | {
+                    success: false;
+                    message: string;
+                }
+            } = await getStoreData(`/api/user/today/sleep?${params}`, `sleep-time-${params}`);
             if (new Date(times.last_update).getDate() !== today.getDate()) {
                 times = await getStoreData(`/api/user/today/sleep?${params}`, `sleep-time-${params}`, true);
             }
 
-            setTimeData(times.response.sleep_info || {wakeup: null, sleep: null});
+            if (times.response.success) {
+                setTimeData({
+                    sleep: new Date(times.response.sleep_info.sleep),
+                    wakeup: new Date(times.response.sleep_info.wakeup),
+                });
+            }
         })();
     }, [date,])
 
@@ -102,8 +119,25 @@ export function IsStudent({date, isMobile,}) {
                 // console.log(timeData);
             });
 
-            const times = await getStoreData(`/api/user/today/sleep?${params}`, `sleep-time-${params}`, true);
-            setTimeData(times.response.sleep_info[0]);
+            const times: {
+                last_update: Date;
+                response: {
+                    success: true;
+                    sleep_info: {
+                        sleep: string;
+                        wakeup: string;
+                    }
+                } | {
+                    success: false;
+                    message: string;
+                }
+            } = await getStoreData(`/api/user/today/sleep?${params}`, `sleep-time-${params}`, true);
+            if (times.response.success) {
+                setTimeData({
+                    sleep: new Date(times.response.sleep_info.sleep),
+                    wakeup: new Date(times.response.sleep_info.wakeup),
+                });
+            }
 
             setError("");
         }
@@ -162,7 +196,7 @@ export function IsStudent({date, isMobile,}) {
                                     <TimeInput
                                         className="w-fit p-1"
                                         date={timeData}
-                                        key={"sleep"}
+                                        keyName={"sleep"}
                                         // onChange={() => setError("")}
                                         selectorPointerEventsNone={!editAnswer}
                                     />
@@ -177,7 +211,7 @@ export function IsStudent({date, isMobile,}) {
                                     <TimeInput
                                         className="w-fit p-1"
                                         date={timeData}
-                                        key={"wakeup"}
+                                        keyName={"wakeup"}
                                         // onChange={() => setError("")}
                                         selectorPointerEventsNone={!editAnswer}
                                     />
@@ -482,6 +516,7 @@ export function IsAdmin(
                             components={{
                                 IndicatorSeparator: () => null
                             }}
+                            isSearchable={false}
                         />
                         <Select
                             options={[
@@ -501,6 +536,7 @@ export function IsAdmin(
                             components={{
                                 IndicatorSeparator: () => null
                             }}
+                            isSearchable={false}
                         />
                         <div
                             className={cn(

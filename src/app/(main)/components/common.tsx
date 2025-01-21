@@ -214,16 +214,14 @@ export function Alert({path, isMobile}: { path: string, isMobile: boolean }) {
 
 export function TimeInput(
     {
-        date, key,
+        date, keyName, dateAction,
         className, onChange = () => null, selectorPointerEventsNone = false
     }: {
-        date: { sleep: string | null; wakeup: string | null }; key: "sleep" | "wakeup"
-        className: string; onChange?: () => void; selectorPointerEventsNone: boolean;
+        date: { sleep: Date; wakeup: Date }; keyName: "sleep" | "wakeup"; dateAction?: (t: { sleep: Date; wakeup: Date }) => void;
+        className: string; onChange?: () => void; selectorPointerEventsNone?: boolean;
     }
 ) {
-    const time = new Date(date[key]);
-    time.setHours(time.getHours(), 0, 0, 0);
-    date[key] = time.toISOString();
+    console.log(date)
 
     return (
         <div className={className}>
@@ -239,23 +237,24 @@ export function TimeInput(
                     }}
                     options={Array.from({length: 24}, (_, i) => (
                         {
-                            value: String(i + 1).padStart(2, "0"),
-                            label: String(i + 1).padStart(2, "0"),
+                            value: String(i).padStart(2, "0"),
+                            label: String(i).padStart(2, "0"),
                         }
                     ))}
                     required
                     onChange={(e) => {
-                        setState((prev) => {
-                            const obj = {...prev};
-                            obj[stateKey] = `${e.value}:${prev[stateKey].split(':')[1]}`;
+                        dateAction((t) => {
+                            const obj = {...t};
+                            obj[keyName].setHours(Number(e.value));
                             return obj;
-                        });
+                        })
                         onChange();
                     }}
                     value={{
-                        value: state[stateKey].split(':')[0],
-                        label: state[stateKey].split(':')[0]
+                        value: date[keyName].getHours().toString(),
+                        label: date[keyName].getHours().toString(),
                     }}
+                    isSearchable={false}
                 />
                 <div className="flex items-start justify-center text-xl">
                     시
@@ -277,17 +276,18 @@ export function TimeInput(
                     ))}
                     required
                     onChange={(e) => {
-                        setState((prev) => {
-                            const obj = {...prev};
-                            obj[stateKey] = `${prev[stateKey].split(':')[0]}:${e.value}`;
+                        dateAction((t) => {
+                            const obj = {...t};
+                            obj[keyName].setMinutes(Number(e.value));
                             return obj;
-                        });
+                        })
                         onChange();
                     }}
                     value={{
-                        value: state[stateKey].split(':')[1],
-                        label: state[stateKey].split(':')[1]
+                        value: date[keyName].getMinutes().toString(),
+                        label: date[keyName].getMinutes().toString(),
                     }}
+                    isSearchable={false}
                 />
                 <div className="flex items-start justify-center text-xl">
                     분
@@ -297,7 +297,7 @@ export function TimeInput(
     );
 }
 
-export function TodayQuestion({device}: { device }) {
+export function TodayQuestion({device}: { device: string }) {
     const path = usePathname();
     const [answered, setAnswered] = useState(false);
     const [showQuestion, setShowQuestion] = useState(false);
@@ -305,11 +305,12 @@ export function TodayQuestion({device}: { device }) {
     const [userType, setUserType] = useState(0);
 
     const [qList, setQList] = useState({})
-
-    const [timeData, setTimeData] = useState({
-        "wakeup_time": "07:00",
-        "sleep_time": "23:00"
+    const today = new Date();
+    const [timeData, setTimeData] = useState<{ wakeup: Date; sleep: Date }>({
+        wakeup: new Date(today.getFullYear(), today.getMonth(), today.getDate()),
+        sleep: new Date(today.getFullYear(), today.getMonth(), today.getDate()),
     });
+    console.log(timeData)
 
     const [error, setError] = useState("");
 
@@ -352,7 +353,14 @@ export function TodayQuestion({device}: { device }) {
             }
         });
 
-        const r1 = await PUT('/api/user/today/sleep', timeData)
+        if (timeData.sleep > timeData.wakeup) timeData.sleep.setDate(timeData.sleep.getDate() - 1);
+        timeData.wakeup.setHours(timeData.wakeup.getHours() + 9);
+        timeData.sleep.setHours(timeData.sleep.getHours() + 9);
+
+        const r1 = await PUT('/api/user/today/sleep', {
+            sleep: timeData.sleep.toISOString(),
+            wakeup: timeData.wakeup.toISOString(),
+        })
         // console.log(r1)
         if (!r1.success) {
             // alert("error occurred while put sleep / wakeup time");
@@ -420,9 +428,9 @@ export function TodayQuestion({device}: { device }) {
                             </label>
                             <TimeInput
                                 className="w-full"
-                                setState={setTimeData}
-                                state={timeData}
-                                stateKey={"sleep_time"}
+                                date={timeData}
+                                dateAction={setTimeData}
+                                keyName={"sleep"}
                                 onChange={() => setError("")}
                             />
                         </div>
@@ -437,9 +445,9 @@ export function TodayQuestion({device}: { device }) {
                             </label>
                             <TimeInput
                                 className="w-full"
-                                setState={setTimeData}
-                                state={timeData}
-                                stateKey={"wakeup_time"}
+                                date={timeData}
+                                dateAction={setTimeData}
+                                keyName={"wakeup"}
                                 onChange={() => setError("")}
                             />
                         </div>

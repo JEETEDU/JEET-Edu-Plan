@@ -70,6 +70,7 @@ export default function Mobile() {
                 placeholder="반을 선택해 주세요"
                 instanceId={1}
                 onChange={(e) => setSelectedClass(e.value)}
+                isSearchable={false}
             />
             <div className="flex-grow bg-gray-100">
                 <Scrollbars

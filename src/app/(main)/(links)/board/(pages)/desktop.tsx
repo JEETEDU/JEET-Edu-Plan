@@ -134,6 +134,7 @@ export default function Desktop() {
                         placeholder="반을 선택해 주세요"
                         instanceId={1}
                         onChange={(e) => setSelectedClass(e.value)}
+                        isSearchable={false}
                     />
 
                     <div></div>

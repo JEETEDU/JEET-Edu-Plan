@@ -103,6 +103,7 @@ export default function UserInfo(
                                     return obj;
                                 });
                             }}
+                            isSearchable={false}
                         />
                     </div>
                     <div className="flex flex-col items-start w-full justify-between">
@@ -174,6 +175,7 @@ export default function UserInfo(
                                     return obj;
                                 });
                             }}
+                            isSearchable={false}
                         />
                     </div>
                     <div className="flex flex-col items-start w-full justify-between">
