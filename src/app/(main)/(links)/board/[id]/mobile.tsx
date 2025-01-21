@@ -112,10 +112,13 @@ export default function Chatting({id}: { id: number }) {
     }
 
     const delete_ = () => {
-        console.log(selectedArticle.id);
-        DELETE(`/api/board?article_id=${selectedArticle.id}`).then(r => {
-            console.log(r);
-        }).then(() => window.location.reload());
+        const res = confirm("게시물을 삭제하시겠습니까?");
+        if (res) {
+            console.log(selectedArticle.id);
+            DELETE(`/api/board?article_id=${selectedArticle.id}`).then(r => {
+                console.log(r);
+            }).then(() => window.location.reload());
+        }
     }
 
     return (
@@ -143,10 +146,7 @@ export default function Chatting({id}: { id: number }) {
                         {(selectedArticle.user.id === uid) && (
                             <>
                                 <Link
-                                    href={{
-                                        pathname: "/board/new",
-                                        query: {prev: JSON.stringify(selectedArticle)}
-                                    }}
+                                    href={`/board/edit/${selectedArticle.id}`}
                                     className="p-1 border-2 border-blue rounded hover:bg-blue hover:text-white duration-200"
                                 >
                                     <div className="i-system-uicons-write"/>

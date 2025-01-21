@@ -118,7 +118,7 @@ export function TodayAnswer({date, uid}: CTodayAnswer) {
         <div className="flex flex-col justify-between gap-4">
             <div className="flex items-center w-full justify-between">
                 <div className="text-2xl text-gray-800 font-semibold">
-                    오늘의 질문 응답 ({date.toLocaleDateString()}) [{uid}]
+                    오늘의 질문 응답 ({date.toLocaleDateString()})
                 </div>
                 {/*<div className="flex items-center text-lg text-red-700 font-bold">*/}
                 {/*    {error}*/}

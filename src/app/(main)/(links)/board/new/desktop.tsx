@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 import {GET, getStoreData} from "@/app/(main)/components/functions";
 import Select from "react-select";
 import Scrollbars from "react-custom-scrollbars-2";
-import {useRouter, useSearchParams} from "next/navigation";
+import {useRouter} from "next/navigation";
 import {IArticle} from "@/app/(main)/(links)/board/component";
 
 const ReactQuill = dynamic(() => import('react-quill-new'), {ssr: false})
@@ -69,9 +69,7 @@ interface IClassInfo {
     }[];
 }
 
-export default function HtmlEditor() {
-    const params = useSearchParams();
-
+export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
     const router = useRouter();
 
     const [content, setContent] = useState<INewArticle>(initContent);
@@ -95,32 +93,39 @@ export default function HtmlEditor() {
 
     const [classes, setClasses] = useState<IClass[]>([]);
     const [selectedClass, setSelectedClass] = useState<string>("/로딩중...");
-    const [category, setCategory] = useState<{ label: string; value: string }>({label: "일반", value: '0'})
     const [subjects, setSubjects] = useState<{ id: number; name: string }[]>([]);
     const [selectedSubject, setSelectedSubject] = useState<{ label: string; value: string }>({label: "로딩중...", value: ""});
-    const [notice, setNotice] = useState<{ label: string; value: string }>({label: "공지 등록 안함", value: "0"});
     const [fileList, setFileList] = useState<File[]>([]);
-    const [prevId, setPrevId] = useState<number>(0);
-
     const [attachedFiles, setAttachedFiles] = useState<{ name: string; path: string }[]>([]);
 
-    const categoryList = [
-        {label: "일반", value: '0'},
-        {label: "질문", value: '2'},
-        {label: "자료", value: '3'},
-    ];
+    const categories = ["일반", null, "질문", "자료"];
     const noticeList = [
         {value: "0", label: "공지 등록 안함"},
         {value: "1", label: "공지로 등록"},
     ];
 
-    const prev = params.get("prev");
+    useEffect(() => {
+        if (prev !== null) {
+            console.log('prev', prev)
+            setContent({
+                category: prev.category,
+                class_id: 1, // prev.class_.id
+                content: prev.content || "",
+                notice: prev.notice,
+                subject_id: prev.subject.id || 0,
+                title: prev.title,
+            });
+            setAttachedFiles(prev.attach_files || [])
+            setSelectedSubject({
+                label: prev.subject.name || "",
+                value: String(prev.subject.id)
+            })
+            // const c = prev.class_;
+            // setSelectedClass(`${c.id}/${c.name} | ${c.description}`);
+        }
+    }, [prev]);
 
     useEffect(() => {
-        if (prev) {
-            const _p: IArticle = JSON.parse(prev);
-            setPrevId(_p.id);
-        }
         (async () => {
             setUser((await getStoreData('/api/user/info', 'user-info')).response.user);
 
@@ -130,48 +135,14 @@ export default function HtmlEditor() {
             } = (await getStoreData("/api/user/class", 'class-list')).response;
             if (resClass.success) {
                 setClasses(resClass.classes);
-                const c = resClass.classes[0];
-                setSelectedClass(`${c.id}/${c.name} | ${c.description}`);
-                if (!prevId) setContent({...content, class_id: c.id});
+                if (prev === null) {
+                    const c = resClass.classes[0];
+                    setSelectedClass(`${c.id}/${c.name} | ${c.description}`);
+                }
             }
         })();
         setStorage(sessionStorage);
     }, [])
-
-    useEffect(() => {
-        if (prevId !== 0) {
-            const _p: IArticle = JSON.parse(prev);
-            console.log(_p);
-            setContent({
-                category: _p.category,
-                class_id: _p.class_?.id,
-                content: _p.content || "",
-                notice: _p.notice,
-                subject_id: _p.subject.id,
-                title: _p.title
-            });
-            const _c = [
-                "일반",
-                "_",
-                "질문",
-                "자료"
-            ]
-            setCategory({
-                value: String(_p.category),
-                label: _c[Number(_p.category)]
-            });
-            const _n = ["공지 등록 안함", "공지로 등록"];
-            setNotice({
-                value: String(_p.notice),
-                label: _n[Number(_p.notice)]
-            })
-            setSelectedSubject({
-                label: _p.subject.name!,
-                value: String(_p.subject.id)
-            })
-            if (_p.attach_files_exist) setAttachedFiles(_p.attach_files!);
-        }
-    }, [prevId]);
 
     useEffect(() => {
         console.log(content);
@@ -228,6 +199,7 @@ export default function HtmlEditor() {
         if (!content.title.trim()) return;
         if (!content.content.trim()) return;
         const formData = new FormData();
+        console.log(content)
         formData.append("article", JSON.stringify(content));
         fileList.map((file: File) => {
             formData.append("files", file);
@@ -236,13 +208,15 @@ export default function HtmlEditor() {
             method: 'POST',
             body: formData
         }).then(res => res.json()).then((res) => {
-            console.log(res);
+            if (res.success) {
+                alert("게시물이 업로드되었습니다!");
+                router.push('/board');
+            }
         })
-        alert("게시물이 업로드되었습니다!");
-        router.push('/board');
     };
 
     const update = () => {
+        if (prev === null) return;
         if (!content.title.trim()) return;
         if (!content.content.trim()) return;
         const formData = new FormData();
@@ -256,7 +230,7 @@ export default function HtmlEditor() {
         fileList.map((file: File) => {
             formData.append("files", file);
         })
-        formData.append("article_id", prevId);
+        formData.append("article_id", String(prev.id));
         fetch('/api/board', {
             method: 'PATCH',
             body: formData
@@ -302,10 +276,10 @@ export default function HtmlEditor() {
                         불러오기
                     </button>
                     <button
-                        onClick={(prevId === 0) ? upload : update}
+                        onClick={(prev === null) ? upload : update}
                         className="px-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
                     >
-                        {(prevId === 0) ? "게시하기" : "저장하기"}
+                        {(prev === null) ? "게시하기" : "저장하기"}
                     </button>
                 </div>
             </div>
@@ -342,13 +316,14 @@ export default function HtmlEditor() {
                         <Select
                             className="w-full"
                             // menuPlacement="top"
-                            options={categoryList}
+                            options={categories.filter(c => (c !== null)).map((c, i) => {
+                                return {value: String(i), label: c}
+                            })}
                             required
-                            value={category}
+                            value={{value: String(content.category), label: categories[content.category]}}
                             placeholder="게시물 종류를 선택해 주세요"
                             instanceId={1}
                             onChange={(e) => {
-                                setCategory(e);
                                 setContent({...content, category: Number(e.value)});
                             }}
                         />
@@ -384,11 +359,10 @@ export default function HtmlEditor() {
                                 noticeList[0]
                             ] : noticeList}
                             required
-                            value={notice}
+                            value={noticeList[content.notice]}
                             placeholder="과목을 선택해 주세요"
                             instanceId={1}
                             onChange={(e) => {
-                                setNotice(e);
                                 setContent({...content, is_notice: Number(e.value)});
                             }}
                         />
@@ -397,7 +371,6 @@ export default function HtmlEditor() {
 
             </div>
             <div className="flex flex-row w-full justify-between items-center gap-4 justify-between">
-                {(prev) && (<div className="text-sm text-gray-600 whitespace-nowrap">내용이 보이지 않는다면 새로고침 해 주세요.</div>)}
                 <Scrollbars
                     className="w-full h-full"
                     universal
