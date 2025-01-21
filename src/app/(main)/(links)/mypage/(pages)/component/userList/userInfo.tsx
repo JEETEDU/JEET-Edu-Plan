@@ -2,7 +2,7 @@ import {cn, PATCH} from "@/app/(main)/components/functions";
 import Select from "react-select";
 import TextareaAutosize from "react-textarea-autosize";
 import React from "react";
-import {IUserInfo} from "../userDetail";
+import {IUserInfo} from "./userDetail";
 
 export interface CUserInfo {
     uid: number;

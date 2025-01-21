@@ -67,12 +67,12 @@ export default function ClassSetting() {
     const [edit, setEdit] = useState<boolean>(false);
     const [addSubject, setAddSubject] = useState<string | null>(null);
 
-    function refreshClasses() {
+    function refreshClasses(resetHead: boolean = false) {
         (async () => {
             const res: { success: boolean; classes: IClass[] } = await GET(`/api/admin/class?name=${search}`);
             if (res.success) {
                 setClassList(res.classes);
-                setHead(res.classes[0].id);
+                if (resetHead) setHead(res.classes[0].id);
             }
         })();
     }
@@ -105,7 +105,7 @@ export default function ClassSetting() {
             display: (selectedClass.display === 1),
             description: selectedClass.description,
         }).then((res: { success: boolean; message: string }) => {
-            refreshClasses();
+            refreshClasses(false);
             return res;
         });
     };
@@ -122,8 +122,132 @@ export default function ClassSetting() {
         });
     }
 
+    const [newClass, setNewClass] = useState<{ class_name: string; display: boolean; description: string } | null>(null);
+
     return <div className="grid grid-cols-4 h-full gap-2 max-w-full">
+        {(newClass !== null) && (
+            <div
+                className="fixed inset-0 bg-black/50 flex items-center justify-center z-10"
+                onClick={() => setNewClass(null)} // 모달 바깥 클릭 시 닫힘
+            >
+                <div
+                    className={cn("bg-gray-50 rounded-lg shadow-lg p-6 flex flex-col gap-8 w-8/10 max-h-9/10")}
+                    onClick={(e) => e.stopPropagation()} // 모달 내부 클릭 시 닫히지 않도록 방지
+                >
+                    <div className="flex w-full justify-between items-center flex-col space-y-4">
+                        <div className="w-full grid grid-cols-3 gap-4">
+                            <div className="flex flex-col items-start w-full justify-between col-span-2">
+                                <label htmlFor="name" className="component-button-info">
+                                    이름
+                                </label>
+                                <input
+                                    className="component-input resize-none bg-white"
+                                    value={newClass.class_name}
+                                    placeholder="반 이름을 입력해주세요"
+                                    onChange={(e) => {
+                                        setNewClass((prev) => {
+                                            if (prev !== null) {
+                                                const obj = {...prev};
+                                                obj.class_name = e.target.value;
+                                                return obj;
+                                            } else {
+                                                return prev;
+                                            }
+                                        });
+                                    }}
+                                />
+                            </div>
+                            <div className="flex flex-col items-start w-full justify-between">
+                                <label htmlFor="name" className="component-button-info">
+                                    학생들에게 공개 여부
+                                </label>
+                                <Select
+                                    className="text-lg font-bold w-full text-center"
+                                    value={newClass.display ? {value: "1", label: "공개"} : {value: "0", label: "비공개"}}
+                                    components={{
+                                        IndicatorSeparator: () => null
+                                    }}
+                                    options={[
+                                        {value: "true", label: "공개"},
+                                        {value: "false", label: "비공개"}
+                                    ]}
+                                    required
+                                    placeholder="입력해주세요"
+                                    onChange={(e) => {
+                                        setNewClass((prev) => {
+                                            if (prev !== null) {
+                                                const obj = {...prev};
+                                                if (e) {
+                                                    obj.display = (e.value === 'true');
+                                                }
+                                                return obj;
+                                            } else {
+                                                return prev;
+                                            }
+                                        });
+                                    }}
+                                    isSearchable={false}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col items-start w-full justify-between col-span-3">
+                            <label htmlFor="name" className="component-button-info">
+                                설명
+                            </label>
+                            <input
+                                className={cn(
+                                    "component-input resize-none bg-white"
+                                )}
+                                value={newClass.description || ""}
+                                placeholder="반 설명을 입력해주세요"
+                                onChange={(e) => {
+                                    setNewClass((prev) => {
+                                        if (prev !== null) {
+                                            const obj = {...prev};
+                                            obj.description = e.target.value;
+                                            return obj;
+                                        } else {
+                                            return prev;
+                                        }
+                                    });
+                                }}
+                            />
+                        </div>
+                    </div>
+                    <div className="w-full flex justify-end items-center gap-6">
+                        <button
+                            onClick={async () => {
+                                const res = await POST("/api/admin/class", newClass);
+                                if (res.success) {
+                                    alert(`새로운 반 ${newClass.class_name} 이(가) 생성되었습니다!`);
+                                    setNewClass(null);
+                                    refreshClasses();
+                                } else {
+                                    alert("정확한 정보를 입력해 주세요");
+                                }
+                            }}
+                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                        >
+                            저장
+                        </button>
+                        <button
+                            onClick={() => setNewClass(null)}
+                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                        >
+                            취소
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )}
         <div className="h-full flex flex-col space-y-4">
+            <div
+                className="bg-green-500 rounded text-white font-bold p-1 flex justify-center items-center hover:bg-green-600 cursor-pointer"
+                onClick={() => setNewClass({description: "", display: true, class_name: ""})}
+            >
+                새로운 반 추가하기
+            </div>
             <div
                 className={cn(
                     "border-2 py-1 px-3 flex-1 flex rounded justify-between items-center gap-3",
@@ -140,7 +264,7 @@ export default function ClassSetting() {
                 />
                 <button
                     className="i-heroicons-outline-search"
-                    onClick={refreshClasses}
+                    onClick={() => refreshClasses()}
                 />
             </div>
             <Scrollbars
@@ -283,6 +407,7 @@ export default function ClassSetting() {
                                         return obj;
                                     });
                                 }}
+                                isSearchable={false}
                             />
                         </div>
                         <div className="flex flex-col items-start w-full justify-between col-span-3">

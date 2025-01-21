@@ -2,9 +2,10 @@
 
 import React, {useEffect, useState} from "react";
 import {getStoreData} from "@/app/(main)/components/functions";
-import UserInfo from "./component/userInfo";
-import ManageUser from "./component/manageUser";
-import {TodayAnswer} from "@/app/(main)/(links)/mypage/(pages)/component/todayAnswer";
+import UserInfo from "./userInfo";
+import ManageUser from "./manageUser";
+import {TodayAnswer} from "@/app/(main)/(links)/mypage/(pages)/component/userList/todayAnswer";
+import UserClass from "@/app/(main)/(links)/mypage/(pages)/component/userList/userClass";
 
 export interface IUserInfo {
     uid: number;
@@ -49,16 +50,11 @@ export default function UserDetail({uid, date, refresh}: { uid: number, date: Da
                 today={today}
                 refresh={refresh}
             />
-            <ManageUser
-                uid={uid}
-                refresh={refresh}
-            />
+            <ManageUser uid={uid}/>
             <Hr/>
-            <TodayAnswer
-                date={date}
-                uid={uid}
-            />
+            <TodayAnswer date={date} uid={uid}/>
             <Hr/>
+            <UserClass uid={uid} userType={userInfo.user_type || 1}/>
         </div>
     );
 }
