@@ -359,7 +359,6 @@ export async function DELETE(req: NextRequest) {
  *            name: search_by
  *            schema:
  *              type: string
- *              example: "name"
  *              enum: ["user_id", "name", "first_year", "school", "joined_term"]
  *            description: Search by field (user_id, name(like), first_year(eq), school(like), joined_term(like))
  *            required: false
@@ -367,7 +366,6 @@ export async function DELETE(req: NextRequest) {
  *            name: search_string
  *            schema:
  *              type: string
- *              example: "john"
  *            description: Search string
  *            required: false
  *          - in: query

@@ -1,12 +1,12 @@
 "use client";
 
 import TextareaAutosize from "react-textarea-autosize";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {cn, getStoreData, POST, PUT} from "@/app/(main)/components/functions";
 import {TimeInput} from "@/app/(main)/components/common";
 import Select from "react-select";
 import Scrollbars from "react-custom-scrollbars-2";
-import UserDetail from "@/app/(main)/(links)/mypage/(pages)/userDetail";
+import UserDetail from "@/app/(main)/(links)/mypage/(pages)/component/userList/userDetail";
 import Log from "@/app/(main)/(links)/mypage/(pages)/component/log";
 import ClassSetting from "@/app/(main)/(links)/mypage/(pages)/component/classSetting";
 
@@ -14,7 +14,7 @@ export function IsStudent({date, isMobile,}) {
     const [editAnswer, setEditAnswer] = useState(false);
     const [error, setError] = useState("");
 
-    const [timeData, setTimeData] = useState<{ wakeup: Date, sleep: Date }>({ wakeup: new Date(), sleep: new Date() });
+    const [timeData, setTimeData] = useState<{ wakeup: Date, sleep: Date }>({wakeup: new Date(), sleep: new Date()});
 
     const _a = [
         "answer_1",
@@ -258,6 +258,20 @@ export function IsStudent({date, isMobile,}) {
     );
 }
 
+interface IListUser {
+    uid: number;
+    login_id: string;
+    user_type: number;
+    name: string;
+    first_year: number;
+    school: string;
+    joined_term: string;
+    classes: {
+        id: number;
+        name: string;
+    }[];
+}
+
 export function IsAdmin(
     {
         qList, setQList,
@@ -269,8 +283,8 @@ export function IsAdmin(
     const dateString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     const params = `date=${dateString}`;
 
-    const [userList, setUserList] = useState([]);
-    const [newUserList, setNewUserList] = useState([]);
+    const [userList, setUserList] = useState<IListUser[]>([]);
+    const [newUserList, setNewUserList] = useState<IListUser[]>([]);
 
     const [questionOK, setQuestionOK] = useState(false);
     const [head, setHead] = useState(-1);
@@ -368,20 +382,34 @@ export function IsAdmin(
         }
     }, [tab,]);
 
+    const [page, setPage] = useState(1);
+    const scrollbars = useRef<Scrollbars>(null);
+
+    const _param = Object.entries(userParams).reduce((str, [k, v]) => {
+        if (v !== "") {
+            return `${str}&${String(k)}=${String(v)}`;
+        } else {
+            return str;
+        }
+    }, "order_by=name&order=ASC");
+
     const refreshUser = (refreshHead: boolean = true) => {
-        const _param = Object.entries(userParams).reduce((str, [k, v]) => {
-            if (v !== "") {
-                return `${str}&${String(k)}=${String(v)}`;
-            } else {
-                return str;
-            }
-        }, "order_by=name&order=ASC");
+        setPage(1);
         (async () => {
-            const users = (await getStoreData(`/api/admin/user?${_param}`, 'user-list-student', true)).response.users;
+            const users: IListUser[] = (await getStoreData(`/api/admin/user?page${_param}`, 'user-list-student', true)).response.users;
             setUserList(users);
             if (refreshHead && users[0]) {
                 setHead(users[0].uid);
             }
+        })().then(() => {
+            if (scrollbars.current) scrollbars.current.scrollToTop();
+        });
+    }
+
+    const nextPage = () => {
+        (async () => {
+            const users: IListUser[] = (await getStoreData(`/api/admin/user?page=${page + 1}&${_param}`, 'user-list-student', true)).response.users;
+            setUserList((prev) => [...prev, ...users]);
         })();
     }
 
@@ -573,8 +601,19 @@ export function IsAdmin(
                             className="w-full flex-1"
                             universal
                             autoHide
+                            ref={scrollbars}
+                            onScrollStop={async () => {
+                                if (scrollbars.current!.getScrollHeight() - scrollbars.current!.getClientHeight() <= scrollbars.current!.getScrollTop()) {
+                                    (async () => {
+                                        nextPage();
+                                        setPage((p) => p + 1);
+                                    })().then(() => {
+                                        scrollbars.current!.scrollTop(scrollbars.current!.getScrollTop() - 10);
+                                    });
+                                }
+                            }}
                         >
-                            <div className="flex flex-col w-full items-center space-y-4">
+                            <div className="flex flex-col w-full items-center space-y-4 pb-3">
                                 {userList.map((u) => {
                                     return (
                                         <div

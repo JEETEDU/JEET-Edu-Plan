@@ -1,7 +1,7 @@
 'use client';
 
 import React, {useEffect, useState} from "react";
-import {IUserInfo} from "@/app/(main)/(links)/mypage/(pages)/userDetail";
+import {IUserInfo} from "@/app/(main)/(links)/mypage/(pages)/component/userList/userDetail";
 import TextareaAutosize from "react-textarea-autosize";
 
 export interface CTodayAnswer {
@@ -10,21 +10,6 @@ export interface CTodayAnswer {
 }
 
 export function TodayAnswer({date, uid}: CTodayAnswer) {
-
-    // const _a = [
-    //     "answer_1",
-    //     "answer_2",
-    //     "answer_3",
-    //     "answer_lastday",
-    //     "answer_school",
-    //     "answer_academy",
-    // ]
-
-    // const today = new Date();
-    // const params = `date=${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
-    //
-    // const [answered, setAnswered] = useState(false);
-    // const [questionOK, setQuestionOK] = useState(false);
 
     interface ITodaySleep {
         sleep?: string;
