@@ -224,7 +224,7 @@ export async function GET(req: NextRequest) {
         const user_id = decoded.user_id;
         const date = req.nextUrl.searchParams.get('date') ?? '';
 
-        let queryBuilder = new QueryBuilder();
+        const queryBuilder = new QueryBuilder();
         let query =
             queryBuilder.select({
                     sleep: schema.sleeps.sleep,
@@ -251,7 +251,7 @@ export async function GET(req: NextRequest) {
         let [sleep_info] = await db.execute(query);
 
         // @ts-ignore
-        if (sleep_info.lenght == 0) {
+        if (Object.keys(sleep_info).length === 0) {
             return return_400("No data found");
         }
 

@@ -307,6 +307,7 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
                                 setSelectedClass(e.value);
                                 setContent({...content, class_id: Number(e.value.split('/')[0])});
                             }}
+                            isSearchable={false}
                         />
                     </div>
                     <div className="flex flex-col items-start w-full justify-between">
@@ -326,6 +327,7 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
                             onChange={(e) => {
                                 setContent({...content, category: Number(e.value)});
                             }}
+                            isSearchable={false}
                         />
                     </div>
                     <div className="flex flex-col items-start w-full justify-between">
@@ -346,6 +348,7 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
                                 setSelectedSubject(e);
                                 setContent({...content, subject_id: Number(e.value)});
                             }}
+                            isSearchable={false}
                         />
                     </div>
                     <div className="flex flex-col items-start w-full justify-between">
@@ -365,6 +368,7 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
                             onChange={(e) => {
                                 setContent({...content, is_notice: Number(e.value)});
                             }}
+                            isSearchable={false}
                         />
                     </div>
                 </div>
