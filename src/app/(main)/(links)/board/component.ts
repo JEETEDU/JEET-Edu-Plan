@@ -21,9 +21,10 @@ export interface IArticle {
         id: number | null;
         name: string | null;
     };
-    class_?: {
+    class_: {
         id: number;
         name: string;
+        description: string;
     }
 }
 
@@ -51,6 +52,7 @@ export const initArticle: IArticle = {
     class_: {
         id: 0,
         name: "",
+        description: "",
     }
 }
 

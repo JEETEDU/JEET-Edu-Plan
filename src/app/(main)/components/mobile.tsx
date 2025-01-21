@@ -3,8 +3,10 @@
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {cn} from "@/app/(main)/components/functions"
-import React, {useState} from "react";
+import React from "react";
 import {Alert, TodayQuestion} from "@/app/(main)/components/common";
+import logo from "@/app/(others)/file/images/LOGO.png";
+import Image from "next/image";
 
 export function Navigation1() {
     const path = usePathname();
@@ -12,9 +14,7 @@ export function Navigation1() {
         <div className="nav">
             {/* 상단 로고 */}
             <header className="nav-header flex justify-between">
-                <div className="nav-title">
-                    JEET Education
-                </div>
+                <Image src={logo} alt="" height={25}/>
                 <Alert path={path} isMobile={true}/>
             </header>
         </div>

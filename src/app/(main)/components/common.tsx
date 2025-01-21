@@ -2,7 +2,7 @@
 
 import {cn, DELETE, GET, getStoreData, PUT} from "@/app/(main)/components/functions";
 import React, {useEffect, useState} from "react";
-import {usePathname} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 import TextareaAutosize from "react-textarea-autosize";
 import Select from "react-select";
 import Scrollbars from "react-custom-scrollbars-2";
@@ -217,16 +217,8 @@ export function TimeInput(
         setState, state, stateKey, className,
         onChange = (() => null),
         selectorPointerEventsNone = false,
-    }: {
-        setState: React.Dispatch<React.SetStateAction<{ "wakeup_time": Date; "sleep_time": Date }>>;
-        stateKey: "wakeup_time" | "sleep_time";
-        className: string;
-        onChange: () => void;
-        selectorPointerEventsNone?: boolean;
-        state: { "wakeup_time": Date; "sleep_time": Date }
     }
 ) {
-    const date = state[stateKey];
     return (
         <div className={className}>
             <div className="flex justify-around items-center h-full w-full">
@@ -250,15 +242,15 @@ export function TimeInput(
                         // setHour(() => e.value);
                         setState((prev) => {
                             const obj = {...prev};
-                            obj[stateKey].setHours(Number(e.value));
+                            obj[stateKey] = `${e.value}:${prev[stateKey].split(':')[1]}`;
                             return obj;
                         });
                         onChange();
                     }}
-                    value={(typeof date === 'object' && date !== null && 'getHours' in date) ? {
-                        value: String(date.getHours()).padStart(2, "0"),
-                        label: String(date.getHours()).padStart(2, "0"),
-                    } : {value: "--", label: "--"}}
+                    value={{
+                        value: state[stateKey].split(':')[0],
+                        label: state[stateKey].split(':')[0]
+                    }}
                 />
                 <div className="flex items-start justify-center text-xl">
                     시
@@ -282,15 +274,15 @@ export function TimeInput(
                     onChange={(e) => {
                         setState((prev) => {
                             const obj = {...prev};
-                            obj[stateKey].setMinutes(Number(e.value));
+                            obj[stateKey] = `${prev[stateKey].split(':')[0]}:${e.value}`;
                             return obj;
                         });
                         onChange();
                     }}
-                    value={(typeof date === 'object' && date !== null && 'getHours' in date) ? {
-                        value: String(date.getMinutes()).padStart(2, "0"),
-                        label: String(date.getMinutes()).padStart(2, "0"),
-                    } : {value: "--", label: "--"}}
+                    value={{
+                        value: state[stateKey].split(':')[1],
+                        label: state[stateKey].split(':')[1]
+                    }}
                 />
                 <div className="flex items-start justify-center text-xl">
                     분
@@ -300,7 +292,7 @@ export function TimeInput(
     );
 }
 
-export function TodayQuestion({device}: { device: string }) {
+export function TodayQuestion({device}: { device }) {
     const path = usePathname();
     const [answered, setAnswered] = useState(false);
     const [showQuestion, setShowQuestion] = useState(false);
@@ -309,18 +301,9 @@ export function TodayQuestion({device}: { device: string }) {
 
     const [qList, setQList] = useState({})
 
-    const [timeData, setTimeData] = useState<{ wakeup_time: Date; sleep_time: Date }>(() => {
-        const wakeup = new Date();
-        wakeup.setHours(7, 0, 0, 0);
-
-        const sleep = new Date();
-        sleep.setDate(sleep.getDate() - 1);
-        sleep.setHours(23, 0, 0, 0);
-
-        return {
-            "wakeup_time": wakeup,
-            "sleep_time": sleep
-        }
+    const [timeData, setTimeData] = useState({
+        "wakeup_time": "07:00",
+        "sleep_time": "23:00"
     });
 
     const [error, setError] = useState("");
@@ -338,8 +321,6 @@ export function TodayQuestion({device}: { device: string }) {
                     questions = await getStoreData(`/api/user/today/question`, 'question-list', true)
                 }
 
-                console.log(questions);
-
                 if (questions.response.success) {
                     setQuestionOK(true);
                     setQList(questions.response.answers[0].questions);
@@ -349,19 +330,15 @@ export function TodayQuestion({device}: { device: string }) {
                 }
             }
 
-        })();
+        })()/*.then(r => console.log(r))*/;
     }, [answered]);
-
-    useEffect(() => {
-        console.log(questionOK)
-    }, [questionOK]);
 
     const register = async () => {
         // console.log(timeData)
         const body = {
-            answer_lastday: document.getElementById('y')!.value,
-            answer_school: document.getElementById('s')!.value,
-            answer_academy: document.getElementById('a')!.value
+            answer_lastday: document.getElementById('y').value,
+            answer_school: document.getElementById('s').value,
+            answer_academy: document.getElementById('a').value
         };
 
         Object.entries(qList).map(([key, value], index) => {
@@ -370,11 +347,8 @@ export function TodayQuestion({device}: { device: string }) {
             }
         });
 
-        const r1 = await PUT('/api/user/today/sleep', {
-            "wakeup_time": timeData.wakeup_time.toISOString(),
-            "sleep_time": timeData.sleep_time.toISOString(),
-        })
-        console.log(r1)
+        const r1 = await PUT('/api/user/today/sleep', timeData)
+        // console.log(r1)
         if (!r1.success) {
             // alert("error occurred while put sleep / wakeup time");
             return false;
