@@ -111,7 +111,7 @@ export const homeworks = mysqlTable('homework', {
 
 // Sleep table
 export const sleeps = mysqlTable('sleep', {
-    date: date().notNull().default(sql`CURDATE()`),
+    date: date().notNull().default(sql`CURRENT_TIMESTAMP()`),
     user_id: int().notNull().references(() => users.uid, { onDelete: 'cascade' }),
     wakeup: datetime(),
     sleep: datetime(),

@@ -32,11 +32,11 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
  *                          sleep_time:
  *                              type: string
  *                              description: User's sleep time
- *                              example: "23:30"
+ *                              example: "2025-01-01T23:00:00.000Z"
  *                          wakeup_time:
  *                              type: string
  *                              description: User's wakeup time
- *                              example: "07:00"
+ *                              example: "2025-01-02T07:00:00.000Z"
  *                      required:
  *                          - sleep_time
  *                          - wakeup_time
@@ -97,22 +97,27 @@ export async function PUT(req: NextRequest) {
             const sleep_time = data.sleep_time;
             const wakeup_time = data.wakeup_time;
 
-            // Check if sleep_time and wake_time are valid as HH:MM
-            const timePattern = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
-            if (!timePattern.test(sleep_time) || !timePattern.test(wakeup_time)) {
+            // // Check if sleep_time and wake_time are valid as HH:MM
+            // const timePattern = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+            // if (!timePattern.test(sleep_time) || !timePattern.test(wakeup_time)) {
+            //     let sleep_time_
+            //     return return_400("Invalid time format");
+            // }
+            //
+            // const sleep_datetime = parseTime(sleep_time);
+            // const wake_datetime = parseTime(wakeup_time);
+            //
+            // if (sleep_datetime > wake_datetime) {
+            //     sleep_datetime.setDate(sleep_datetime.getDate() - 1);
+            // }
+            const isoTimePattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
+            if (!isoTimePattern.test(sleep_time) || !isoTimePattern.test(wakeup_time)) {
                 return return_400("Invalid time format");
-            }
-
-            const sleep_datetime = parseTime(sleep_time);
-            const wake_datetime = parseTime(wakeup_time);
-
-            if (sleep_datetime > wake_datetime) {
-                sleep_datetime.setDate(sleep_datetime.getDate() - 1);
             }
 
             const [sleep_info] =
                 await db.select({
-                    count: count()
+                    count: count(schema.sleeps.date)
                 })
                 .from(schema.sleeps)
                 .where(and(
@@ -123,8 +128,8 @@ export async function PUT(req: NextRequest) {
             if (sleep_info.count != 0) {
                 await tx.update(schema.sleeps)
                     .set({
-                        sleep: sleep_datetime,
-                        wakeup: wake_datetime
+                        sleep: new Date(sleep_time),
+                        wakeup: new Date(wakeup_time)
                     })
                     .where(and(
                         eq(schema.sleeps.user_id, user_id),
@@ -138,11 +143,13 @@ export async function PUT(req: NextRequest) {
             }
 
 
+            // @ts-ignore
             await tx.insert(schema.sleeps)
                 .values({
+                    date: todayString(),
                     user_id: user_id,
-                    sleep: sleep_datetime,
-                    wakeup: wake_datetime
+                    sleep: new Date(sleep_time),
+                    wakeup: new Date(wakeup_time),
                 });
 
             return NextResponse.json({
@@ -188,10 +195,10 @@ export async function PUT(req: NextRequest) {
  *                                  properties:
  *                                      sleep:
  *                                          type: string
- *                                          example: "23:00"
+ *                                          example: "2025-01-01T23:00:00.000Z"
  *                                      wakeup:
  *                                          type: string
- *                                          example: "07:00"
+ *                                          example: "2025-01-02T07:00:00.000Z"
  *          "400":
  *              description: Bad request
  *              content:
@@ -265,12 +272,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({
             success: true,
             // @ts-ignore
-            sleep_info: sleep_info.map((info: any) => {
-                return {
-                    sleep: new Date(info.sleep),
-                    wakeup: new Date(info.wakeup)
-                };
-            })
+            sleep_info: sleep_info[0]
         }, {status: 200});
     } catch (e: any) {
         console.error(e);
