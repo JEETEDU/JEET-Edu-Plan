@@ -32,11 +32,11 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
  *                          sleep_time:
  *                              type: string
  *                              description: User's sleep time
- *                              example: "2025-01-01T23:00:00.000Z"
+ *                              example: "23:30"
  *                          wakeup_time:
  *                              type: string
  *                              description: User's wakeup time
- *                              example: "2025-01-02T07:00:00.000Z"
+ *                              example: "07:00"
  *                      required:
  *                          - sleep_time
  *                          - wakeup_time
