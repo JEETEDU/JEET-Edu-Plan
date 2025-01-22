@@ -2,6 +2,7 @@
 
 import React, {useEffect, useState} from "react";
 import {GET, POST} from "@/app/(main)/components/functions";
+import JoinUserClass from "@/app/(main)/(links)/mypage/(pages)/component/joinUserClass";
 
 interface IUser {
     uid: number;
@@ -58,8 +59,14 @@ export default function UserClass({uid, userType}: { uid: number; userType: numb
                 <div className="text-2xl text-gray-800 font-semibold">
                     반 설정
                 </div>
-                <div className="flex items-center text-lg text-red-700 font-bold">
-                    {error}
+                <div className="flex flex-row gap-4 items-center">
+                    <div className="flex items-center text-lg text-red-700 font-bold">
+                        {error}
+                    </div>
+                    <JoinUserClass
+                        text='반 추가'
+                        className="py-1 px-3 bg-blue-500 text-white rounded font-bold hover:bg-blue-600"
+                    />
                 </div>
             </div>
             <div className="flex flex-col w-full gap-2 items-end justify-between">
