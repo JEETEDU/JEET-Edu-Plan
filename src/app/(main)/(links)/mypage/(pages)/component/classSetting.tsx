@@ -5,12 +5,14 @@ import React, {useEffect, useState} from "react";
 import {cn, DELETE, GET, POST, PUT} from "@/app/(main)/components/functions";
 import {Hr} from "@/app/(main)/(links)/home/(pages)/desktop";
 import Select from "react-select";
+import JoinUserClass from "@/app/(main)/(links)/mypage/(pages)/component/joinUserClass";
 
-interface IClass {
+export interface IClass {
     id: number;
     name: string;
     display: number;
     description: string;
+    selected? : boolean;
 }
 
 interface IStudent {
@@ -279,7 +281,7 @@ export default function ClassSetting() {
                         onClick={() => setHead(class_.id)}
                     >
                         <div className="flex justify-center items-center border-2 px-1 border-green rounded font-bold bg-green text-white">
-                            {String(class_.id).padStart(3, '0')}
+                            {String(class_.id).padStart(2, '0')}
                         </div>
                         <div className="flex flex-col space-y-2 flex-1">
                             <div className="flex flex-row justify-between items-center">
@@ -437,6 +439,7 @@ export default function ClassSetting() {
                         <div className="text-2xl text-gray-800 font-semibold">
                             유저 목록
                         </div>
+                        <JoinUserClass text="유저 추가하기" className="bg-blue-500 hover:bg-blue-600 py-1 px-2 rounded font-bold text-white"/>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="flex flex-col items-start w-full justify-start gap-1">

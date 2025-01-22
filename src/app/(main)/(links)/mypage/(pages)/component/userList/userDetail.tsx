@@ -32,7 +32,10 @@ export default function UserDetail({uid, date, refreshAction}: { uid: number, da
 
     useEffect(() => {
         (async () => {
-            setUserInfo((await getStoreData(`/api/user/info/${uid}`, `user-info-${uid}`, true)).response.user);
+            const res = (await getStoreData(`/api/user/info/${uid}`, `user-info-${uid}`, true)).response;
+            if (res.success) {
+                setUserInfo(res.user);
+            }
         })();
     }, [uid]);
 

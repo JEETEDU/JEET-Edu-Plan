@@ -1,7 +1,7 @@
-import type { NextRequest } from 'next/server';
-import { db } from '@/database';
+import type {NextRequest} from 'next/server';
+import {db} from '@/database';
 import * as schema from '@/database/schema';
-import { NextResponse } from 'next/server';
+import {NextResponse} from 'next/server';
 import {and, eq} from 'drizzle-orm';
 import {
     db_log,
@@ -106,8 +106,7 @@ export async function POST(req: NextRequest) {
                 if (decoded.user_type < UserType.ADMIN) { // not admin
                     return return_permission_denied();
                 }
-            }
-            else { // not logged in
+            } else { // not logged in
                 return return_not_logged_in();
             }
 
@@ -148,17 +147,17 @@ export async function POST(req: NextRequest) {
             if (!class_) {
                 return return_400('Class not found');
             }
-            if (class_.student_class) {
-                return return_400('User already joined class');
+            if (!class_.student_class) {
+                // return return_400('User already joined class');
+
+                await tx.insert(schema.studentClasses)
+                    .values({
+                        user_id: data.user_id,
+                        class_id: data.class_id
+                    });
+
+                await db_log(tx, decoded.user_id, `User ${user.uid} joined class ${class_.class_info.name}`);
             }
-
-            await tx.insert(schema.studentClasses)
-                .values({
-                    user_id: data.user_id,
-                    class_id: data.class_id
-                });
-
-            await db_log(tx, decoded.user_id, `User ${user.uid} joined class ${class_.class_info.name}`);
 
             return NextResponse.json({
                 success: true,

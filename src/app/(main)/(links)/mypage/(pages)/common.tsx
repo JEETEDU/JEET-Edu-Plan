@@ -286,7 +286,7 @@ export function IsStudent({date, isMobile,}) {
     );
 }
 
-interface IListUser {
+export interface IListUser {
     uid: number;
     login_id: string;
     user_type: number;
@@ -298,6 +298,7 @@ interface IListUser {
         id: number;
         name: string;
     }[];
+    selected?: boolean;
 }
 
 export function IsAdmin(
@@ -344,8 +345,8 @@ export function IsAdmin(
     useEffect(() => {
         (async () => {
             const users = (await getStoreData('/api/admin/user?user_type=1&order_by=name&order=ASC&limit=10', 'user-list-student')).response.users;
-            setUserList(users);
-            setHead(users[0].uid);
+            setUserList(users || []);
+            setHead(users[0].uid || 0);
 
             const newUsers = (await getStoreData('/api/admin/user?user_type=0&order_by=name&order=ASC', 'user-list-student-new')).response.users;
             setNewUserList(newUsers.map((u) => {
@@ -383,7 +384,7 @@ export function IsAdmin(
 
     const [userParams, setUserParams] = useState({
         user_type: "1",
-        search_by: "",
+        search_by: "name",
         search_string: ""
     });
 
@@ -425,9 +426,9 @@ export function IsAdmin(
         setPage(1);
         (async () => {
             const users: IListUser[] = (await getStoreData(`/api/admin/user?page${_param}`, 'user-list-student', true)).response.users;
-            setUserList(users);
+            setUserList(users || []);
             if (refreshHead && users[0]) {
-                setHead(users[0].uid);
+                setHead(users[0].uid || 0);
             }
         })().then(() => {
             if (scrollbars.current) scrollbars.current.scrollToTop();
@@ -590,6 +591,7 @@ export function IsAdmin(
                                     return obj;
                                 })
                             }}
+                            defaultValue={{value: "name", label: "이름 (ex. 나태양)"}}
                             components={{
                                 IndicatorSeparator: () => null
                             }}
@@ -597,7 +599,7 @@ export function IsAdmin(
                         />
                         <div
                             className={cn(
-                                "border-2 py-1 px-3 flex-1 flex justify-between items-center gap-3",
+                                "border-2 py-1 px-3 flex-1 flex justify-between items-center gap-3 rounded",
                                 {"border-black": focusOnSearch}
                             )}
                             onFocus={() => setFocusOnSearch(true)}
@@ -615,7 +617,7 @@ export function IsAdmin(
                             />
                             <button
                                 className="i-heroicons-outline-search"
-                                onClick={refreshUser}
+                                onClick={() => refreshUser()}
                             />
                         </div>
                         <button
@@ -625,7 +627,7 @@ export function IsAdmin(
                             새로고침
                         </button>
                     </div>
-                    <div className="grid grid-cols-3 gap-6 h-full">
+                    <div className="grid grid-cols-4 gap-6 h-full">
                         <Scrollbars
                             className="w-full flex-1"
                             universal
@@ -680,7 +682,7 @@ export function IsAdmin(
                             </div>
                         </Scrollbars>
                         <Scrollbars
-                            className="w-full flex-1 col-span-2"
+                            className="w-full flex-1 col-span-3"
                             universal
                             autoHide
                         >
