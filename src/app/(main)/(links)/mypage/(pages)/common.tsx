@@ -14,7 +14,11 @@ export function IsStudent({date, isMobile,}) {
     const [editAnswer, setEditAnswer] = useState(false);
     const [error, setError] = useState("");
 
-    const [timeData, setTimeData] = useState<{ wakeup: Date, sleep: Date }>({wakeup: new Date(), sleep: new Date()});
+    const [timeData, setTimeData] = useState<{ success: boolean; wakeup: Date; sleep: Date }>({
+        success: false,
+        wakeup: new Date(),
+        sleep: new Date()
+    });
 
     const _a = [
         "answer_1",
@@ -41,6 +45,8 @@ export function IsStudent({date, isMobile,}) {
             if (new Date(questions.last_update).getDate() !== today.getDate()) {
                 questions = await getStoreData(`/api/user/today/question?${_params}`, `question-list-${_params}`, true)
             }
+
+            console.log(questions);
 
             if (questions.response.success) {
                 setQuestionOK(true);
@@ -71,15 +77,23 @@ export function IsStudent({date, isMobile,}) {
                     success: false;
                     message: string;
                 }
-            } = await getStoreData(`/api/user/today/sleep?${params}`, `sleep-time-${params}`);
+            } = await getStoreData(`/api/user/today/sleep?${_params}`, `sleep-time-${_params}`);
             if (new Date(times.last_update).getDate() !== today.getDate()) {
-                times = await getStoreData(`/api/user/today/sleep?${params}`, `sleep-time-${params}`, true);
+                times = await getStoreData(`/api/user/today/sleep?${_params}`, `sleep-time-${_params}`, true);
             }
+            console.log('t', times);
 
             if (times.response.success) {
                 setTimeData({
+                    success: true,
                     sleep: new Date(times.response.sleep_info.sleep),
                     wakeup: new Date(times.response.sleep_info.wakeup),
+                });
+            } else {
+                setTimeData({
+                    success: false,
+                    sleep: new Date(),
+                    wakeup: new Date(),
                 });
             }
         })();
@@ -97,7 +111,7 @@ export function IsStudent({date, isMobile,}) {
             }, {});
             console.log(body)
 
-            await PUT('/api/user/today/question', body);
+            const r1 = await PUT('/api/user/today/question', body);
 
             const questions = await getStoreData(`/api/user/today/question?${params}`, `question-list-${params}`, true);
 
@@ -111,32 +125,44 @@ export function IsStudent({date, isMobile,}) {
             console.log(qaArr)
             setAList(qaArr);
 
-            await PUT('/api/user/today/sleep', {
-                sleep_time: timeData.sleep,
-                wakeup_time: timeData.wakeup,
-            }).then(r => {
-                // console.log(r);
-                // console.log(timeData);
+            if (timeData.sleep > timeData.wakeup) timeData.sleep.setDate(timeData.sleep.getDate() - 1);
+
+            const r2 = await PUT('/api/user/today/sleep', {
+                sleep: (new Date(timeData.sleep.getFullYear(), timeData.sleep.getMonth(), timeData.sleep.getDate(), timeData.sleep.getHours() + 9)).toISOString(),
+                wakeup: (new Date(timeData.wakeup.getFullYear(), timeData.wakeup.getMonth(), timeData.wakeup.getDate(), timeData.wakeup.getHours() + 9)).toISOString(),
             });
 
-            const times: {
-                last_update: Date;
-                response: {
-                    success: true;
-                    sleep_info: {
-                        sleep: string;
-                        wakeup: string;
+            if (r1 && r2) {
+                alert('저장되었습니다!');
+                sessionStorage.clear();
+
+                const times: {
+                    last_update: Date;
+                    response: {
+                        success: true;
+                        sleep_info: {
+                            sleep: string;
+                            wakeup: string;
+                        }
+                    } | {
+                        success: false;
+                        message: string;
                     }
-                } | {
-                    success: false;
-                    message: string;
-                }
-            } = await getStoreData(`/api/user/today/sleep?${params}`, `sleep-time-${params}`, true);
-            if (times.response.success) {
+                } = await getStoreData(`/api/user/today/sleep?${params}`, `sleep-time-${params}`, true);
+
+                if (times.response.success) {
+                    setTimeData({
+                        success: true,
+                        sleep: new Date(times.response.sleep_info.sleep),
+                        wakeup: new Date(times.response.sleep_info.wakeup),
+                    });
+                } else {
                 setTimeData({
-                    sleep: new Date(times.response.sleep_info.sleep),
-                    wakeup: new Date(times.response.sleep_info.wakeup),
+                    success: false,
+                    sleep: new Date(),
+                    wakeup: new Date(),
                 });
+            }
             }
 
             setError("");
@@ -197,6 +223,7 @@ export function IsStudent({date, isMobile,}) {
                                         className="w-fit p-1"
                                         date={timeData}
                                         keyName={"sleep"}
+                                        dateAction={setTimeData}
                                         // onChange={() => setError("")}
                                         selectorPointerEventsNone={!editAnswer}
                                     />
@@ -212,6 +239,7 @@ export function IsStudent({date, isMobile,}) {
                                         className="w-fit p-1"
                                         date={timeData}
                                         keyName={"wakeup"}
+                                        dateAction={setTimeData}
                                         // onChange={() => setError("")}
                                         selectorPointerEventsNone={!editAnswer}
                                     />
