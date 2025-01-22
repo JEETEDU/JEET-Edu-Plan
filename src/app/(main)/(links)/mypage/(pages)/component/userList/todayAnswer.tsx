@@ -12,11 +12,11 @@ export interface CTodayAnswer {
 export function TodayAnswer({date, uid}: CTodayAnswer) {
 
     interface ITodaySleep {
-        sleep?: string;
-        wakeup?: string;
+        sleep: string | null;
+        wakeup: string | null;
     }
 
-    const [sleep, setSleep] = useState<ITodaySleep>({});
+    const [sleep, setSleep] = useState<ITodaySleep>({sleep: null, wakeup: null});
 
     interface ITodayAnswer {
         answer_1?: string;
@@ -79,7 +79,7 @@ export function TodayAnswer({date, uid}: CTodayAnswer) {
                     setSleep(response.responses[0].sleep || {});
                 } else {
                     setAnswer({});
-                    setSleep({});
+                    setSleep({sleep: null, wakeup: null});
                 }
                 setQuestion((prev) => {
                     return {
@@ -89,7 +89,7 @@ export function TodayAnswer({date, uid}: CTodayAnswer) {
                 })
             } else {
                 setAnswer({});
-                setSleep({});
+                setSleep({sleep: null, wakeup: null});
                 setQuestion({
                     question_lastday: "어젯밤 공부한 내용은?",
                     question_academy: "오늘의 학원 과제는?",
@@ -98,6 +98,24 @@ export function TodayAnswer({date, uid}: CTodayAnswer) {
             }
         })();
     }, [date, uid,])
+
+    const [time_, setTime] = useState({
+        sleep: "아직 응답하지 않았습니다.",
+        wakeup: "아직 응답하지 않았습니다.",
+    })
+    useEffect(() => {
+        if (sleep.sleep !== null && sleep.wakeup !== null) {
+            setTime({
+                sleep: `${(new Date(sleep.sleep)).getHours().toString().padStart(2, "0")} : ${(new Date(sleep.sleep)).getMinutes().toString().padStart(2, "0")}`,
+                wakeup: `${(new Date(sleep.wakeup)).getHours().toString().padStart(2, "0")} : ${(new Date(sleep.wakeup)).getMinutes().toString().padStart(2, "0")}`,
+            })
+        } else {
+            setTime({
+                sleep: "아직 응답하지 않았습니다.",
+                wakeup: "아직 응답하지 않았습니다.",
+            })
+        }
+    }, [sleep]);
 
     return (
         <div className="flex flex-col justify-between gap-4">
@@ -116,7 +134,7 @@ export function TodayAnswer({date, uid}: CTodayAnswer) {
                             취침시간
                         </label>
                         <div className="component-input resize-none text-center text-xl font-bold">
-                            {sleep?.sleep || "아직 응답하지 않았습니다."}
+                            {time_.sleep}
                         </div>
                     </div>
                     <div className="flex flex-col items-start w-full justify-between">
@@ -124,7 +142,7 @@ export function TodayAnswer({date, uid}: CTodayAnswer) {
                             기상시간
                         </label>
                         <div className="component-input resize-none text-center text-xl font-bold">
-                            {sleep?.wakeup || "아직 응답하지 않았습니다."}
+                            {time_.wakeup}
                         </div>
                     </div>
                 </div>

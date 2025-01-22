@@ -6,6 +6,7 @@ import {usePathname, useRouter} from "next/navigation";
 import TextareaAutosize from "react-textarea-autosize";
 import Select from "react-select";
 import Scrollbars from "react-custom-scrollbars-2";
+import {b} from "@unocss/preset-web-fonts/shared/preset-web-fonts.TGEYFvVV";
 
 export function Alert({path, isMobile}: { path: string, isMobile: boolean }) {
     if (path === "/") {
@@ -217,12 +218,10 @@ export function TimeInput(
         date, keyName, dateAction,
         className, onChange = () => null, selectorPointerEventsNone = false
     }: {
-        date: { sleep: Date; wakeup: Date }; keyName: "sleep" | "wakeup"; dateAction?: (t: { sleep: Date; wakeup: Date }) => void;
+        date: { success: boolean; sleep: Date; wakeup: Date }; keyName: "sleep" | "wakeup"; dateAction?: (t: { success: boolean; sleep: Date; wakeup: Date }) => void;
         className: string; onChange?: () => void; selectorPointerEventsNone?: boolean;
     }
 ) {
-    console.log(date)
-
     return (
         <div className={className}>
             <div className="flex justify-around items-center h-full w-full">
@@ -250,10 +249,10 @@ export function TimeInput(
                         })
                         onChange();
                     }}
-                    value={{
-                        value: date[keyName].getHours().toString(),
-                        label: date[keyName].getHours().toString(),
-                    }}
+                    value={date.success ? {
+                        value: date[keyName].getHours().toString().padStart(2, "0"),
+                        label: date[keyName].getHours().toString().padStart(2, "0"),
+                    } : {value: '--', label: '--'}}
                     isSearchable={false}
                 />
                 <div className="flex items-start justify-center text-xl">
@@ -283,10 +282,10 @@ export function TimeInput(
                         })
                         onChange();
                     }}
-                    value={{
-                        value: date[keyName].getMinutes().toString(),
-                        label: date[keyName].getMinutes().toString(),
-                    }}
+                    value={date.success ? {
+                        value: date[keyName].getMinutes().toString().padStart(2, "0"),
+                        label: date[keyName].getMinutes().toString().padStart(2, "0"),
+                    } : {value: '--', label: '--'}}
                     isSearchable={false}
                 />
                 <div className="flex items-start justify-center text-xl">
@@ -306,11 +305,11 @@ export function TodayQuestion({device}: { device: string }) {
 
     const [qList, setQList] = useState({})
     const today = new Date();
-    const [timeData, setTimeData] = useState<{ wakeup: Date; sleep: Date }>({
-        wakeup: new Date(today.getFullYear(), today.getMonth(), today.getDate()),
-        sleep: new Date(today.getFullYear(), today.getMonth(), today.getDate()),
+    const [timeData, setTimeData] = useState<{ success: boolean; wakeup: Date; sleep: Date }>({
+        success: true,
+        wakeup: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 7),
+        sleep: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23),
     });
-    console.log(timeData)
 
     const [error, setError] = useState("");
 
@@ -354,13 +353,11 @@ export function TodayQuestion({device}: { device: string }) {
         });
 
         if (timeData.sleep > timeData.wakeup) timeData.sleep.setDate(timeData.sleep.getDate() - 1);
-        timeData.wakeup.setHours(timeData.wakeup.getHours() + 9);
-        timeData.sleep.setHours(timeData.sleep.getHours() + 9);
 
         const r1 = await PUT('/api/user/today/sleep', {
-            sleep: timeData.sleep.toISOString(),
-            wakeup: timeData.wakeup.toISOString(),
-        })
+            sleep: (new Date(timeData.sleep.getFullYear(), timeData.sleep.getMonth(), timeData.sleep.getDate(), timeData.sleep.getHours() + 9)).toISOString(),
+            wakeup: (new Date(timeData.wakeup.getFullYear(), timeData.wakeup.getMonth(), timeData.wakeup.getDate(), timeData.wakeup.getHours() + 9)).toISOString(),
+        });
         // console.log(r1)
         if (!r1.success) {
             // alert("error occurred while put sleep / wakeup time");
