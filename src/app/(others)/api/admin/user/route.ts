@@ -558,6 +558,28 @@ export async function GET(req: NextRequest) {
                     schema.classes,
                     eq(schema.studentClasses.class_id, schema.classes.id)
                 )
+                .union(
+                    queryBuilder.select({
+                        uid: sub_table.uid,
+                        login_id: sub_table.login_id,
+                        user_type: sub_table.user_type,
+                        name: sub_table.name,
+                        first_year: sub_table.first_year,
+                        school: sub_table.school,
+                        joined_term: sub_table.joined_term,
+                        class_id: sql`${schema.classes.id} as class_id`,
+                        class_name: sql`${schema.classes.name} as class_name`
+                    })
+                    .from(sub_table)
+                    .leftJoin(
+                        schema.teacherClasses,
+                        eq(schema.teacherClasses.user_id, sub_table.uid)
+                    )
+                    .leftJoin(
+                        schema.classes,
+                        eq(schema.teacherClasses.class_id, schema.classes.id)
+                    )
+                )
                 .$dynamic();
         if (order_by && order) {
             let order_func = asc;
