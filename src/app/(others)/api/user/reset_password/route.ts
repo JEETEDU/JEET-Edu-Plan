@@ -2,11 +2,8 @@ import {NextRequest, NextResponse} from "next/server";
 import {db} from "@/database";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
 import {
-    db_log,
     return_400, return_500,
-    return_not_logged_in,
-    return_permission_denied,
-    UserType
+    return_not_logged_in
 } from "@/app/(others)/api/(tools)/tools";
 import * as schema from "@/database/schema";
 import {eq} from "drizzle-orm";
@@ -81,11 +78,11 @@ export async function POST(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
             const token = req.cookies.get("token")?.value ?? '';
-            let decoded: DecodedToken | false = verifyToken(token);
+            const decoded: DecodedToken | false = verifyToken(token);
             if (!decoded) return return_not_logged_in();
 
             const data = await req.json();
-            let pw = data.new_password?.toString() ?? '';
+            const pw = data.new_password?.toString() ?? '';
             if (!pw) return return_400('new_password is required');
             if (pw.length < 8) return return_400('Password must be at least 8 characters long');
 

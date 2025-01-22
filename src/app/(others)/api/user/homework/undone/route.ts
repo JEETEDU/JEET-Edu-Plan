@@ -2,9 +2,8 @@ import type { NextRequest } from 'next/server';
 import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
-import {and, asc, count, desc, eq, like, or, SQL, sql} from 'drizzle-orm';
+import {and, eq} from 'drizzle-orm';
 import {
-    check_date_string,
     return_400,
     return_500,
     return_not_logged_in,
@@ -12,10 +11,6 @@ import {
     UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
-import {QueryBuilder} from "drizzle-orm/mysql-core";
-import {delete_files, save_files, SavedFileList, update_files} from "@/app/(others)/api/(tools)/files";
-import {AlertType, register_alert, register_alert_for_class} from "@/app/(others)/api/(tools)/alerts";
-import {ArticleCategory} from "@/app/(others)/api/board/tools";
 
 
 /**
@@ -55,7 +50,7 @@ export async function PUT(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
             const token = req.cookies.get("token")?.value ?? '';
-            let decoded: DecodedToken | false = verifyToken(token);
+            const decoded: DecodedToken | false = verifyToken(token);
             if (!decoded) return return_not_logged_in();
 
             const user_id = decoded.user_id;

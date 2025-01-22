@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import {return_400, return_500, return_not_logged_in} from "@/app/(others)/api/(tools)/tools";
+import {return_500, return_not_logged_in} from "@/app/(others)/api/(tools)/tools";
 
 export async function GET(req: NextRequest) {
     return POST(req);

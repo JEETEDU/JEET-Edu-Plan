@@ -248,7 +248,7 @@ export async function GET(req: NextRequest) {
             eq(schema.sleeps.date, todayString())
         ));
 
-        let [sleep_info] = await db.execute(query);
+        const [sleep_info] = await db.execute(query);
 
         // @ts-ignore
         if (Object.keys(sleep_info).length === 0) {

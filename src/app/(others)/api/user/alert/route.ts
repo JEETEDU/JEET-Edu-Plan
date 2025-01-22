@@ -3,15 +3,11 @@ import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
 import {
-    db_log,
-    return_400, return_404, return_500,
-    return_not_logged_in,
-    return_permission_denied,
-    UserType
+    return_400, return_500,
+    return_not_logged_in
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
-import {and, asc, desc, eq, like, ne, sql} from 'drizzle-orm';
-import {QueryBuilder} from "drizzle-orm/mysql-core";
+import {and, asc, eq, sql} from 'drizzle-orm';
 
 /**
  * @swagger
@@ -59,15 +55,15 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
 export async function GET(req: NextRequest) {
     try {
         const token = req.cookies.get("token")?.value ?? '';
-        let decoded: DecodedToken | false = verifyToken(token);
+        const decoded: DecodedToken | false = verifyToken(token);
         if (!decoded) return return_not_logged_in();
 
         const data = req.nextUrl.searchParams;
         const unread = data.get('unread') === 'true';
 
-        let user_id = decoded.user_id;
+        const user_id = decoded.user_id;
 
-        let alerts =
+        const alerts =
             await db.select()
                 .from(schema.alerts)
                 .where(and(
@@ -124,15 +120,15 @@ export async function DELETE(req: NextRequest) {
     try {
         return await db.transaction(async (tx) => {
             const token = req.cookies.get("token")?.value ?? '';
-            let decoded: DecodedToken | false = verifyToken(token);
+            const decoded: DecodedToken | false = verifyToken(token);
             if (!decoded) return return_not_logged_in();
 
-            let user_id = decoded.user_id;
+            const user_id = decoded.user_id;
 
             const data = req.nextUrl.searchParams;
             const alert_id = parseInt(data.get('alert_id') ?? '');
 
-            let [alert] =
+            const [alert] =
                 await db.select()
                     .from(schema.alerts)
                     .where(and(

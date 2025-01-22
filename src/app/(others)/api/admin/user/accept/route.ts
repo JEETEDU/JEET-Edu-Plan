@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
                 return return_400('user_id is required');
             }
 
-            let [user] =
+            const [user] =
                 await tx.select()
                     .from(schema.users)
                     .where(

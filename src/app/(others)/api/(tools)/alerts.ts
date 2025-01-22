@@ -1,7 +1,6 @@
-import { db } from '@/database';
 import * as schema from '@/database/schema';
-import {and, asc, count, desc, eq, like, sql} from 'drizzle-orm';
-import {MySqlTransaction, QueryBuilder} from "drizzle-orm/mysql-core";
+import {and, eq} from 'drizzle-orm';
+import {MySqlTransaction} from "drizzle-orm/mysql-core";
 
 type TX = MySqlTransaction<any, any, any, any>;
 export enum AlertType {
@@ -29,7 +28,7 @@ export async function register_alert(tx: TX, user_id: number | [number], message
 }
 
 export async function register_alert_for_class(tx: TX, class_id: number, message: string, alert_type: number = 0, article_id: number | null = null): Promise<void> {
-    let users = await tx.select({
+    const users = await tx.select({
         user_id: schema.studentClasses.user_id,
     })
         .from(schema.studentClasses)

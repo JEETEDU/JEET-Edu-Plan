@@ -4,7 +4,7 @@ import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
 import {and, eq} from 'drizzle-orm';
 import {
-    return_400, return_500,
+    return_500,
     return_not_logged_in,
     UserType
 } from "@/app/(others)/api/(tools)/tools";

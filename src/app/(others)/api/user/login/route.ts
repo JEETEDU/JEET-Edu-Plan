@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
     try {
         const token: string = req.cookies.get("token")?.value ?? '';
         if (token) {
-            let decoded = verifyToken(token);
+            const decoded = verifyToken(token);
             if (decoded) {
                 return NextResponse.json({
                     success: false,
@@ -79,16 +79,16 @@ export async function POST(req: NextRequest) {
 
         const data = await req.json();
         let login_id = data.login_id;
-        let pw = data.pw;
+        const pw = data.pw;
 
         if (!login_id || !pw) {
             return return_400("Please fill out all fields");
         }
 
         login_id = login_id.toString().trim();
-        let pw_hash: Buffer = crypto.createHash('sha256').update(pw.toString().trim()).digest();
+        const pw_hash: Buffer = crypto.createHash('sha256').update(pw.toString().trim()).digest();
 
-        let [user] =
+        const [user] =
             await db.select()
                 .from(schema.users)
                 .where(

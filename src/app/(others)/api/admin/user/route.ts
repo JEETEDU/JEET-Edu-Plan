@@ -115,7 +115,7 @@ export async function PATCH(req: NextRequest) {
         return db.transaction(async (tx) => {
             const token: string = req.cookies.get("token")?.value ?? '';
             if (token) {
-                let decoded = verifyToken(token);
+                const decoded = verifyToken(token);
                 if (!decoded) { // invalid token
                     return return_not_logged_in();
                 }
@@ -134,7 +134,7 @@ export async function PATCH(req: NextRequest) {
 
             const user_id = data.user_id;
 
-            let [user] =
+            const [user] =
                 await tx.select()
                     .from(schema.users)
                     .where(
@@ -176,7 +176,7 @@ export async function PATCH(req: NextRequest) {
                 return return_400('Joined_term is too long');
             }
 
-            let update_data: any = {};
+            const update_data: any = {};
             if (user_type) update_data['user_type'] = user_type;
             if (name) update_data['name'] = name;
             if (first_year) update_data['first_year'] = first_year;
@@ -484,7 +484,7 @@ export async function GET(req: NextRequest) {
     try {
         const token: string = req.cookies.get("token")?.value ?? '';
         if (token) {
-            let decoded = verifyToken(token);
+            const decoded = verifyToken(token);
             if (!decoded) { // invalid token
                 return return_not_logged_in();
             }
@@ -512,7 +512,7 @@ export async function GET(req: NextRequest) {
             return return_400('Invalid limit');
         }
 
-        let subqueryBuilder = new QueryBuilder();
+        const subqueryBuilder = new QueryBuilder();
         let subquery =
             subqueryBuilder.select()
                 .from(schema.users)
@@ -534,9 +534,9 @@ export async function GET(req: NextRequest) {
             );
         }
         if (limit) subquery = subquery.limit(limit).offset((page - 1) * limit);
-        let sub_table = subquery.where(where_clause).as('subquery');
+        const sub_table = subquery.where(where_clause).as('subquery');
 
-        let queryBuilder = new QueryBuilder();
+        const queryBuilder = new QueryBuilder();
         let query =
             queryBuilder.select({
                     uid: sub_table.uid,
@@ -591,8 +591,8 @@ export async function GET(req: NextRequest) {
             }
         }
 
-        let [rows]: any = await db.execute(query);
-        let users = Array.isArray(rows) ? rows.reduce((acc: any, row: any) => {
+        const [rows]: any = await db.execute(query);
+        const users = Array.isArray(rows) ? rows.reduce((acc: any, row: any) => {
             let user = acc.find((u: any) => u.uid === row.uid);
             if (!user) {
                 user = {

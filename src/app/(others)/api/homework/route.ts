@@ -4,19 +4,16 @@ import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
 import {
     check_date_string,
-    db_log,
-    return_400, return_404, return_500,
+    return_400, return_500,
     return_not_logged_in,
     return_permission_denied,
     UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
-import {and, asc, count, desc, eq, like, ne, sql} from 'drizzle-orm';
-import {QueryBuilder} from "drizzle-orm/mysql-core";
+import {and, count, eq, sql} from 'drizzle-orm';
 import {ArticleCategory} from "@/app/(others)/api/board/tools";
 import {save_files, SavedFileList, update_files} from "@/app/(others)/api/(tools)/files";
-import {AlertType, register_alert, register_alert_for_class} from "@/app/(others)/api/(tools)/alerts";
-import {inArray} from "drizzle-orm/sql/expressions/conditions";
+import {AlertType, register_alert_for_class} from "@/app/(others)/api/(tools)/alerts";
 
 
 /**
@@ -96,11 +93,11 @@ export async function POST(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
             const token = req.cookies.get("token")?.value ?? '';
-            let decoded: DecodedToken | false = verifyToken(token);
+            const decoded: DecodedToken | false = verifyToken(token);
             if (!decoded) return return_not_logged_in();
 
-            let user_id = decoded.user_id;
-            let user_type = decoded.user_type;
+            const user_id = decoded.user_id;
+            const user_type = decoded.user_type;
             if (user_type < UserType.TEACHER) return return_permission_denied();
 
             const data = await req.formData();
@@ -110,13 +107,13 @@ export async function POST(req: NextRequest) {
             if (!article) return return_400("article is required");
             const article_json = JSON.parse(article.toString());
 
-            let class_id: number = parseInt(article_json.class_id) ?? 0;
-            let title: string = article_json.title.toString() ?? '';
-            let content: string = article_json.content.toString() ?? '';
-            let is_notice: number = parseInt(article_json.is_notice ?? 0);
-            let subject_id: number = parseInt(article_json.subject_id ?? 0);
-            let category = ArticleCategory.HOMEWORK;
-            let due_date: string = article_json.due_date ?? '';
+            const class_id: number = parseInt(article_json.class_id) ?? 0;
+            const title: string = article_json.title.toString() ?? '';
+            const content: string = article_json.content.toString() ?? '';
+            const is_notice: number = parseInt(article_json.is_notice ?? 0);
+            const subject_id: number = parseInt(article_json.subject_id ?? 0);
+            const category = ArticleCategory.HOMEWORK;
+            const due_date: string = article_json.due_date ?? '';
 
             if (!class_id) return return_400("class_id is required");
             if (!title) return return_400("title is required");
@@ -126,7 +123,7 @@ export async function POST(req: NextRequest) {
             if (Number.isNaN(subject_id)) return return_400("subject_id should be a number");
             if (!check_date_string(due_date)) return return_400("Invalid due_date");
 
-            let [class_] =
+            const [class_] =
                 await tx.select({
                     subject_count: count(schema.teacherClasses.subject_id)
                 })
@@ -141,10 +138,10 @@ export async function POST(req: NextRequest) {
             if (!class_) return return_400("Class not found or you are not the teacher of the class");
             if (subject_id !== 0 && class_.subject_count === 0) return return_400("You are not the teacher of the subject or the subject is not in the class");
 
-            let files_path: SavedFileList = await save_files(tx, files);
+            const files_path: SavedFileList = await save_files(tx, files);
 
             // @ts-ignore
-            let [article_id] = await tx.insert(schema.boards).values({
+            const [article_id] = await tx.insert(schema.boards).values({
                     class_id: class_id,
                     user_id: user_id,
                     title: title,
@@ -158,7 +155,7 @@ export async function POST(req: NextRequest) {
                 }
             ).$returningId();
 
-            let users = await tx.select({
+            const users = await tx.select({
                 user_id: schema.studentClasses.user_id,
             })
                 .from(schema.studentClasses)
@@ -259,11 +256,11 @@ export async function PATCH(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
             const token = req.cookies.get("token")?.value ?? '';
-            let decoded: DecodedToken | false = verifyToken(token);
+            const decoded: DecodedToken | false = verifyToken(token);
             if (!decoded) return return_not_logged_in();
 
-            let user_id = decoded.user_id;
-            let user_type = decoded.user_type;
+            const user_id = decoded.user_id;
+            const user_type = decoded.user_type;
             if (user_type < UserType.TEACHER) return return_permission_denied();
 
             const data = await req.formData();
@@ -273,28 +270,28 @@ export async function PATCH(req: NextRequest) {
             // @ts-ignore
             const files = data.getAll("files") as FileList;
 
-            let title: string = article_json.title?.toString() ?? '';
-            let content: string = article_json.content?.toString() ?? '';
-            let attach_files: SavedFileList = article_json.attach_files ?? [];
-            let due_date: string = article_json.due_date ?? '';
+            const title: string = article_json.title?.toString() ?? '';
+            const content: string = article_json.content?.toString() ?? '';
+            const attach_files: SavedFileList = article_json.attach_files ?? [];
+            const due_date: string = article_json.due_date ?? '';
 
             if (!article_id) return return_400("article_id is required");
             if (title && title.length > 255) return return_400("title is too long");
             if (!check_date_string(due_date)) return return_400("Invalid due_date");
 
-            let [article_] =
+            const [article_] =
                 await tx.select()
                     .from(schema.boards)
                     .where(eq(schema.boards.id, article_id));
             if (!article_) return return_400("Article not found");
             if (article_.category !== ArticleCategory.HOMEWORK) return return_400("Article is not a homework");
 
-            let update_data: any = {}
+            const update_data: any = {}
             if (title) update_data['title'] = title;
             if (content) update_data['content'] = content;
             if (due_date) update_data['due_date'] = due_date;
 
-            let files_path: SavedFileList = await update_files(tx, files, JSON.parse(article_.attach_files?.toString() ?? '[]'), attach_files);
+            const files_path: SavedFileList = await update_files(tx, files, JSON.parse(article_.attach_files?.toString() ?? '[]'), attach_files);
             if (files_path.length > 0) update_data['attach_files'] = files_path;
             if (article_.attach_files && article_.attach_files != files_path) update_data['attach_files'] = files_path;
 
@@ -302,13 +299,13 @@ export async function PATCH(req: NextRequest) {
                 .set(update_data)
                 .where(eq(schema.boards.id, article_id))
 
-            let users = await tx.select({
+            const users = await tx.select({
                 user_id: schema.studentClasses.user_id,
             })
                 .from(schema.studentClasses)
                 .where(eq(schema.studentClasses.class_id, article_.class_id));
 
-            let update_data_homework: any = {}
+            const update_data_homework: any = {}
             if (title) update_data_homework['title'] = title;
             if (due_date) update_data_homework['due_date'] = due_date;
             await tx.update(schema.homeworks)
@@ -362,18 +359,18 @@ export async function DELETE(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
             const token = req.cookies.get("token")?.value ?? '';
-            let decoded: DecodedToken | false = verifyToken(token);
+            const decoded: DecodedToken | false = verifyToken(token);
             if (!decoded) return return_not_logged_in();
 
-            let user_id = decoded.user_id;
-            let user_type = decoded.user_type;
+            const user_id = decoded.user_id;
+            const user_type = decoded.user_type;
             if (user_type < UserType.TEACHER) return return_permission_denied();
 
             const data = req.nextUrl.searchParams;
             const article_id = parseInt(data.get('article_id') ?? '');
             if (Number.isNaN(article_id)) return return_400("article_id is required");
 
-            let [article] =
+            const [article] =
                 await tx.select()
                     .from(schema.boards)
                     .where(eq(schema.boards.id, article_id));

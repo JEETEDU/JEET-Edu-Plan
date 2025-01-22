@@ -3,16 +3,12 @@ import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
 import {
-    db_log,
-    return_400, return_404, return_500,
+    return_400, return_500,
     return_not_logged_in,
-    return_permission_denied,
-    UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
-import {and, arrayContains, asc, desc, eq, like, ne, sql} from 'drizzle-orm';
-import {QueryBuilder} from "drizzle-orm/mysql-core";
-import {arrayContained, inArray} from "drizzle-orm/sql/expressions/conditions";
+import {and, eq} from 'drizzle-orm';
+import {inArray} from "drizzle-orm/sql/expressions/conditions";
 
 
 /**
@@ -56,16 +52,16 @@ export async function PUT(req: NextRequest) {
     try {
         return await db.transaction(async (tx) => {
             const token = req.cookies.get("token")?.value ?? '';
-            let decoded: DecodedToken | false = verifyToken(token);
+            const decoded: DecodedToken | false = verifyToken(token);
             if (!decoded) return return_not_logged_in();
 
-            let user_id = decoded.user_id;
+            const user_id = decoded.user_id;
 
             const data = await req.json();
-            let alert_ids = data.alert
+            const alert_ids = data.alert
             if (alert_ids.length === 0) return return_400('No alert_id provided');
 
-            let alerts = await tx.select()
+            const alerts = await tx.select()
                 .from(schema.alerts)
                 .where(and(
                     eq(schema.alerts.user_id, user_id),

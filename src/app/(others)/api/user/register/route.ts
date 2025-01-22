@@ -3,8 +3,7 @@ import { db } from '@/database'
 import * as schema from '@/database/schema'
 import crypto from 'crypto'
 import {NextResponse} from "next/server";
-import {eq} from "drizzle-orm";
-import {generateToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
+import {verifyToken} from "@/app/(others)/api/(tools)/auth";
 import {return_400, return_500} from "@/app/(others)/api/(tools)/tools";
 
 /**
@@ -73,7 +72,7 @@ export async function POST(req: NextRequest) {
         return await db.transaction(async (tx) => {
             const token: string = req.cookies.get("token")?.value ?? '';
             if (token) {
-                let decoded = verifyToken(token);
+                const decoded = verifyToken(token);
                 if (decoded) {
                     return return_400("Already logged in");
                 }

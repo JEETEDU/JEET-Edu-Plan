@@ -4,7 +4,6 @@ import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
 import {and, asc, count, desc, eq, like, or, SQL, sql} from 'drizzle-orm';
 import {
-    check_date_string,
     return_400,
     return_500,
     return_not_logged_in,

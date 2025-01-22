@@ -4,9 +4,8 @@ import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
 import { eq } from 'drizzle-orm';
 import {
-    return_400, return_500,
+    return_500,
     return_not_logged_in,
-    UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
 
@@ -80,7 +79,7 @@ export async function GET(req: NextRequest) {
             return return_not_logged_in();
         }
 
-        let [user] =
+        const [user] =
             await db.select({
                     uid: schema.users.uid,
                     login_id: schema.users.login_id,
