@@ -33,7 +33,7 @@ export function ArticleItem({article, head = 0, setHead = null}: { article: IArt
                 <Category category={article.category}/>
                 <Subject subject={article.subject.name}/>
                 <p className="ml-3 text-black flex-1 flex justify-end">
-                    {article.user.name} {(article.user.user_type > 1) && "선생님"}
+                    {article.user.name} {(article.user.user_type ? article.user.user_type > 1 : false) && "선생님"}
                 </p>
             </div>
         </button>
@@ -133,7 +133,7 @@ export default function Desktop() {
                         value={{value: selectedClass, label: selectedClass.split('/')[1]}}
                         placeholder="반을 선택해 주세요"
                         instanceId={1}
-                        onChange={(e) => setSelectedClass(e.value)}
+                        onChange={(e) => setSelectedClass(e?.value ?? "")}
                         isSearchable={false}
                     />
 

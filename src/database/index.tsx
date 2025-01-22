@@ -16,11 +16,11 @@ function singleton<Value>(name: string, value: () => Value): Value {
 // Function to create the database connection and apply migrations if needed
 function createDatabaseConnection() {
     const poolConnection = mysql.createPool({
-    host: process.env["DB_HOST"],
-    port: process.env["DB_PORT"],
-    user: process.env["DB_USER"],
-    password: process.env["DB_PSWD"],
-    database: process.env["DB_NAME"],
+    host: process.env["DB_HOST"] ?? 'localhost',
+    port: Number(process.env["DB_PORT"] ?? 3306),
+    user: process.env["DB_USER"] ?? 'jeet',
+    password: process.env["DB_PSWD"] ?? '',
+    database: process.env["DB_NAME"] ?? 'jeet',
 });
     return drizzle(poolConnection);
 }
