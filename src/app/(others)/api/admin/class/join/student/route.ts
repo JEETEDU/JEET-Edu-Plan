@@ -11,7 +11,6 @@ import {
     UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
-import {studentClasses} from "@/database/schema";
 
 /**
  * @swagger
@@ -120,7 +119,7 @@ export async function POST(req: NextRequest) {
                 return return_400('user_id is required');
             }
 
-            let [user] =
+            const [user] =
                 await tx.select()
                     .from(schema.users)
                     .where(
@@ -133,7 +132,7 @@ export async function POST(req: NextRequest) {
                 return return_400('User is not a student');
             }
 
-            let [class_] =
+            const [class_] =
                 await tx.select()
                     .from(schema.classes)
                     .leftJoin(

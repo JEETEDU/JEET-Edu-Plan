@@ -2,12 +2,12 @@ import type { NextRequest } from 'next/server';
 import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
-import {count, eq, SQL, sql} from 'drizzle-orm';
+import {count, eq, SQL} from 'drizzle-orm';
 import {
     db_log,
     return_400, return_500,
     return_not_logged_in,
-    return_permission_denied, to_date_string, todayString,
+    return_permission_denied, todayString,
     UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
@@ -134,7 +134,7 @@ export async function PUT(req: NextRequest) {
         }
         else date = todayString();
 
-        let [today_question] = await db.select({
+        const [today_question] = await db.select({
             count: count()
         })
             .from(schema.todayQuestions)
@@ -293,7 +293,7 @@ export async function GET(req: NextRequest) {
             }
         }
 
-        let [today_questions] = await db.select()
+        const [today_questions] = await db.select()
             .from(schema.todayQuestions)
             .where(
                 // @ts-ignore

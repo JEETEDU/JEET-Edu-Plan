@@ -736,7 +736,7 @@ export function IsAdmin(
                                                 onClick={() => {
                                                     POST('/api/admin/user/reject', {user_id: u.uid});
                                                     setNewUserList((users) => {
-                                                        let _users = [...users];
+                                                        const _users = [...users];
                                                         _users[i].reject = true;
                                                         return _users;
                                                     })
@@ -753,7 +753,7 @@ export function IsAdmin(
                                                 onClick={() => {
                                                     POST('/api/admin/user/accept', {user_id: u.uid});
                                                     setNewUserList((users) => {
-                                                        let _users = [...users];
+                                                        const _users = [...users];
                                                         _users[i].accept = true;
                                                         return _users;
                                                     })

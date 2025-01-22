@@ -2,9 +2,8 @@ import type { NextRequest } from 'next/server';
 import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
-import {and, asc, count, desc, eq, like, sql} from 'drizzle-orm';
+import {and, count, eq, sql} from 'drizzle-orm';
 import {
-    check_date_string,
     return_400,
     return_500,
     return_not_logged_in,
@@ -12,7 +11,6 @@ import {
     UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
-import {QueryBuilder} from "drizzle-orm/mysql-core";
 import {delete_files, save_files, SavedFileList, update_files} from "@/app/(others)/api/(tools)/files";
 import {register_alert} from "@/app/(others)/api/(tools)/alerts";
 
@@ -86,7 +84,7 @@ export async function POST(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
             const token = req.cookies.get("token")?.value ?? '';
-            let decoded: DecodedToken | false = verifyToken(token);
+            const decoded: DecodedToken | false = verifyToken(token);
             if (!decoded) return return_not_logged_in();
 
             const data = await req.formData();
@@ -94,16 +92,16 @@ export async function POST(req: NextRequest) {
             // @ts-ignore
             const files = data.getAll('files') as FileList;
 
-            let user_id = decoded.user_id;
-            let user_type = decoded.user_type;
+            const user_id = decoded.user_id;
+            const user_type = decoded.user_type;
 
-            let article_id: number = parseInt(comment.article_id) ?? 0;
-            let content: string = comment.content.toString() ?? '';
+            const article_id: number = parseInt(comment.article_id) ?? 0;
+            const content: string = comment.content.toString() ?? '';
 
             if (!article_id) return return_400('article_id is required');
             if (!content) return return_400('content is required');
 
-            let [article] =
+            const [article] =
                 await tx.select({
                     user_id: schema.boards.user_id,
                     board_count: count(schema.boards.id),
@@ -126,7 +124,7 @@ export async function POST(req: NextRequest) {
             if (article.board_count === 0) return return_400('Article not found');
             if (article.user_count === 0 && user_type !== UserType.ADMIN) return return_permission_denied();
 
-            let files_path: SavedFileList = await save_files(tx, files);
+            const files_path: SavedFileList = await save_files(tx, files);
             await tx.insert(schema.comments).values({
                 article_id: article_id,
                 user_id: user_id,
@@ -229,7 +227,7 @@ export async function PATCH(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
             const token = req.cookies.get("token")?.value ?? '';
-            let decoded: DecodedToken | false = verifyToken(token);
+            const decoded: DecodedToken | false = verifyToken(token);
             if (!decoded) return return_not_logged_in();
 
             const data = await req.formData();
@@ -237,26 +235,26 @@ export async function PATCH(req: NextRequest) {
             // @ts-ignore
             const files = data.getAll('files') as FileList;
 
-            let user_id = decoded.user_id;
-            let user_type = decoded.user_type;
+            const user_id = decoded.user_id;
+            const user_type = decoded.user_type;
 
-            let comment_id: number = parseInt(data.get('comment_id')?.toString() ?? '0');
-            let content: string = comment_json.content.toString() ?? '';
-            let attach_files: SavedFileList = comment_json.attach_files ?? [];
+            const comment_id: number = parseInt(data.get('comment_id')?.toString() ?? '0');
+            const content: string = comment_json.content.toString() ?? '';
+            const attach_files: SavedFileList = comment_json.attach_files ?? [];
 
             if (!comment_id) return return_400('comment_id is required');
 
-            let [comment] =
+            const [comment] =
                 await tx.select()
                     .from(schema.comments)
                     .where(eq(schema.comments.id, comment_id));
             if (!comment) return return_400('Comment not found');
             if (comment.user_id !== user_id && user_type < UserType.TEACHER ) return return_permission_denied();
 
-            let update_data: any = {};
+            const update_data: any = {};
             if (content) update_data.content = content;
 
-            let files_path: SavedFileList = await update_files(tx, files, JSON.parse(comment.attach_files?.toString() ?? '[]'), attach_files);
+            const files_path: SavedFileList = await update_files(tx, files, JSON.parse(comment.attach_files?.toString() ?? '[]'), attach_files);
             if (files_path.length) update_data['attach_files'] = files_path;
             if (comment.attach_files && comment.attach_files != files_path) update_data['attach_files'] = files_path;
 
@@ -328,17 +326,17 @@ export async function DELETE(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
             const token = req.cookies.get("token")?.value ?? '';
-            let decoded: DecodedToken | false = verifyToken(token);
+            const decoded: DecodedToken | false = verifyToken(token);
             if (!decoded) return return_not_logged_in();
 
             const data = await req.json();
             const comment_id = parseInt(data.comment_id ?? '');
             if (Number.isNaN(comment_id)) return return_400("comment_id is required");
 
-            let user_id = decoded.user_id;
-            let user_type = decoded.user_type;
+            const user_id = decoded.user_id;
+            const user_type = decoded.user_type;
 
-            let [comment] =
+            const [comment] =
                 await tx.select()
                     .from(schema.comments)
                     .where(eq(schema.comments.id, comment_id))

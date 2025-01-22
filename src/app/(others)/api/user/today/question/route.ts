@@ -1,15 +1,14 @@
 import type { NextRequest } from 'next/server'
 import { db } from '@/database'
 import * as schema from '@/database/schema'
-import crypto from 'crypto'
 import {NextResponse} from "next/server";
 import {eq, and, sql, count, SQL} from "drizzle-orm";
-import {DecodedToken, generateToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
+import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
 import {
     return_400,
     return_500,
     return_not_logged_in,
-    return_permission_denied, to_time_string, todayString,
+    todayString,
     UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {QueryBuilder} from "drizzle-orm/mysql-core";
@@ -114,8 +113,8 @@ export async function GET(req: NextRequest) {
         }
         else date = todayString();
 
-        let queryBuilder = new QueryBuilder();
-        let query =
+        const queryBuilder = new QueryBuilder();
+        const query =
             queryBuilder.select({
                     answers: schema.todayAnswers,
                     questions: schema.todayQuestions
@@ -152,7 +151,7 @@ export async function GET(req: NextRequest) {
                     )
                 ).$dynamic();
 
-        let [answers] = await db.execute(query);
+        const [answers] = await db.execute(query);
 
         // @ts-ignore
         if (answers.length == 0) {
@@ -318,7 +317,7 @@ export async function PUT(req: NextRequest) {
                 return return_400('answer_3 is required');
             }
 
-            let [todayAnswers] =
+            const [todayAnswers] =
                 await tx.select({
                     count: count()
                 })

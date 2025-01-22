@@ -10,12 +10,12 @@ export type SavedFileList = { name: string, path: string }[];
 type TX = MySqlTransaction<any, any, any, any>;
 
 export async function save_files(tx: TX, files: FileList): Promise<SavedFileList> {
-    let files_path: SavedFileList = [];
-    for (let file of files) {
+    const files_path: SavedFileList = [];
+    for (const file of files) {
         if (!file.name) continue;
-        let file_name = Math.random().toString(36).substring(2, 15);
-        let file_ext = '.' + file.name.split('.').pop();
-        let file_path = save_path + '/' + file_name + file_ext;
+        const file_name = Math.random().toString(36).substring(2, 15);
+        const file_ext = '.' + file.name.split('.').pop();
+        const file_path = save_path + '/' + file_name + file_ext;
         files_path.push({
             name: file.name,
             path: url_path + '/' + file_name + file_ext
@@ -32,12 +32,12 @@ export async function save_files(tx: TX, files: FileList): Promise<SavedFileList
 }
 
 export async function update_files(tx: TX, files: FileList, original: SavedFileList, edited: SavedFileList): Promise<SavedFileList> {
-    let files_path: SavedFileList = edited;
-    for (let file of files) {
+    const files_path: SavedFileList = edited;
+    for (const file of files) {
         if (!file.name) continue;
-        let file_name = Math.random().toString(36).substring(2, 15);
-        let file_ext = '.' + file.name.split('.').pop();
-        let file_path = save_path + '/' + file_name + file_ext;
+        const file_name = Math.random().toString(36).substring(2, 15);
+        const file_ext = '.' + file.name.split('.').pop();
+        const file_path = save_path + '/' + file_name + file_ext;
         files_path.push({
             name: file.name,
             path: url_path + '/' + file_name + file_ext
@@ -51,7 +51,7 @@ export async function update_files(tx: TX, files: FileList, original: SavedFileL
         });
     }
     if (!original) return files_path
-    for (let file of original) {
+    for (const file of original) {
         if (!files_path.some((f) => f.path === file.path)) {
             console.debug(file.path.split('/').pop()?.split('.').shift() )
             fs.unlink(save_path + '/' + file.path.split('/').pop(), (err) => {
@@ -65,7 +65,7 @@ export async function update_files(tx: TX, files: FileList, original: SavedFileL
 }
 
 export async function delete_files(tx: TX, files: SavedFileList) {
-    for (let file of files) {
+    for (const file of files) {
         fs.unlink(save_path + '/' + file.path.split('/').pop(), (err) => {
             if (err) console.error(err);
         });

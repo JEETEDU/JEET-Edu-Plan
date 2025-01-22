@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server';
 import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
-import {and, eq, like} from 'drizzle-orm';
+import {eq, like} from 'drizzle-orm';
 import {
     db_log,
     return_400, return_500,
@@ -12,7 +12,6 @@ import {
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
 import {check_admin_permission} from "@/app/(others)/api/admin/(tools)/tools";
-import {QueryBuilder} from "drizzle-orm/mysql-core";
 
 
 /**
@@ -102,13 +101,13 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
  */
 export async function GET(req: NextRequest) {
     try {
-        let token: DecodedToken | NextResponse = check_admin_permission(req.cookies.get("token")?.value ?? '');
+        const token: DecodedToken | NextResponse = check_admin_permission(req.cookies.get("token")?.value ?? '');
         if (token instanceof NextResponse) return token;
 
         const data = req.nextUrl.searchParams;
         const name = data.get('name') ?? '';
 
-        let classes = await db.select({
+        const classes = await db.select({
             id: schema.classes.id,
             name: schema.classes.name,
             display: schema.classes.display,
@@ -361,7 +360,7 @@ export async function DELETE(req: NextRequest) {
                 return return_400('class_id is required');
             }
 
-            let [class_] = await tx.select()
+            const [class_] = await tx.select()
                 .from(schema.classes)
                 .where(
                     eq(schema.classes.id, data.class_id)
@@ -490,7 +489,7 @@ export async function PUT(req: NextRequest) {
                 return return_400('description is too long');
             }
 
-            let [classInfo] =
+            const [classInfo] =
                 await tx.select()
                     .from(schema.classes)
                     .where(

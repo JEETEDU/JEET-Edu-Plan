@@ -128,7 +128,7 @@ export async function GET(req: NextRequest, { params }: { params: { user_id: num
             }
         }
 
-        let [user] =
+        const [user] =
             await db.select(select_columns)
                 .from(schema.users)
                 .where(eq(schema.users.uid, user_id));

@@ -2,12 +2,12 @@ import type { NextRequest } from 'next/server';
 import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
-import {and, asc, desc, eq, like, SQL, sql} from 'drizzle-orm';
+import {and, asc, desc, eq, like, SQL} from 'drizzle-orm';
 import {
     return_400,
     return_500,
     return_not_logged_in,
-    return_permission_denied, to_date_string, to_time_string, todayString,
+    return_permission_denied, todayString,
     UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {verifyToken} from "@/app/(others)/api/(tools)/auth";
@@ -180,7 +180,7 @@ export async function GET(req: NextRequest) {
     try {
         const token: string = req.cookies.get("token")?.value ?? '';
         if (token) {
-            let decoded = verifyToken(token);
+            const decoded = verifyToken(token);
             if (!decoded) { // invalid token
                 return return_not_logged_in();
             }
@@ -215,7 +215,7 @@ export async function GET(req: NextRequest) {
         }
         else date = todayString();
 
-        let queryBuilder = new QueryBuilder();
+        const queryBuilder = new QueryBuilder();
         let query =
             queryBuilder.select({
                 user: schema.users,
@@ -280,11 +280,11 @@ export async function GET(req: NextRequest) {
         }
         query = query.limit(parseInt(limit)).offset((parseInt(page) - 1) * parseInt(limit));
 
-        let [result] = await db.execute(query);
+        const [result] = await db.execute(query);
 
         console.debug(query.toSQL());
 
-        let [question] =
+        const [question] =
             await db.select()
                 .from(schema.todayQuestions)
                 .where(

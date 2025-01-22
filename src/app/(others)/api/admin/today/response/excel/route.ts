@@ -1,14 +1,12 @@
 import type { NextRequest } from 'next/server';
 import { db } from '@/database';
 import * as schema from '@/database/schema';
-import { NextResponse } from 'next/server';
-import {and, asc, desc, eq, gte, isNotNull, like, lte, or, SQL, sql} from 'drizzle-orm';
+import {and, eq, gte, isNotNull, lte, SQL, sql} from 'drizzle-orm';
 import {
     return_400,
     return_500,
     return_not_logged_in,
-    return_permission_denied, to_date_string, to_time_string, todayString,
-    UserType
+    return_permission_denied, to_date_string, to_time_string, UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {verifyToken} from "@/app/(others)/api/(tools)/auth";
 import {QueryBuilder} from "drizzle-orm/mysql-core";
@@ -58,19 +56,19 @@ import {Workbook} from "exceljs";
 export async function GET(req: NextRequest) {
     try {
         const token = req.cookies.get("token")?.value ?? '';
-        let decoded = verifyToken(token);
+        const decoded = verifyToken(token);
         if (!decoded) return return_not_logged_in();
         if (decoded.user_type !== UserType.ADMIN) return return_permission_denied();
 
         const data = req.nextUrl.searchParams;
-        let start_date: string | SQL = data.get('start_date') ?? '';
-        let end_date: string | SQL = data.get('end_date') ?? '';
+        const start_date: string | SQL = data.get('start_date') ?? '';
+        const end_date: string | SQL = data.get('end_date') ?? '';
 
         const datePattern = /^\d{4}-\d{2}-\d{2}$/;
         if (start_date && !datePattern.test(start_date)) return return_400("Invalid date format for 'start_date'.");
         if (end_date && !datePattern.test(end_date)) return return_400("Invalid date format for 'end_date'.");
 
-        let sub_table = db.select({
+        const sub_table = db.select({
             user_id: schema.users.uid,
             user_type: schema.users.user_type,
             name: schema.users.name,
@@ -155,10 +153,10 @@ export async function GET(req: NextRequest) {
         if (end_date) where_clause = and(where_clause, lte(sql`sub_table.date`, end_date));
         query = query.where(where_clause);
 
-        let [result] = await db.execute(query);
+        const [result] = await db.execute(query);
 
-        let workbook = new Workbook();
-        let sheet = workbook.addWorksheet('Sheet1');
+        const workbook = new Workbook();
+        const sheet = workbook.addWorksheet('Sheet1');
         sheet.columns = [
             {header: '날짜', key: 'date'},
             {header: 'User ID', key: 'uid'},

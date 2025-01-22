@@ -12,7 +12,7 @@ export function generateToken(user_id: number, user_type: number) {
 
 export function verifyToken(token: string): DecodedToken | false {
     try {
-        let decoded: any = jwt.verify(token, secret);
+        const decoded: any = jwt.verify(token, secret);
         if (decoded.user_type == UserType.NONE) return false;
         return {
             user_id: decoded.user_id,

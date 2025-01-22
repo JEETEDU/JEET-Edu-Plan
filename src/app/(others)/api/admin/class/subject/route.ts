@@ -5,15 +5,10 @@ import { NextResponse } from 'next/server';
 import {and, count, eq, like, sql} from 'drizzle-orm';
 import {
     db_log,
-    return_400, return_500,
-    return_not_logged_in,
-    return_permission_denied,
-    UserType
+    return_400, return_500
 } from "@/app/(others)/api/(tools)/tools";
-import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
+import {DecodedToken} from "@/app/(others)/api/(tools)/auth";
 import {check_admin_permission} from "@/app/(others)/api/admin/(tools)/tools";
-import {QueryBuilder} from "drizzle-orm/mysql-core";
-import {subjects} from "@/database/schema";
 
 
 /**
@@ -86,13 +81,13 @@ import {subjects} from "@/database/schema";
  */
 export async function GET(req: NextRequest) {
     try {
-        let token: DecodedToken | NextResponse = check_admin_permission(req.cookies.get("token")?.value ?? '');
+        const token: DecodedToken | NextResponse = check_admin_permission(req.cookies.get("token")?.value ?? '');
         if (token instanceof NextResponse) return token;
 
         const data = req.nextUrl.searchParams;
         const class_id = data.get('class_id') ?? '';
 
-        let rows = await db.select({
+        const rows = await db.select({
             id: schema.subjects.id,
             name: schema.subjects.name,
             class_: {
@@ -123,7 +118,7 @@ export async function GET(req: NextRequest) {
                 eq(schema.classes.id, class_id)
             );
 
-        let subjects = Array.isArray(rows) ? rows.reduce((acc: any, row: any) => {
+        const subjects = Array.isArray(rows) ? rows.reduce((acc: any, row: any) => {
             let subject = acc.find((u: any) => u.id === row.id);
             console.log(subject);
             if (!subject) {
@@ -209,7 +204,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
-            let token: DecodedToken | NextResponse = check_admin_permission(req.cookies.get("token")?.value ?? '');
+            const token: DecodedToken | NextResponse = check_admin_permission(req.cookies.get("token")?.value ?? '');
             if (token instanceof NextResponse) return token;
 
             const data = await req.json();
@@ -219,7 +214,7 @@ export async function POST(req: NextRequest) {
             if (!class_id || !name) return return_400("Missing required fields.");
             if (name.length > 255) return return_400("Subject name is too long.");
 
-            let [class_] =
+            const [class_] =
                 await tx.select({
                     id: schema.classes.id,
                     subject: count(schema.subjects.id)
@@ -308,7 +303,7 @@ export async function POST(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
-            let token: DecodedToken | NextResponse = check_admin_permission(req.cookies.get("token")?.value ?? '');
+            const token: DecodedToken | NextResponse = check_admin_permission(req.cookies.get("token")?.value ?? '');
             if (token instanceof NextResponse) return token;
 
             const data = await req.json();
@@ -316,7 +311,7 @@ export async function DELETE(req: NextRequest) {
 
             if (!subject_id) return return_400("Missing required fields.");
 
-            let [subject] =
+            const [subject] =
                 await tx.select({
                     id: schema.subjects.id,
                     name: schema.subjects.name,

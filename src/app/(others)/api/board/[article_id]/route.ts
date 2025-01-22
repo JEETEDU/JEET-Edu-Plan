@@ -2,9 +2,8 @@ import type { NextRequest } from 'next/server';
 import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
-import {and, asc, count, desc, eq, like, sql} from 'drizzle-orm';
+import {and, asc, count, eq, sql} from 'drizzle-orm';
 import {
-    check_date_string,
     return_400,
     return_500,
     return_not_logged_in,
@@ -12,8 +11,6 @@ import {
     UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
-import {QueryBuilder} from "drizzle-orm/mysql-core";
-import {save_files} from "@/app/(others)/api/(tools)/files";
 
 /**
  * @swagger
@@ -128,16 +125,16 @@ import {save_files} from "@/app/(others)/api/(tools)/files";
 export async function GET(req: NextRequest, { params }: { params: { article_id: string } }) {
     try {
         const token = req.cookies.get("token")?.value ?? '';
-        let decoded: DecodedToken | false = verifyToken(token);
+        const decoded: DecodedToken | false = verifyToken(token);
         if (!decoded) return return_not_logged_in();
 
         const article_id = parseInt((await params).article_id);
         if (isNaN(article_id)) return return_400('Invalid article id');
 
-        let user_id = decoded.user_id;
-        let user_type = decoded.user_type;
+        const user_id = decoded.user_id;
+        const user_type = decoded.user_type;
 
-        let [article] =
+        const [article] =
             await db.select({
                 id: schema.boards.id,
                 title: schema.boards.title,
@@ -173,7 +170,7 @@ export async function GET(req: NextRequest, { params }: { params: { article_id: 
         // @ts-ignore
         article.attach_files = article.attach_files ? JSON.parse(article.attach_files) : [];
 
-        let comments = await db.select({
+        const comments = await db.select({
             id: schema.comments.id,
             user_id: schema.comments.user_id,
             user_name: sql`${schema.users.name} as user_name`,

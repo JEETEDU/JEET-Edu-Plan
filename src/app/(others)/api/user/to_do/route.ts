@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server';
 import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
-import {and, asc, count, desc, eq, gte, like, lte, or, SQL, sql} from 'drizzle-orm';
+import {and, eq, gte, lte, SQL} from 'drizzle-orm';
 import {
     check_date_string,
     return_400,
@@ -13,9 +13,6 @@ import {
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
 import {QueryBuilder} from "drizzle-orm/mysql-core";
-import {delete_files, save_files, SavedFileList, update_files} from "@/app/(others)/api/(tools)/files";
-import {AlertType, register_alert, register_alert_for_class} from "@/app/(others)/api/(tools)/alerts";
-import {ArticleCategory} from "@/app/(others)/api/board/tools";
 
 
 /**
@@ -69,7 +66,7 @@ export async function POST(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
             const token = req.cookies.get("token")?.value ?? '';
-            let decoded: DecodedToken | false = verifyToken(token);
+            const decoded: DecodedToken | false = verifyToken(token);
             if (!decoded) return return_not_logged_in();
 
             const user_id = decoded.user_id;
@@ -153,7 +150,7 @@ export async function PATCH(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
             const token = req.cookies.get("token")?.value ?? '';
-            let decoded: DecodedToken | false = verifyToken(token);
+            const decoded: DecodedToken | false = verifyToken(token);
             if (!decoded) return return_not_logged_in();
 
             const user_id = decoded.user_id;
@@ -176,7 +173,7 @@ export async function PATCH(req: NextRequest) {
                     .where(and(eq(schema.todoes.id, todo_id), eq(schema.todoes.user_id, user_id)));
             if (!todo) return return_400('To-do item not found');
 
-            let values: any = {};
+            const values: any = {};
             if (content) values.content = content;
             if (due_date) values.due_date = due_date;
             if (due_date === -1) values.due_date = null;
@@ -236,7 +233,7 @@ export async function DELETE(req: NextRequest) {
     try {
         return db.transaction(async (tx) => {
             const token = req.cookies.get("token")?.value ?? '';
-            let decoded: DecodedToken | false = verifyToken(token);
+            const decoded: DecodedToken | false = verifyToken(token);
             if (!decoded) return return_not_logged_in();
 
             const user_id = decoded.user_id;
@@ -347,7 +344,7 @@ export async function DELETE(req: NextRequest) {
 export async function GET(req: NextRequest) {
     try {
         const token = req.cookies.get("token")?.value ?? '';
-        let decoded: DecodedToken | false = verifyToken(token);
+        const decoded: DecodedToken | false = verifyToken(token);
         if (!decoded) return return_not_logged_in();
 
         const user_id = decoded.user_id;
@@ -379,7 +376,7 @@ export async function GET(req: NextRequest) {
         if(end_due_date) where_clause = and(where_clause, lte(schema.todoes.due_date, new Date(end_due_date)));
         query = query.where(where_clause).limit(limit).offset((page - 1) * limit);
 
-        let [todoes] = await db.execute(query);
+        const [todoes] = await db.execute(query);
 
         return NextResponse.json({
             success: true,

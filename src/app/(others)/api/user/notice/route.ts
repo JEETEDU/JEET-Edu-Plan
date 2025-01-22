@@ -2,17 +2,14 @@ import type { NextRequest } from 'next/server';
 import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
-import {and, asc, count, desc, eq, like, sql} from 'drizzle-orm';
+import {and, desc, eq, sql} from 'drizzle-orm';
 import {
-    check_date_string,
     return_400,
     return_500,
     return_not_logged_in,
-    return_permission_denied,
     UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
-import {QueryBuilder} from "drizzle-orm/mysql-core";
 
 
 /**
@@ -116,7 +113,7 @@ export async function GET(req: NextRequest) {
         const user_type = decoded.user_type;
 
         const link_table = user_type === UserType.STUDENT ? schema.studentClasses : schema.teacherClasses;
-        let notices =
+        const notices =
             await db.select({
                 id: schema.boards.id,
                 title: schema.boards.title,

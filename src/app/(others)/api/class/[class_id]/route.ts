@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server';
 import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
-import {asc, desc, eq, like, sql} from 'drizzle-orm';
+import {eq} from 'drizzle-orm';
 import {
     return_400,
     return_500,
@@ -11,7 +11,6 @@ import {
     UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
-import {QueryBuilder} from "drizzle-orm/mysql-core";
 
 
 /**
@@ -187,7 +186,7 @@ export async function GET(req: NextRequest, {params}: {params: {class_id: number
 
         const class_id = (await params).class_id;
 
-        let [class_] = await db.select()
+        const [class_] = await db.select()
             .from(schema.classes)
             .where(
                 eq(schema.classes.id, class_id)
@@ -216,7 +215,7 @@ export async function GET(req: NextRequest, {params}: {params: {class_id: number
                 }
             }
         }
-        let students = await db.select(
+        const students = await db.select(
             user_select_columns
         )
             .from(schema.users)
@@ -235,7 +234,7 @@ export async function GET(req: NextRequest, {params}: {params: {class_id: number
             }
         }
 
-        let teachers = await db.select({
+        const teachers = await db.select({
             ...user_select_columns,
             subject: {
                 id: schema.subjects.id
@@ -254,7 +253,7 @@ export async function GET(req: NextRequest, {params}: {params: {class_id: number
                 eq(schema.teacherClasses.class_id, class_id)
             );
 
-        let subjects = await db.select({
+        const subjects = await db.select({
             id: schema.subjects.id,
             name: schema.subjects.name
         })
@@ -263,7 +262,7 @@ export async function GET(req: NextRequest, {params}: {params: {class_id: number
                 eq(schema.subjects.class_id, class_id)
             );
 
-        let class_info = {
+        const class_info = {
             id: class_.id,
             name: class_.name,
             description: class_.description,

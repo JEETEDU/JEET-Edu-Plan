@@ -11,7 +11,6 @@ import {
     UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
-import {studentClasses} from "@/database/schema";
 
 /**
  * @swagger
@@ -113,7 +112,7 @@ export async function POST(req: NextRequest) {
                 return return_400('user_id is required');
             }
 
-            let [class_] =
+            const [class_] =
                 await tx.select()
                     .from(schema.classes)
                     .leftJoin(

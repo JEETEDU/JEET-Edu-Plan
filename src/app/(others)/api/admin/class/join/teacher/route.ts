@@ -11,7 +11,6 @@ import {
     UserType
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
-import {studentClasses} from "@/database/schema";
 
 /**
  * @swagger
@@ -128,7 +127,7 @@ export async function POST(req: NextRequest) {
                 return return_400('subject_id is required');
             }
 
-            let [user] =
+            const [user] =
                 await tx.select()
                     .from(schema.users)
                     .where(
@@ -141,7 +140,7 @@ export async function POST(req: NextRequest) {
                 return return_400('User is not a teacher');
             }
 
-            let [class_] =
+            const [class_] =
                 await tx.select()
                     .from(schema.classes)
                     .leftJoin(
@@ -162,7 +161,7 @@ export async function POST(req: NextRequest) {
                 return return_400('User already joined class');
             }
 
-            let [subject] =
+            const [subject] =
                     await tx.select()
                         .from(schema.subjects)
                         .where(

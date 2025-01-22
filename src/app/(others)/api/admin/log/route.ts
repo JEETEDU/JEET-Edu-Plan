@@ -123,7 +123,7 @@ export async function GET(req: NextRequest) {
     try {
         const token: string = req.cookies.get("token")?.value ?? '';
         if (token) {
-            let decoded = verifyToken(token);
+            const decoded = verifyToken(token);
             if (!decoded) { // invalid token
                 return return_not_logged_in();
             }
@@ -151,7 +151,7 @@ export async function GET(req: NextRequest) {
             return return_400('Invalid user_id');
         }
 
-        let queryBuilder = new QueryBuilder();
+        const queryBuilder = new QueryBuilder();
         let query =
             queryBuilder.select({
                 'log_id': schema.logs.id,
@@ -171,7 +171,7 @@ export async function GET(req: NextRequest) {
         query = query.limit(parseInt(limit));
         query = query.offset((parseInt(page) - 1) * parseInt(limit));
 
-        let [logs] = await db.execute(query);
+        const [logs] = await db.execute(query);
         return NextResponse.json({
             success: true,
             logs: logs

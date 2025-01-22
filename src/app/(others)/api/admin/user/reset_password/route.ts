@@ -115,7 +115,7 @@ export async function POST(req: NextRequest) {
 
             const user_id = data.user_id;
 
-            let [user] =
+            const [user] =
                 await tx.select()
                     .from(schema.users)
                     .where(
