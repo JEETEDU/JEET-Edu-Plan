@@ -170,7 +170,7 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *                   type: string
  *                   example: "Internal Server Error"
  */
-export async function GET(req: NextRequest, {params}: {params: {class_id: number}}): Promise<NextResponse> {
+export async function GET(req: NextRequest, {params}: {params: Promise<{class_id: number}> }): Promise<NextResponse> {
     try {
         const token: string = req.cookies.get("token")?.value ?? '';
         let decoded: DecodedToken | false;

@@ -87,7 +87,7 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *                                  type: string
  *                                  example: "error message"
  */
-export async function GET(req: NextRequest, { params }: { params: { user_id: number } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ user_id: number }> }) {
     try {
         const token: string = req.cookies.get("token")?.value ?? '';
         let decoded: DecodedToken | false;
