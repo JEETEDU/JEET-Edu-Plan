@@ -70,6 +70,7 @@ export default function ClassSetting() {
     function refreshClasses(resetHead: boolean = false) {
         (async () => {
             const res: { success: boolean; classes: IClass[] } = await GET(`/api/admin/class?name=${search}`);
+            console.log('r', res)
             if (res.success) {
                 setClassList(res.classes);
                 if (resetHead) setHead(res.classes[0].id);
@@ -78,7 +79,7 @@ export default function ClassSetting() {
     }
 
     useEffect(() => {
-        refreshClasses();
+        refreshClasses(true);
     }, [search]);
 
     function refreshClass() {

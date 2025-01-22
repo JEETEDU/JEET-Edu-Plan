@@ -19,7 +19,7 @@ export interface IUserInfo {
 
 const Hr = () => <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"/>;
 
-export default function UserDetail({uid, date, refresh}: { uid: number, date: Date, refresh: Function }) {
+export default function UserDetail({uid, date, refreshAction}: { uid: number, date: Date, refreshAction: (b?: boolean) => void }) {
     const [userInfo, setUserInfo] = useState<IUserInfo>({
         first_year: "",
         joined_term: "",
@@ -27,9 +27,8 @@ export default function UserDetail({uid, date, refresh}: { uid: number, date: Da
         name: "",
         school: "",
         uid: 0,
-        user_type: 0
+        user_type: 1
     });
-    const [editInfo, setEditInfo] = useState(false);
 
     useEffect(() => {
         (async () => {
@@ -37,7 +36,6 @@ export default function UserDetail({uid, date, refresh}: { uid: number, date: Da
         })();
     }, [uid]);
 
-    const today = new Date();
 
     return (
         <div className="w-full min-h-full border-2 p-3 flex flex-col gap-4">
@@ -45,16 +43,20 @@ export default function UserDetail({uid, date, refresh}: { uid: number, date: Da
                 uid={uid}
                 userInfo={userInfo}
                 setUserInfo={setUserInfo}
-                editInfo={editInfo}
-                setEditInfo={setEditInfo}
-                today={today}
-                refresh={refresh}
+                refresh={refreshAction}
             />
             <ManageUser uid={uid}/>
             <Hr/>
-            <TodayAnswer date={date} uid={uid}/>
-            <Hr/>
-            <UserClass uid={uid} userType={userInfo.user_type || 1}/>
+            {(userInfo.user_type === 1) && (
+                <>
+                    <TodayAnswer date={date} uid={uid}/>
+                    <Hr/>
+                </>
+            )}
+            <UserClass
+                uid={uid}
+                userType={userInfo.user_type || 1}
+            />
         </div>
     );
 }
