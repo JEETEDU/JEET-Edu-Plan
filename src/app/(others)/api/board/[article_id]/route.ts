@@ -122,7 +122,7 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *       500:
  *         description: Internal server error.
  */
-export async function GET(req: NextRequest, { params }: { params: { article_id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ article_id: string }> }) {
     try {
         const token = req.cookies.get("token")?.value ?? '';
         const decoded: DecodedToken | false = verifyToken(token);
