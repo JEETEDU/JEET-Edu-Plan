@@ -559,7 +559,8 @@ export function IsAdmin(
                             className="text-lg font-bold"
                             options={[
                                 {value: "1", label: "학생 목록"},
-                                {value: "2", label: "선생 목록"}
+                                {value: "2", label: "선생 목록"},
+                                {value: "3", label: "관리자"},
                             ]}
                             defaultValue={{value: "1", label: "학생 목록"}}
                             onChange={(e) => {
@@ -686,7 +687,7 @@ export function IsAdmin(
                             <UserDetail
                                 uid={head}
                                 date={date}
-                                refresh={refreshUser}
+                                refreshAction={refreshUser}
                             />
                         </Scrollbars>
                     </div>
