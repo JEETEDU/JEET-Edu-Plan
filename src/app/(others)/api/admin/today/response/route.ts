@@ -306,8 +306,8 @@ export async function GET(req: NextRequest) {
                         joined_term: user.joined_term
                     },
                     sleep: {
-                        sleep: new Date(user.sleep),
-                        wakeup: new Date(user.wakeup)
+                        sleep: user.sleep ? new Date(user.sleep) : null,
+                        wakeup: user.wakeup ? new Date(user.wakeup) : null
                     },
                     answers: {
                         answer_1: user.answer_1,

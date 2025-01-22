@@ -129,9 +129,9 @@ export async function PUT(req: NextRequest) {
             }
 
 
-            // @ts-ignore
             await tx.insert(schema.sleeps)
                 .values({
+                    // @ts-ignore
                     date: todayString(),
                     user_id: user_id,
                     sleep: new Date(sleep),
