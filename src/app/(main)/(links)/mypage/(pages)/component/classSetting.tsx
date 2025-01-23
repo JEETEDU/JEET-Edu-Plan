@@ -589,7 +589,7 @@ export default function ClassSetting() {
                                                     {(s.teachers.length > 0) && s.teachers.map((t) => {
                                                         return (
                                                             <div
-                                                                key={t.uid}
+                                                                key={t.uid * s.id}
                                                                 className="border-2 rounded flex justify-between p-2 gap-4 cursor-pointer hover:bg-white"
                                                             >
                                                                 <div className="flex items-center gap-4">
