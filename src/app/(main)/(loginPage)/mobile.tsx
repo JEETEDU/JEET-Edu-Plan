@@ -59,7 +59,7 @@ export default function Mobile() {
                     회원가입
                 </button>
             </div>
-            <div className="flex flex-col w-full max-w-xs bg-white dark:bg-gray-800 rounded-lg p-4">
+            <div className="flex flex-col w-full bg-white dark:bg-gray-800 rounded-lg p-4">
                 <h2 className="title-2">
                     {isLogin ? "로그인" : "회원 가입"}
                 </h2>
