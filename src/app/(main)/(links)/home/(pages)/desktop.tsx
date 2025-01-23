@@ -6,6 +6,7 @@ import Scrollbars from "react-custom-scrollbars-2";
 import {IArticle, loadArticle} from "@/app/(main)/(links)/board/component";
 import {ArticleItem} from "@/app/(main)/(links)/board/(pages)/desktop";
 import Notice from "@/app/(main)/(links)/home/[id]/mobile";
+import Homeworks from "@/app/(main)/(links)/home/components/homeworks";
 
 export function Category({category}: { category: number }) {
     const text = [
@@ -174,26 +175,7 @@ export default function Desktop() {
                             <div className="text-center text-2xl mb-4">
                                 숙제 목록
                             </div>
-                            {/*<Scrollbars*/}
-                            {/*    className="w-full h-full"*/}
-                            {/*    universal*/}
-                            {/*    autoHide*/}
-                            {/*>*/}
-                            {/*    {notifications.map((notification, index) => (*/}
-                            {/*        <Link*/}
-                            {/*            key={index}*/}
-                            {/*            className="block w-full"*/}
-                            {/*            href={'/'}*/}
-                            {/*        >*/}
-                            {/*            <div className={cn(*/}
-                            {/*                "p-3 mb-2 hover:bg-gray-100 rounded-lg shadow-lg border border-gray-200 w-full",*/}
-                            {/*                "bg-white"*/}
-                            {/*            )}>*/}
-                            {/*                {notification}*/}
-                            {/*            </div>*/}
-                            {/*        </Link>*/}
-                            {/*    ))}*/}
-                            {/*</Scrollbars>*/}
+                            <Homeworks/>
                         </div>
                         <div className="overflow-hidden pt-4 px-4 bg-gray-100 flex flex-col">
                             <div className="text-center text-2xl mb-4">

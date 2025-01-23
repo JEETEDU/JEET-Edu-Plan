@@ -11,16 +11,16 @@ export default function Desktop() {
     const router = useRouter();
 
     const login = async () => {
-        await POST('/api/user/login', {
+        const res = await POST('/api/user/login', {
             login_id: document.getElementById("id").value,
             pw: document.getElementById("password").value
-        }).then(res => {
-            if (res.success) {
-                router.push('/home');
-            } else {
-                setError({message: res.message, color: "text-red-600"});
-            }
         })
+        if (res.success) {
+            console.log(res)
+            router.push('/home');
+        } else {
+            setError({message: res.message, color: "text-red-600"});
+        }
     }
 
     const register = async () => {
@@ -38,7 +38,7 @@ export default function Desktop() {
     }
 
     return (
-        <div className="component-container">
+        <div className="component-container h-full flex flex-col justify-center items-center">
             <div className="grid grid-cols-2 component-form mb-4 p-0">
                 <button
                     className={cn({
