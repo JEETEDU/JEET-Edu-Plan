@@ -181,26 +181,6 @@ export default function Desktop() {
                             <div className="text-center text-2xl mb-4">
                                 내 할일 목록
                             </div>
-                            {/*<Scrollbars*/}
-                            {/*    className="w-full h-full"*/}
-                            {/*    universal*/}
-                            {/*    autoHide*/}
-                            {/*>*/}
-                            {/*    {notifications.map((notification, index) => (*/}
-                            {/*        <Link*/}
-                            {/*            key={index}*/}
-                            {/*            className="block w-full"*/}
-                            {/*            href={'/'}*/}
-                            {/*        >*/}
-                            {/*            <div className={cn(*/}
-                            {/*                "p-3 mb-2 hover:bg-gray-100 rounded-lg shadow-lg border border-gray-200 w-full",*/}
-                            {/*                "bg-white"*/}
-                            {/*            )}>*/}
-                            {/*                {notification}*/}
-                            {/*            </div>*/}
-                            {/*        </Link>*/}
-                            {/*    ))}*/}
-                            {/*</Scrollbars>*/}
                         </div>
                     </div>
                 )}

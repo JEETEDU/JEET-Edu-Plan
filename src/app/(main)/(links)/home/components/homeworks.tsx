@@ -1,14 +1,14 @@
 'use client';
 
 import Scrollbars from "react-custom-scrollbars-2";
-import React, {useEffect, useState, forwardRef, Ref} from "react";
+import React, {useEffect, useState} from "react";
 import {cn, GET, PUT} from "@/app/(main)/components/functions";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
-// import { ko } from "date-fns/esm/locale";
 
 import 'react-datepicker/dist/react-datepicker.css';
 import {ko} from "date-fns/locale";
+import styled from "styled-components";
 
 interface IHomework {
     article_id: number;
@@ -42,7 +42,86 @@ interface IClassInfo {
     subjects: ISubject[];
 }
 
-export default function Homeworks() {
+const DatepickerWrapper = styled.div`
+.react-datepicker{
+
+    padding : 16px 16px 0 16px;
+    
+    .react-datepicker__header {
+        background-color: #fff;
+        color: #fff;
+        border-bottom: none;
+        border-radius: 0;    
+    }
+
+    .react-datepicker__month-container {
+        
+        padding-bottom : 16px;
+        margin-bottom : 8px;
+
+        .react-datepicker__day-names{
+            
+            width : 280px;
+            display : flex;
+            justify-content : center;
+            align-items : center;
+            box-sizing : border-box;
+            
+            .react-datepicker__day-name{
+                display : flex;
+                width : 40px;
+                height : 40px;
+                justify-content : center;
+                align-items : center;
+            }
+        }
+
+        .react-datepicker__month{
+            margin : 0px;
+        }
+
+        .react-datepicker__week{
+
+            width : 280px;
+            display : flex;
+            justify-content : space-around;
+
+            > * {
+                display : flex;
+                width : 40px;
+                height : 40px;
+                justify-content : center;
+                align-items : center;
+                color: var(--neutral-dark-medium, #494A50);
+                text-align: center;
+
+                font-family: Inter;
+                font-size: 12px;
+                font-style: normal;
+                font-weight: 700;
+                line-height: normal;
+            }
+
+            .react-datepicker__day--selected{
+                border-radius: 20px;
+                background: var(--highlight-darkest, #006FFD);
+                display: flex;
+                width: 40px;
+                height: 40px;
+                justify-content: center;
+                align-items: center;
+                color : #fff;
+            }
+        }
+}
+
+.react-datepicker__children-container{
+    width : 300px;
+    }
+}
+`
+
+export default function Homeworks({isMobile = false}: { isMobile?: boolean }) {
     const [homeworks, setHomeworks] = useState<IHomework[]>([]);
     const [classes, setClasses] = useState<IClass[]>([]);
     const [subjects, setSubjects] = useState<ISubject[]>([]);
@@ -120,10 +199,12 @@ export default function Homeworks() {
         console.log("Homeworks: ", homeworks);
     }, [homeworks.length]);
 
+    const [openDatePicker, setOpenDatePicker] = useState<boolean>(false);
+
     return (
         <div className="flex flex-col w-full h-full gap-4">
             <div className="flex flex-col w-full gap-2">
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-2 items-end">
                     <Select
                         // menuPlacement="top"
                         className="text-center"
@@ -142,87 +223,100 @@ export default function Homeworks() {
                         onChange={(e) => setDone(e)}
                         isSearchable={false}
                     />
-                    <Select
-                        // menuPlacement="top"
-                        components={{
-                            IndicatorSeparator: () => null
-                        }}
-                        className="text-center"
-                        options={[
-                            {value: "", label: "전체 반"},
-                            ...(classes.map((c) => {
-                                return {value: String(c.id), label: c.name};
-                            }))
-                        ]}
-                        required
-                        value={class_}
-                        placeholder="반을 선택해 주세요"
-                        instanceId={1}
-                        onChange={(e) => setClass(e)}
-                        isSearchable={false}
-                    />
-                    <Select
-                        // menuPlacement="top"
-                        components={{
-                            IndicatorSeparator: () => null
-                        }}
-                        className="text-center"
-                        options={[
-                            {value: "", label: "전체 과목"},
-                            ...(subjects.map((s) => {
-                                return {value: String(s.id), label: s.name};
-                            }))
-                        ]}
-                        required
-                        value={subject}
-                        placeholder="반을 선택해 주세요"
-                        instanceId={1}
-                        onChange={(e) => setSubject(e)}
-                        isSearchable={false}
-                    />
-                    <div className="flex flex-col">
-                        <div className="component-button-info">
-                            한 페이지에 표시할 숙제 수:
-                        </div>
-                        <input
-                            className="w-full py-1 text-center border-2 rounded"
-                            type="number"
-                            value={limit}
-                            onChange={(e) => setLimit(Number(e.target.value))}
+
+                    {(!isMobile) && (<>
+                        <Select
+                            // menuPlacement="top"
+                            components={{
+                                IndicatorSeparator: () => null
+                            }}
+                            className="text-center"
+                            options={[
+                                {value: "", label: "전체 반"},
+                                ...(classes.map((c) => {
+                                    return {value: String(c.id), label: c.name};
+                                }))
+                            ]}
+                            required
+                            value={class_}
+                            placeholder="반을 선택해 주세요"
+                            instanceId={1}
+                            onChange={(e) => setClass(e)}
+                            isSearchable={false}
                         />
-                    </div>
+                        <Select
+                            // menuPlacement="top"
+                            components={{
+                                IndicatorSeparator: () => null
+                            }}
+                            className="text-center"
+                            options={[
+                                {value: "", label: "전체 과목"},
+                                ...(subjects.map((s) => {
+                                    return {value: String(s.id), label: s.name};
+                                }))
+                            ]}
+                            required
+                            value={subject}
+                            placeholder="반을 선택해 주세요"
+                            instanceId={1}
+                            onChange={(e) => setSubject(e)}
+                            isSearchable={false}
+                        />
+                        <div className="flex flex-col">
+                            <div className="component-button-info">
+                                한 페이지에 표시할 숙제 수:
+                            </div>
+                            <input
+                                className="w-full py-1 text-center border-2 rounded"
+                                type="number"
+                                value={limit}
+                                onChange={(e) => setLimit(Number(e.target.value))}
+                            />
+                        </div>
+                    </>)}
                     <div className="flex flex-col col-span-2">
                         <div className="component-button-info">
                             마감일로 검색:
                         </div>
                         <div className="flex-1 flex flex-row justify-between gap-2 items-center">
-                            <div className="w-full py-1 text-center border-2 rounded bg-white flex justify-end">
-                                <DatePicker
-                                    className="outline-none"
-                                    locale={ko}
-                                    isClearable
-                                    selected={startDueDate}
-                                    onChange={(e) => setStartDueDate(e)}
-                                    dateFormat='yyyy-MM-dd'
-                                    placeholderText="전체 기한"
-                                    disabledKeyboardNavigation
-                                />
-                            </div>
-                            <div>
-                                ~
-                            </div>
-                            <div className="w-full py-1 text-center border-2 rounded bg-white flex justify-end">
-                                <DatePicker
-                                    className="outline-none"
-                                    locale={ko}
-                                    isClearable
-                                    selected={endDueDate}
-                                    onChange={(e) => setEndDueDate(e)}
-                                    dateFormat='yyyy-MM-dd'
-                                    placeholderText="전체 기한"
-                                    disabledKeyboardNavigation
-                                />
-                            </div>
+                            {(!isMobile) && (<>
+                                <DatepickerWrapper className="w-full py-1 text-center border-2 rounded bg-white flex justify-end">
+                                    <DatePicker
+                                        className="outline-none"
+                                        locale={ko}
+                                        isClearable
+                                        selected={startDueDate}
+                                        onChange={(e) => setStartDueDate(e)}
+                                        dateFormat='yyyy-MM-dd'
+                                        placeholderText="전체 기한"
+                                        disabledKeyboardNavigation
+                                    />
+                                </DatepickerWrapper>
+                                <div>
+                                    ~
+                                </div>
+                                <DatepickerWrapper className="w-full py-1 text-center border-2 rounded bg-white flex justify-end">
+                                    <DatePicker
+                                        className="outline-none"
+                                        locale={ko}
+                                        isClearable
+                                        selected={endDueDate}
+                                        onChange={(e) => setEndDueDate(e)}
+                                        dateFormat='yyyy-MM-dd'
+                                        placeholderText="전체 기한"
+                                        disabledKeyboardNavigation
+                                    />
+                                </DatepickerWrapper>
+                            </>)}
+                            {isMobile && (
+                                <div
+                                    className="w-full py-1 justify-center items-center text-center border-2 rounded bg-white flex"
+                                    onClick={() => setOpenDatePicker(true)}
+                                >
+                                    {startDueDate?.toLocaleDateString() || ""} ~ {endDueDate?.toLocaleDateString() || ""}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -2,11 +2,10 @@
 
 import {cn, DELETE, GET, getStoreData, PUT} from "@/app/(main)/components/functions";
 import React, {useEffect, useState} from "react";
-import {usePathname, useRouter} from "next/navigation";
+import {usePathname} from "next/navigation";
 import TextareaAutosize from "react-textarea-autosize";
 import Select from "react-select";
 import Scrollbars from "react-custom-scrollbars-2";
-import {b} from "@unocss/preset-web-fonts/shared/preset-web-fonts.TGEYFvVV";
 
 export function Alert({path, isMobile}: { path: string, isMobile: boolean }) {
     if (path === "/") {

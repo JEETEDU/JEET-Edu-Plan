@@ -6,6 +6,7 @@ import Link from "next/link";
 import {IArticle, initArticle, loadArticleInfo} from "@/app/(main)/(links)/board/component";
 import Scrollbars from "react-custom-scrollbars-2";
 import {Author, Category, Class_, Delete, Hr, Subject, Time, Title, Update} from "@/app/(main)/(links)/home/(pages)/desktop";
+import Homeworks from "@/app/(main)/(links)/home/components/homeworks";
 
 // 더 할 작업
 // 1. 공지사항은 종류에 따라 색으로 구분, 기한 표시 등등
@@ -13,7 +14,7 @@ import {Author, Category, Class_, Delete, Hr, Subject, Time, Title, Update} from
 // 3.1. 지금도 나쁘지 않을지도..?
 
 export default function Mobile() {
-    const [isInfo, setIsInfo] = useState(true);
+    const [tab, setTab] = useState<number>(0);
 
     const [notices, setNotices] = useState<IArticle[]>([]);
 
@@ -34,22 +35,31 @@ export default function Mobile() {
     return (
         <div className="flex flex-col h-full">
             <div className="h-fit">
-                <div className="static h-fit grid grid-cols-2 w-screen">
+                <div className="static h-fit grid grid-cols-3 w-screen">
                     <button
                         className={cn({
-                            "bg-white pointer-events-none": isInfo,
-                            "bg-gray-300 hover:bg-gray-200 transition duration-200": !isInfo,
+                            "bg-white pointer-events-none": (tab === 0),
+                            "bg-gray-300 hover:bg-gray-200 transition duration-200": (tab !== 0),
                         }, "h-fit text-center p-2")}
-                        onClick={() => setIsInfo(!isInfo)}
+                        onClick={() => setTab(0)}
                     >
                         공지사항
                     </button>
                     <button
                         className={cn({
-                            "bg-white pointer-events-none": !isInfo,
-                            "bg-gray-300 hover:bg-gray-200 transition duration-200": isInfo,
+                            "bg-white pointer-events-none": (tab === 1),
+                            "bg-gray-300 hover:bg-gray-200 transition duration-200": (tab !== 1),
                         }, "h-fit text-center p-2")}
-                        onClick={() => setIsInfo(!isInfo)}
+                        onClick={() => setTab(1)}
+                    >
+                        숙제
+                    </button>
+                    <button
+                        className={cn({
+                            "bg-white pointer-events-none": (tab === 2),
+                            "bg-gray-300 hover:bg-gray-200 transition duration-200": (tab !== 2),
+                        }, "h-fit text-center p-2")}
+                        onClick={() => setTab(2)}
                     >
                         할 일 목록
                     </button>
@@ -57,7 +67,7 @@ export default function Mobile() {
             </div>
 
             <div className="flex-grow overflow-hidden">
-                {isInfo ? (
+                {(tab === 0) && (
                     <Scrollbars
                         className="w-full h-full" // bg-gray-100
                         universal
@@ -93,66 +103,10 @@ export default function Mobile() {
                             )}
                         </div>
                     </Scrollbars>
-                ) : (
-                    <div className="flex flex-col h-full">
-                        {/*<div className="my-4 mx-6">*/}
-                        {/*    /!* 진행 상황 표시 *!/*/}
-                        {/*    <div className="h-fit mx-1 pb-1 text-center flex items-center justify-center">*/}
-                        {/*        <span className="font-semibold text-gray-800">*/}
-                        {/*            오늘의 할 일 {completedTasks}/{totalTasks}개 완료*/}
-                        {/*        </span>*/}
-                        {/*    </div>*/}
-
-                        {/*    /!* 진행률 표시 *!/*/}
-                        {/*    <div className="w-full h-1 bg-gray-200 rounded-full my-4">*/}
-                        {/*        <div*/}
-                        {/*            className="h-full bg-blue-500 rounded-full"*/}
-                        {/*            style={{width: `${progress}%`}}*/}
-                        {/*        />*/}
-                        {/*    </div>*/}
-
-                        {/*    <div className="flex justify-end w-full">*/}
-                        {/*        <button*/}
-                        {/*            className="mx-1 text-gray-600"*/}
-                        {/*            onClick={() => setShowCompletedTasks(!showCompletedTasks)}*/}
-                        {/*        >*/}
-                        {/*            {showCompletedTasks ? "완료한 일 숨기기" : "완료한 일 보이기"}*/}
-                        {/*        </button>*/}
-                        {/*    </div>*/}
-                        {/*</div>*/}
-
-                        {/*<div className="flex-grow overflow-y-auto p-4 bg-gray-100">*/}
-                        {/*    {filteredTasks.map((task, index) => (*/}
-                        {/*        <Link*/}
-                        {/*            href={`/homeworks/${index}`}*/}
-                        {/*            key={index}*/}
-                        {/*            className="block w-full"*/}
-                        {/*        >*/}
-                        {/*            <div className={`px-4 py-3 mb-4 bg-white rounded-lg shadow-md border-2 ${task.completed ? "border-green-400 bg-green-50" : "border-gray-300"}`}>*/}
-                        {/*                <div className="flex items-center">*/}
-                        {/*                <span className={`${task.completed ? "text-green-600" : "text-gray-700"}`}>*/}
-                        {/*                    {task.text}*/}
-                        {/*                </span>*/}
-                        {/*                    {task.completed && <div className="i-system-uicons-check"/>}*/}
-                        {/*                </div>*/}
-                        {/*            </div>*/}
-                        {/*        </Link>*/}
-                        {/*    ))}*/}
-                        {/*</div>*/}
-                        {/*<div className="h-fit mx-1 pb-1 text-center flex items-center justify-center">*/}
-                        {/*    <Link*/}
-                        {/*        className="component-button mx-1"*/}
-                        {/*        href={'/homeworks'}*/}
-                        {/*    >*/}
-                        {/*        숙제 보러가기*/}
-                        {/*    </Link>*/}
-                        {/*    <Link*/}
-                        {/*        className="component-button mx-1"*/}
-                        {/*        href={'/home'}*/}
-                        {/*    >*/}
-                        {/*        할 일 추가하기*/}
-                        {/*    </Link>*/}
-                        {/*</div>*/}
+                )}
+                {(tab === 1) && (
+                    <div className="p-2 w-full h-full">
+                        <Homeworks isMobile={true} />
                     </div>
                 )}
             </div>
