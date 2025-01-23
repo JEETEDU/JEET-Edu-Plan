@@ -2,11 +2,10 @@
 
 import React, {useEffect, useState} from "react";
 import Scrollbars from "react-custom-scrollbars-2";
-import {IArticle, initArticle, loadArticle, loadArticleInfo} from "@/app/(main)/(links)/board/component";
-import {Author, Category, Class_, Delete, Hr, Subject, Time, Title, Update} from "@/app/(main)/(links)/home/(pages)/desktop";
+import {IArticle, initArticle, loadArticleInfo} from "@/app/(main)/(links)/board/component";
+import {Author, Category, Class_, Hr, Subject, Time, Title} from "@/app/(main)/(links)/home/(pages)/desktop";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import {DELETE} from "@/app/(main)/components/functions";
 
 const ReactQuill = dynamic(() => import('react-quill-new'), {ssr: false})
 
