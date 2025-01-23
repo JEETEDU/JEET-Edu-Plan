@@ -19,7 +19,8 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
  *  patch:
  *      tags:
  *          - Admin/User
- *      description: <b>Admin</b><br>Update a user
+ *      description: <b>Admin</b><br>Update a user. If user_type is changed, user will be quit from all classes
+ *      summary: Update a user
  *      security:
  *          - cookieAuth: []
  *      summary: Update a user
@@ -186,6 +187,14 @@ export async function PATCH(req: NextRequest) {
             await tx.update(schema.users)
                 .set(update_data)
                 .where(eq(schema.users.uid, user_id));
+
+            // delete studentClasses and teacherClasses if user_type is changed
+            if (user_type) {
+                await tx.delete(schema.studentClasses)
+                    .where(eq(schema.studentClasses.user_id, user_id));
+                await tx.delete(schema.teacherClasses)
+                    .where(eq(schema.teacherClasses.user_id, user_id));
+            }
 
             await db_log(tx, user_id, `User ${user_id} updated to ${JSON.stringify(update_data)}`);
 
