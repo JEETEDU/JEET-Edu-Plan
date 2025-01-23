@@ -125,7 +125,7 @@ export async function GET(req: NextRequest) {
                 due_date: schema.boards.due_date,
                 comment_count: schema.boards.comment_count,
                 class_: {
-                    id: link_table.class_id,
+                    id: sql`${schema.classes.id}`.as('class_id'),
                     name: sql`${schema.classes.name}`.as('class_name')
                 },
                 user: {
@@ -139,8 +139,13 @@ export async function GET(req: NextRequest) {
             })
                 .from(schema.boards)
                 .leftJoin(
-                    link_table,
-                    eq(link_table.class_id, schema.boards.class_id)
+                    db.selectDistinct({
+                            class_id: link_table.class_id
+                        })
+                        .from(link_table)
+                        .where(eq(link_table.user_id, user_id))
+                        .as('link_table'),
+                    eq(sql`link_table.class_id`, schema.boards.class_id)
                 )
                 .leftJoin(
                     schema.classes,
@@ -154,12 +159,7 @@ export async function GET(req: NextRequest) {
                     schema.subjects,
                     eq(schema.boards.subject_id, schema.subjects.id)
                 )
-                .where(
-                    and(
-                        eq(schema.boards.notice, 1),
-                        eq(link_table.user_id, user_id)
-                    )
-                )
+                .where(eq(schema.boards.notice, 1))
                 .limit(limit)
                 .offset((page - 1) * limit)
                 .orderBy(desc(schema.boards.create_time));

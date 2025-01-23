@@ -23,7 +23,6 @@ import {QueryBuilder} from "drizzle-orm/mysql-core";
  *      summary: Update a user
  *      security:
  *          - cookieAuth: []
- *      summary: Update a user
  *      requestBody:
  *          required: true
  *          content:
