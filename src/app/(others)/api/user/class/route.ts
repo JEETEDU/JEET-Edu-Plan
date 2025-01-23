@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server';
 import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
-import {and, eq} from 'drizzle-orm';
+import {and, eq, sql} from 'drizzle-orm';
 import {
     return_500,
     return_not_logged_in,
@@ -109,7 +109,7 @@ export async function GET(req: NextRequest) {
                 );
         } else {
             classes = await db.select({
-                id: schema.classes.id,
+                id: sql`DISTINCT ${schema.classes.id}`,
                 name: schema.classes.name,
                 description: schema.classes.description,
             })
