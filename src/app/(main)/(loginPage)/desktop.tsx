@@ -78,7 +78,7 @@ export default function Desktop() {
                             <input
                                 type="text"
                                 id="name"
-                                className="component-input"
+                                className="component-input py-2 px-4"
                                 placeholder="이름을 입력해 주세요"
                                 required
                             />
@@ -92,7 +92,7 @@ export default function Desktop() {
                         <input
                             type="text"
                             id="id"
-                            className="component-input"
+                            className="component-input py-2 px-4"
                             placeholder="아이디를 입력해주세요"
                             onKeyDown={(e) => {
                                 if (e.key === "Enter") {
@@ -117,7 +117,7 @@ export default function Desktop() {
                             <input
                                 type={showPassword ? "text" : "password"}
                                 id="password"
-                                className="component-input"
+                                className="component-input py-2 px-4"
                                 placeholder="비밀번호를 입력해주세요"
                                 onKeyDown={(e) => {
                                     if (e.key === "Enter") {

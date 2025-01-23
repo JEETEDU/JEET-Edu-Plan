@@ -40,7 +40,6 @@ export async function GET(url: string) {
         (res) => res.json()
     ).then(
         (res) => {
-            console.log(res);
             return res;
         }
     )
@@ -54,7 +53,6 @@ export async function PUT(url: string, body: object) {
         (res) => res.json()
     ).then(
         (res) => {
-            console.log(res)
             return res;
         }
     )

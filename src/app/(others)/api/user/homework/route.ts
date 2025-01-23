@@ -182,7 +182,7 @@ export async function GET(req: NextRequest) {
         if(class_id) where_clause = and(where_clause, eq(schema.homeworks.class_id, class_id));
         if(subject_id) where_clause = and(where_clause, eq(schema.homeworks.subject_id, subject_id));
         query = query.where(where_clause).limit(limit).offset((page - 1) * limit)
-            .orderby(schema.homeworks.due_date, 'DESC');
+            .orderBy(schema.homeworks.due_date, 'DESC');
 
         const [homeworks] = await db.execute(query);
 

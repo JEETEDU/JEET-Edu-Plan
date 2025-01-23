@@ -72,7 +72,7 @@ export default function Mobile() {
                             <input
                                 type="text"
                                 id="name"
-                                className="component-input"
+                                className="component-input text-sm"
                                 placeholder="이름을 입력해 주세요"
                                 required
                             />
@@ -86,7 +86,7 @@ export default function Mobile() {
                         <input
                             type="text"
                             id="id"
-                            className="component-input"
+                            className="component-input text-sm"
                             placeholder="아이디를 입력해주세요"
                             required
                         />
