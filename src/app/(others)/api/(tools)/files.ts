@@ -53,7 +53,6 @@ export async function update_files(tx: TX, files: FileList, original: SavedFileL
     if (!original) return files_path
     for (const file of original) {
         if (!files_path.some((f) => f.path === file.path)) {
-            console.debug(file.path.split('/').pop()?.split('.').shift() )
             fs.unlink(save_path + '/' + file.path.split('/').pop(), (err) => {
                 if (err) console.error(err);
             });

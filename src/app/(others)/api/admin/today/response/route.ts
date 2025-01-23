@@ -282,8 +282,6 @@ export async function GET(req: NextRequest) {
 
         const [result] = await db.execute(query);
 
-        console.debug(query.toSQL());
-
         const [question] =
             await db.select()
                 .from(schema.todayQuestions)

@@ -64,7 +64,6 @@ export async function GET(req: NextRequest, { params }: { params: { file_name: s
     else if (file_ext == 'pdf') {
         content_type = 'application/pdf';
     }
-    console.debug(file_name.name)
     return new Response(fs.readFileSync(file_path), {
         headers: {
             'Content-Type': content_type,
