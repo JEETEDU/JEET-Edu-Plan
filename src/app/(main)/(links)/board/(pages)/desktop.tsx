@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {cn, getStoreData} from "@/app/(main)/components/functions";
 import Link from "next/link";
 import Chatting from "@/app/(main)/(links)/board/[id]/mobile";
@@ -16,17 +16,21 @@ export function ArticleItem({article, head = 0, setHead = null}: { article: IArt
             key={article.id}
             className={cn(
                 "p-4 block bg-white rounded-lg border border-gray-200 w-full",
-                (article.id === head) ? "border-2 border-black" : ""
+                (article.id === head) ? "border-2 border-black" : " border-2"
             )}
             onClick={() => {
                 if (setHead) setHead(article.id);
             }}
         >
             <div className={cn(
-                "flex justify-between items-center",
+                "flex flex-row max-w-full items-center gap-4",
             )}>
-                <span className="font-semibold text-gray-800 text-lg">{article.title}</span>
-                <span className="text-sm text-gray-500">{(new Date(article.update_time)).toLocaleString()}</span>
+                <div className="font-semibold text-gray-800 text-lg text-left flex-grow whitespace-nowrap truncate">
+                    {String(article.title)}
+                </div>
+                <div className="text-sm text-gray-500 whitespace-nowrap items-center flex justify-center">
+                    {(new Date(article.update_time)).toLocaleString()}
+                </div>
             </div>
             <hr className="my-2 border-gray-300"/>
             <div className="flex items-center justify-start gap-2">
@@ -42,9 +46,10 @@ export function ArticleItem({article, head = 0, setHead = null}: { article: IArt
 
 export default function Desktop() {
     const [head, setHead] = useState<number>(0);
-    // const [userType, setUserType] = useState(0);
+    const [page, setPage] = useState<number>(1);
 
     const [articles, setArticles] = useState<IArticle[]>([]);
+    const [limit, setLimit] = useState<number>(10);
 
     interface IClass {
         id: number;
@@ -76,9 +81,12 @@ export default function Desktop() {
         reloadClasses();
     }, []);
 
-    useEffect(() => {
+    function reload(append: boolean = false) {
         (async () => {
             const a = await loadArticle(selectedClass);
+            if (append) {
+                setArticles(prev => [...prev, ...a]);
+            }
             setArticles(a);
             if (a[0]) {
                 setHead(a[0].id || 0);
@@ -86,13 +94,18 @@ export default function Desktop() {
                 setHead(0);
             }
         })();
+    }
+
+    useEffect(() => {
+        reload();
     }, [selectedClass]);
 
+    const scrollbars = useRef<Scrollbars>(null);
 
     return (
         <>
             <div className="h-full flex flex-col bg-grap-100">
-                <div className="grid grid-cols-3 overflow-hidden flex-grow gap-4 px-4 bg-gray-100">
+                <div className="grid grid-cols-3 overflow-hidden flex-grow gap-4 pl-4 pr-3 bg-gray-100">
                     <div className="col-span-2 flex flex-col">
                         <div className="flex-grow w-full">
                             {(head !== 0) && <Chatting id={head}/>}
@@ -103,13 +116,19 @@ export default function Desktop() {
                             )}
                         </div>
                     </div>
-                    <div className="flex-grow bg-gray-100">
+                    <div className="flex-grow flex flex-col bg-gray-100 gap-2">
                         <Scrollbars
-                            className="w-full h-full"
+                            className="col-span-1 flex-1 grid grid-cols-1"
                             universal
                             autoHide
+                            ref={scrollbars}
+                            onScrollStop={() => {
+                                if (scrollbars.current!.getScrollHeight() - scrollbars.current!.getClientHeight() <= scrollbars.current!.getScrollTop() + 10) {
+                                    if (articles.length === limit * page) setPage(p => p + 1);
+                                }
+                            }}
                         >
-                            <div className="flex flex-col space-y-2">
+                            <div className="flex flex-col space-y-2 pr-1 w-full overflow-x-hidden">
                                 {articles.map((article: IArticle) => (
                                     <ArticleItem
                                         article={article}
@@ -120,6 +139,16 @@ export default function Desktop() {
                                 ))}
                             </div>
                         </Scrollbars>
+                        <div className="flex flex-row justify-center items-center text-xl w-full gap-10">
+                            <div
+                                className={cn((articles.length < limit * page) ? "text-gray" : "")}
+                                onClick={() => {
+                                    if (articles.length === limit * page) setPage(p => p + 1);
+                                }}
+                            >
+                                <div className="i-system-uicons:chevron-down-circle"/>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

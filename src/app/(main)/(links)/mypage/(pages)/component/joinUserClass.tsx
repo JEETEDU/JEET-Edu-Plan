@@ -163,8 +163,7 @@ export default function JoinUserClass({text, className}: { text: string; classNa
                                             className="text-lg font-bold"
                                             options={[
                                                 {value: "1", label: "학생 목록"},
-                                                {value: "2", label: "선생 목록"},
-                                                {value: "3", label: "관리자"},
+                                                {value: "", label: "선생님은 유저 관리에서 설정해주세요"},
                                             ]}
                                             defaultValue={{value: "1", label: "학생 목록"}}
                                             onChange={(e) => {
@@ -178,6 +177,7 @@ export default function JoinUserClass({text, className}: { text: string; classNa
                                                 IndicatorSeparator: () => null
                                             }}
                                             isSearchable={false}
+                                            isOptionDisabled={(o) => o.value === ""}
                                         />
                                         <Select
                                             options={[
@@ -230,7 +230,7 @@ export default function JoinUserClass({text, className}: { text: string; classNa
                                         autoHide
                                         ref={scrollUser}
                                         onScrollStop={async () => {
-                                            if (scrollUser.current!.getScrollHeight() - scrollUser.current!.getClientHeight() <= scrollUser.current!.getScrollTop()) {
+                                            if (scrollUser.current!.getScrollHeight() - scrollUser.current!.getClientHeight() <= scrollUser.current!.getScrollTop() + 10) {
                                                 (async () => {
                                                     nextPage();
                                                     setPage((p) => p + 1);
