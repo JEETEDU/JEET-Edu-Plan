@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {cn, DELETE, GET} from "@/app/(main)/components/functions";
 import Scrollbars from "react-custom-scrollbars-2";
 import {IArticle, loadArticle} from "@/app/(main)/(links)/board/component";
@@ -111,34 +111,35 @@ export function Author({name}: { name: string }) {
     )
 }
 
+interface IResponseNotices {
+    success: boolean;
+    notices: IArticle[];
+}
+
 export default function Desktop() {
-    const [isInfo, setIsInfo] = useState(true);
-
+    const [tab, setTab] = useState<number>(0);
     const [notices, setNotices] = useState<IArticle[]>([]);
-
     const [head, setHead] = useState<number>(0);
 
     useEffect(() => {
-        interface IResponseNotices {
-            success: boolean;
-            notices: IArticle[];
-        }
-
-        (async () => {
-            const res: IResponseNotices = await GET('/api/user/notice');
-            if (res.success) {
-                setNotices(res.notices);
-                if (res.notices.length > 0) {
-                    setHead(res.notices[0].id);
+        if (tab === 0) {
+            (async () => {
+                const res: IResponseNotices = await GET('/api/user/notice');
+                if (res.success) {
+                    setNotices(res.notices);
+                    if (res.notices.length > 0) {
+                        setHead(res.notices[0].id);
+                    }
                 }
-            }
-        })();
-    }, [])
+            })();
+        }
+    }, [tab])
+
 
     return (
         <>
             <div className="h-full flex flex-col">
-                {isInfo ? (
+                {(tab === 0) && (
                     <div className="flex-1 grid grid-cols-3 overflow-hidden bg-gray-100"> {/* hear */}
                         <div className="col-span-2 bg-white mt-2 mx-4 rounded-lg border">
                             {(head !== 0) && (
@@ -169,14 +170,19 @@ export default function Desktop() {
                             </div>
                         </Scrollbars>
                     </div>
-                ) : (
-                    <div className="flex-1 grid grid-cols-2 overflow-hidden">
-                        <div className="overflow-hidden bg-gray-100 flex flex-col px-4 pt-4">
-                            <div className="text-center text-2xl mb-4">
-                                숙제 목록
-                            </div>
-                            <Homeworks/>
+                )}
+                {(tab === 1) && (
+                    <div className="flex-1 grid grid-cols-3 overflow-hidden bg-gray-100 px-4 gap-4 py-1">
+                        <div className="col-span-2 bg-white rounded-lg border">
+                            {(head !== 0) && (
+                                <Notice id={head}/>
+                            )}
                         </div>
+                        <Homeworks setHeadAction={setHead}/>
+                    </div>
+                )}
+                {(tab === 2) && (
+                    <div className="flex-1 grid grid-cols-2 overflow-hidden">
                         <div className="overflow-hidden pt-4 px-4 bg-gray-100 flex flex-col">
                             <div className="text-center text-2xl mb-4">
                                 내 할일 목록
@@ -188,35 +194,47 @@ export default function Desktop() {
                     <div></div>
 
                     <div className="flex justify-center">
-                        <div className="p-0 rounded-2xl shadow-2xl pointer-events-auto grid grid-cols-2 component-form">
+                        <div className="p-0 rounded-2xl shadow-2xl pointer-events-auto grid grid-cols-3 component-form">
                             <button
                                 className={cn(
                                     {
-                                        "bg-white pointer-events-none": isInfo,
-                                        "bg-gray-300 hover:bg-gray-200 transition duration-200": !isInfo,
+                                        "bg-white pointer-events-none": (tab === 0),
+                                        "bg-gray-300 hover:bg-gray-200 transition duration-200": (tab !== 0),
                                     },
                                     "h-fit rounded-l-lg text-center p-2"
                                 )}
-                                onClick={() => setIsInfo(!isInfo)}
+                                onClick={() => setTab(0)}
                             >
-                                학원 공지사항
+                                공지사항
                             </button>
                             <button
                                 className={cn(
                                     {
-                                        "bg-white pointer-events-none": !isInfo,
-                                        "bg-gray-300 hover:bg-gray-200 transition duration-200": isInfo,
+                                        "bg-white pointer-events-none": (tab === 1),
+                                        "bg-gray-300 hover:bg-gray-200 transition duration-200": (tab !== 1),
+                                    },
+                                    "h-fit text-center p-2"
+                                )}
+                                onClick={() => setTab(1)}
+                            >
+                                숙제
+                            </button>
+                            <button
+                                className={cn(
+                                    {
+                                        "bg-white pointer-events-none": (tab === 2),
+                                        "bg-gray-300 hover:bg-gray-200 transition duration-200": (tab !== 2),
                                     },
                                     "h-fit rounded-r-lg text-center p-2"
                                 )}
-                                onClick={() => setIsInfo(!isInfo)}
+                                onClick={() => setTab(2)}
                             >
                                 할 일 목록
                             </button>
                         </div>
                     </div>
 
-                    {!isInfo && (
+                    {!tab && (
                         <div className="flex justify-end">
                             <button
                                 className="bg-white hover:bg-gray-200 transition duration-200 h-fit rounded-lg text-center py-2 px-5"
