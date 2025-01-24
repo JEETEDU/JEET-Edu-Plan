@@ -43,82 +43,82 @@ interface IClassInfo {
 }
 
 const DatepickerWrapper = styled.div`
-.react-datepicker{
+    .react-datepicker {
 
-    padding : 16px 16px 0 16px;
-    
-    .react-datepicker__header {
-        background-color: #fff;
-        color: #fff;
-        border-bottom: none;
-        border-radius: 0;    
-    }
+        padding: 16px 16px 0 16px;
 
-    .react-datepicker__month-container {
-        
-        padding-bottom : 16px;
-        margin-bottom : 8px;
-
-        .react-datepicker__day-names{
-            
-            width : 280px;
-            display : flex;
-            justify-content : center;
-            align-items : center;
-            box-sizing : border-box;
-            
-            .react-datepicker__day-name{
-                display : flex;
-                width : 40px;
-                height : 40px;
-                justify-content : center;
-                align-items : center;
-            }
+        .react-datepicker__header {
+            background-color: #fff;
+            color: #fff;
+            border-bottom: none;
+            border-radius: 0;
         }
 
-        .react-datepicker__month{
-            margin : 0px;
-        }
+        .react-datepicker__month-container {
 
-        .react-datepicker__week{
+            padding-bottom: 16px;
+            margin-bottom: 8px;
 
-            width : 280px;
-            display : flex;
-            justify-content : space-around;
+            .react-datepicker__day-names {
 
-            > * {
-                display : flex;
-                width : 40px;
-                height : 40px;
-                justify-content : center;
-                align-items : center;
-                color: var(--neutral-dark-medium, #494A50);
-                text-align: center;
-
-                font-family: Inter;
-                font-size: 12px;
-                font-style: normal;
-                font-weight: 700;
-                line-height: normal;
-            }
-
-            .react-datepicker__day--selected{
-                border-radius: 20px;
-                background: var(--highlight-darkest, #006FFD);
+                width: 280px;
                 display: flex;
-                width: 40px;
-                height: 40px;
                 justify-content: center;
                 align-items: center;
-                color : #fff;
+                box-sizing: border-box;
+
+                .react-datepicker__day-name {
+                    display: flex;
+                    width: 40px;
+                    height: 40px;
+                    justify-content: center;
+                    align-items: center;
+                }
+            }
+
+            .react-datepicker__month {
+                margin: 0px;
+            }
+
+            .react-datepicker__week {
+
+                width: 280px;
+                display: flex;
+                justify-content: space-around;
+
+                > * {
+                    display: flex;
+                    width: 40px;
+                    height: 40px;
+                    justify-content: center;
+                    align-items: center;
+                    color: #494A50;
+                    text-align: center;
+
+                    font-family: Inter, serif;
+                    font-size: 12px;
+                    font-style: normal;
+                    font-weight: 700;
+                    line-height: normal;
+                }
+
+                .react-datepicker__day--selected {
+                    border-radius: 20px;
+                    background: #006FFD;
+                    display: flex;
+                    width: 40px;
+                    height: 40px;
+                    justify-content: center;
+                    align-items: center;
+                    color: #fff;
+                }
             }
         }
-}
 
-.react-datepicker__children-container{
-    width : 300px;
+        .react-datepicker__children-container {
+            width: 300px;
+        }
     }
-}
 `
 
 export default function Homeworks({isMobile = false}: { isMobile?: boolean }) {

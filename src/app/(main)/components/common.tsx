@@ -8,9 +8,6 @@ import Select from "react-select";
 import Scrollbars from "react-custom-scrollbars-2";
 
 export function Alert({path, isMobile}: { path: string, isMobile: boolean }) {
-    if (path === "/") {
-        return <></>
-    }
     const [isModalOpen, setModalOpen] = useState<boolean>(false);
     const toggleModal = () => setModalOpen((prev) => !prev);
     const [getOnlyUnread, setGetOnlyUnread] = useState<boolean>(true);
@@ -116,7 +113,7 @@ export function Alert({path, isMobile}: { path: string, isMobile: boolean }) {
         </button>
     }
 
-    return (
+    return (path === '/') ? <></> : (
         <div className="flex items-center">
             <button
                 onClick={toggleModal}
@@ -215,10 +212,10 @@ export function Alert({path, isMobile}: { path: string, isMobile: boolean }) {
 export function TimeInput(
     {
         date, keyName, dateAction,
-        className, onChange = () => null, selectorPointerEventsNone = false
+        className, onChangeAction = () => null, selectorPointerEventsNone = false
     }: {
         date: { success: boolean; sleep: Date; wakeup: Date }; keyName: "sleep" | "wakeup"; dateAction?: (t: { success: boolean; sleep: Date; wakeup: Date }) => void;
-        className: string; onChange?: () => void; selectorPointerEventsNone?: boolean;
+        className: string; onChangeAction?: () => void; selectorPointerEventsNone?: boolean;
     }
 ) {
     return (
@@ -241,12 +238,14 @@ export function TimeInput(
                     ))}
                     required
                     onChange={(e) => {
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-expect-error
                         dateAction((t) => {
                             const obj = {...t};
-                            obj[keyName].setHours(Number(e.value));
+                            obj[keyName].setHours(Number(e ? e.value : 12));
                             return obj;
                         })
-                        onChange();
+                        onChangeAction();
                     }}
                     value={date.success ? {
                         value: date[keyName].getHours().toString().padStart(2, "0"),
@@ -274,12 +273,14 @@ export function TimeInput(
                     ))}
                     required
                     onChange={(e) => {
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-expect-error
                         dateAction((t) => {
                             const obj = {...t};
-                            obj[keyName].setMinutes(Number(e.value));
+                            obj[keyName].setMinutes(Number(e ? e.value : 0));
                             return obj;
                         })
-                        onChange();
+                        onChangeAction();
                     }}
                     value={date.success ? {
                         value: date[keyName].getMinutes().toString().padStart(2, "0"),
@@ -299,7 +300,6 @@ export function TodayQuestion({device}: { device: string }) {
     const path = usePathname();
     const [answered, setAnswered] = useState(false);
     const [showQuestion, setShowQuestion] = useState(false);
-    const [questionOK, setQuestionOK] = useState(false);
     const [userType, setUserType] = useState(0);
 
     const [qList, setQList] = useState({})
@@ -326,11 +326,8 @@ export function TodayQuestion({device}: { device: string }) {
                 }
 
                 if (questions.response.success) {
-                    setQuestionOK(true);
                     setQList(questions.response.answers[0].questions);
                     setAnswered((questions.response.answers[0].answers.answer_1 !== null));
-                } else {
-                    setQuestionOK(false);
                 }
             }
 
@@ -385,7 +382,7 @@ export function TodayQuestion({device}: { device: string }) {
 
     return (<>
         {/*  */}
-        {(!answered && userType === 1 && questionOK) && (
+        {(!answered && userType === 1) && (
             <div className="fixed inset-0 flex items-end justify-end z-50 pointer-events-none">
                 <button
                     className={cn(
@@ -427,7 +424,7 @@ export function TodayQuestion({device}: { device: string }) {
                                 date={timeData}
                                 dateAction={setTimeData}
                                 keyName={"sleep"}
-                                onChange={() => setError("")}
+                                onChangeAction={() => setError("")}
                             />
                         </div>
 
@@ -444,12 +441,48 @@ export function TodayQuestion({device}: { device: string }) {
                                 date={timeData}
                                 dateAction={setTimeData}
                                 keyName={"wakeup"}
-                                onChange={() => setError("")}
+                                onChangeAction={() => setError("")}
                             />
                         </div>
                     </div>
 
                     <div className="space-y-4">
+                        <div>
+                            <label htmlFor="name" className="component-button-info">
+                                오늘의 학원 과제는?
+                            </label>
+                            <TextareaAutosize
+                                id="a"
+                                className="component-input resize-none"
+                                placeholder={"몰라요"}
+                                required
+                                onChange={() => setError("")}
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="name" className="component-button-info">
+                                어젯밤 공부한 내용은?
+                            </label>
+                            <TextareaAutosize
+                                id="y"
+                                className="component-input resize-none"
+                                placeholder={"몰라요"}
+                                required
+                                onChange={() => setError("")}
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="name" className="component-button-info">
+                                오늘의 학교 과제는?
+                            </label>
+                            <TextareaAutosize
+                                id="s"
+                                className="component-input resize-none"
+                                placeholder={"몰라요"}
+                                required
+                                onChange={() => setError("")}
+                            />
+                        </div>
                         {Object.entries(qList).map(([key, value]) => {
                             if (value !== null) {
                                 return (
@@ -469,45 +502,6 @@ export function TodayQuestion({device}: { device: string }) {
                                 );
                             }
                         })}
-
-                        <div>
-                            <label htmlFor="name" className="component-button-info">
-                                오늘의 학원 과제는?
-                            </label>
-                            <TextareaAutosize
-                                id="a"
-                                className="component-input resize-none"
-                                placeholder={"몰라요"}
-                                required
-                                onChange={() => setError("")}
-                            />
-                        </div>
-
-                        <div>
-                            <label htmlFor="name" className="component-button-info">
-                                어젯밤 공부한 내용은?
-                            </label>
-                            <TextareaAutosize
-                                id="y"
-                                className="component-input resize-none"
-                                placeholder={"몰라요"}
-                                required
-                                onChange={() => setError("")}
-                            />
-                        </div>
-
-                        <div>
-                            <label htmlFor="name" className="component-button-info">
-                                오늘의 학교 과제는?
-                            </label>
-                            <TextareaAutosize
-                                id="s"
-                                className="component-input resize-none"
-                                placeholder={"몰라요"}
-                                required
-                                onChange={() => setError("")}
-                            />
-                        </div>
                     </div>
                     <div className="flex flex-col items-center space-y-4">
                         <div className="text-red-600 font-bold">
