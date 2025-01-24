@@ -39,7 +39,7 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *                 success:
  *                   type: boolean
  *                   example: true
- *                 class:
+ *                 class_:
  *                   type: object
  *                   properties:
  *                     id:
@@ -59,6 +59,11 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *                           name:
  *                             type: string
  *                             example: "Algebra"
+ *                           teachers:
+ *                             type: array
+ *                             items:
+ *                               type: integer
+ *                               example: 1
  *                     students:
  *                       type: array
  *                       items:
@@ -99,18 +104,6 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *                           name:
  *                             type: string
  *                             example: "Jane Smith"
- *                           first_year:
- *                             type: integer
- *                             example: 2018(only for teacher)
- *                           school:
- *                             type: string
- *                             example: "Greenwood High(only for teacher)"
- *                           joined_term:
- *                             type: string
- *                             example: "Fall(only for teacher)"
- *                           login_id:
- *                             type: string
- *                             example: "janesmith789(only for admin)"
  *                           subject:
  *                             type: object
  *                             properties:
@@ -119,56 +112,12 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *                                     example: 1
  *       400:
  *         description: Class not found or missing parameters.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Class not found"
  *       401:
  *         description: User not logged in or unauthorized.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Not logged in"
  *       403:
  *         description: Permission denied.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Permission denied"
  *       500:
  *         description: Server error.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Internal Server Error"
  */
 export async function GET(req: NextRequest, {params}: {params: Promise<{class_id: number}> }): Promise<NextResponse> {
     try {
@@ -255,36 +204,44 @@ export async function GET(req: NextRequest, {params}: {params: Promise<{class_id
                 eq(schema.subjects.class_id, class_id)
             );
 
-        const class_info = {
-            id: class_.id,
-            name: class_.name,
-            description: class_.description,
-            display: class_.display,
-            students: students,
-            subjects: subjects.reduce((acc: any, row: any) => {
-                let subject = acc.find((subject: any) => subject.id == row.id);
-                if (!subject) {
-                    subject = {
-                        id: row.id,
-                        name: row.name,
-                        teachers: []
-                    }
-                    acc.push(subject);
-                }
-                if (row.user_id) {
-                    subject.teachers.push({
-                        uid: row.user_id,
-                        user_type: row.user_type,
-                        name: row.user_name
-                    });
-                }
-                return acc;
-                }, [])
-        }
-
         return NextResponse.json({
             success: true,
-            class: class_info
+            class_: {
+                id: class_.id,
+                name: class_.name,
+                description: class_.description,
+                display: class_.display,
+                students: students,
+                ...(
+                    subjects.reduce((acc: any, row: any) => {
+                        let subject = acc.subjects.find((subject: any) => subject.id == row.id);
+                        let teacher = acc.teachers.find((teacher: any) => teacher.uid == row.user_id);
+                        if (!subject) {
+                            subject = {
+                                id: row.id,
+                                name: row.name,
+                                teachers: []
+                            }
+                            acc.subjects.push(subject);
+                        }
+                        if (row.user_id && !teacher) {
+                            teacher = {
+                                uid: row.user_id,
+                                user_type: row.user_type,
+                                name: row.user_name,
+                                subjects: []
+                            }
+                            acc.teachers.push(teacher);
+                        }
+                        if (row.user_id) subject.teachers.push(row.user_id);
+                        if (row.subject_id) teacher.subjects.push(row.subject_id);
+                        return acc;
+                    }, {
+                        subjects: [],
+                        teachers: []
+                    })
+                )
+            }
         });
     } catch (e) {
         console.error(e);
