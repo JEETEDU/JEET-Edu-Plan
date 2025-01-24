@@ -448,13 +448,18 @@ export default function ClassSetting() {
                         <div className="text-2xl text-gray-800 font-semibold">
                             유저 목록
                         </div>
-                        <JoinUserClass text="유저 추가하기" className="bg-blue-500 hover:bg-blue-600 py-1 px-2 rounded font-bold text-white"/>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="flex flex-col items-start w-full justify-start gap-1">
-                            <label className="text-lg flex items-center justify-center font-bold">
-                                학생
-                            </label>
+                            <div className="flex w-full justify-between">
+                                <label className="text-lg flex items-center justify-center font-bold">
+                                    학생
+                                </label>
+                                <JoinUserClass
+                                    text="유저 추가하기"
+                                    className="bg-blue-500 hover:bg-blue-600 py-1 px-2 rounded font-bold text-sm text-white"
+                                />
+                            </div>
                             {selectedClass.students.map((s) => {
                                 return (
                                     <div

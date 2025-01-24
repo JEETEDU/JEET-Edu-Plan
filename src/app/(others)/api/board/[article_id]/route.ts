@@ -195,7 +195,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ arti
                 attach_files_exist: article.attach_files_exist,
                 attach_files: article.attach_files,
                 category: article.category,
-                notice: article.notice,
+                is_notice: article.notice,
                 due_date: article.due_date,
                 comment_count: article.comment_count,
                 user: {

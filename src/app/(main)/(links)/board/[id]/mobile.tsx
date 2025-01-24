@@ -51,7 +51,7 @@ export default function Chatting({id}: { id: number }) {
     }, [editComment]);
 
     useEffect(() => {
-        scrollbars.current!.scrollToBottom();
+        if (screen < 2) scrollbars.current!.scrollToBottom();
     }, [comments.length]);
 
     useEffect(() => {
@@ -127,7 +127,6 @@ export default function Chatting({id}: { id: number }) {
             <div className={cn(
                 "bg-white flex flex-col shadow rounded-lg w-full p-4",
                 {"h-full": screen === 2},
-                // {"max-h-1/4": screen < 2}
             )}>
                 <div className="flex items-start justify-between gap-2">
                     <h2 className="text-xl font-bold text-gray-800 mb-2 break-all">
@@ -200,11 +199,22 @@ export default function Chatting({id}: { id: number }) {
                             </div>
                         </Scrollbars>
                         <div className="flex items-center justify-between text-sm text-gray-500 mt-4 gap-2">
+                            {(selectedArticle.is_notice === 1) && (
+                                <div className="flex flex-col border-2 border-blue-500 p-1 rounded justify-center items-end text-black">
+                                    공지
+                                </div>
+                            )}
                             <Category category={selectedArticle.category}/>
                             <Subject subject={selectedArticle.subject.name || ""}/>
                             <div className="flex gap-4 flex-1 justify-end">
-                                <span>댓글: {comments.length}</span>
-                                {/*<span>마감일: {selectedArticle.due_date}</span>*/}
+                                {(selectedArticle.category === 1) && (
+                                    <div>
+                                        마감일: {(new Date(selectedArticle.due_date || "")).toLocaleDateString()}
+                                    </div>
+                                )}
+                                <div>
+                                    댓글: {comments.length}
+                                </div>
                             </div>
                         </div>
                     </>

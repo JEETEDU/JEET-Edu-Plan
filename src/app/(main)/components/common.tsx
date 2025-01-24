@@ -383,7 +383,7 @@ export function TodayQuestion({device}: { device: string }) {
     return (<>
         {/*  */}
         {(!answered && userType === 1) && (
-            <div className="fixed inset-0 flex items-end justify-end z-50 pointer-events-none">
+            <div className="fixed inset-0 flex items-end justify-end z-5 pointer-events-none">
                 <button
                     className={cn(
                         "py-2 px-2 rounded bg-blue-500 hover:shadow-2xl hover:bg-blue-600 border border-blueGray pointer-events-auto text-white font-bold",

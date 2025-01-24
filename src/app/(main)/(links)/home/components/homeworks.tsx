@@ -156,7 +156,6 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
     const [done, setDone] = useState<{ value: string, label: string }>({value: "0", label: "남은 숙제"});
     const [class_, setClass] = useState<{ value: string, label: string }>({value: "", label: "전체 반"});
     const [subject, setSubject] = useState<{ value: string, label: string }>({value: "", label: "전체 과목"});
-    const [limit, setLimit] = useState<number>(10);
     const today = new Date();
     const [startDueDate, setStartDueDate] = useState<Date | null>(new Date(today.getFullYear(), today.getMonth(), today.getDate()));
     const [endDueDate, setEndDueDate] = useState<Date | null>(null);
@@ -195,7 +194,6 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
 
     useEffect(() => {
         let p = ``;
-        if (limit > 0) p += `&limit=${limit}`;
         if (done.value !== "") p += `&done=${done.value}`;
         if (class_.value !== "") p += `&class_id=${class_.value}`;
         if (subject.value !== "") p += `&subject_id=${subject.value}`;
@@ -203,7 +201,7 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
         if (endDueDate !== null) p += `&end_due_date=${parseDate(endDueDate)}`;
 
         setParam(p);
-    }, [done, class_, subject, limit, startDueDate, endDueDate]);
+    }, [done, class_, subject, startDueDate, endDueDate]);
 
     useEffect(() => {
         (async () => {
@@ -307,23 +305,12 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
                             onChange={(e) => setSubject(e)}
                             isSearchable={false}
                         />
-                        <div className="flex flex-col">
-                            <div className="component-button-info">
-                                한 페이지 표시:
-                            </div>
-                            <input
-                                className="w-full py-1 text-center border-2 rounded"
-                                type="number"
-                                value={limit}
-                                onChange={(e) => setLimit(Number(e.target.value))}
-                            />
-                        </div>
                     </>)}
-                    <div className="flex flex-col col-span-2">
-                        <div className="component-button-info">
+                    <div className={cn("flex items-center", isMobile ? "flex-col col-span-2" : "grid grid-cols-3 col-span-3 gap-2")}>
+                        <div className={isMobile ? "component-button-info w-full justify-start items-end h-fit" : "flex justify-end items-center"}>
                             마감일로 검색:
                         </div>
-                        <div className="flex-1 flex flex-row justify-between gap-2 items-center">
+                        <div className={cn("w-full flex flex-row justify-between gap-2 items-center", isMobile ? "" : "col-span-2")}>
                             {(openDatePicker) && (
                                 <div
                                     className="fixed inset-0 bg-black/50 flex items-center justify-center z-60"
@@ -432,7 +419,7 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
                 ref={scrollbars}
                 onScrollStop={() => {
                     if (scrollbars.current!.getScrollHeight() - scrollbars.current!.getClientHeight() <= scrollbars.current!.getScrollTop() + 10) {
-                        if (homeworks.length === limit * page) setPage(p => p + 1);
+                        if (homeworks.length === 10 * page) setPage(p => p + 1);
                     }
                 }}
             >
@@ -509,16 +496,6 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
                     </div>
                 )}
             </Scrollbars>
-            <div className="flex flex-row justify-center items-center text-xl w-full gap-10">
-                <div
-                    className={cn((homeworks.length < limit * page) ? "text-gray" : "")}
-                    onClick={() => {
-                        if (homeworks.length === limit * page) setPage(p => p + 1);
-                    }}
-                >
-                    <div className="i-system-uicons:chevron-down-circle"/>
-                </div>
-            </div>
         </div>
     );
 }

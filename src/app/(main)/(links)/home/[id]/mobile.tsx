@@ -23,7 +23,7 @@ export default function Notice({id}: { id: number }) {
     return (
         <div className="flex flex-col gap-4 h-full w-full justify-between p-4">
             <>
-                <div className="flex flex-row gap-4 w-full justify-between items-center">
+                <div className="flex flex-row gap-4 w-full justify-between items-start">
                     <Class_ class_={selectedNotice.class_?.name || ""}/>
                     <Subject subject={selectedNotice.subject.name || ""}/>
                     <Category category={selectedNotice.category}/>
