@@ -33,9 +33,8 @@ export function IsStudent({date, isMobile,}) {
     const params = `date=${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
 
     const [answered, setAnswered] = useState(false);
-    const [questionOK, setQuestionOK] = useState(false);
 
-    const [aList, setAList] = useState([]);
+    const [aList, setAList] = useState<[string, string][]>([]);
 
     useEffect(() => {
         const _params = `date=${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -49,20 +48,17 @@ export function IsStudent({date, isMobile,}) {
             console.log(questions);
 
             if (questions.response.success) {
-                setQuestionOK(true);
                 //----------------------------------------------
-                const _q = Object.values(questions.response.answers[0].questions);
+                const _q: string[] = Object.values(questions.response.answers[0].questions);
                 const qArr = _q.concat("오늘의 학원 과제는?", "어젯밤 공부한 내용은?", "오늘의 학교 과제는?");
-                const aArr = Object.values(questions.response.answers[0].answers);
-                const qaArr: [] = qArr.map((q, i) => {
+                const aArr: string[] = Object.values(questions.response.answers[0].answers);
+                const qaArr: [string, string][] = qArr.map((q, i) => {
                     return [q || "", aArr[i]];
                 });
                 console.log(qaArr)
                 //----------------------------------------------
                 setAList(qaArr);
                 setAnswered(Boolean(questions.response.answers[0].answers.answer_1 !== null));
-            } else {
-                setQuestionOK(false);
             }
 
             let times: {
@@ -157,12 +153,12 @@ export function IsStudent({date, isMobile,}) {
                         wakeup: new Date(times.response.sleep_info.wakeup),
                     });
                 } else {
-                setTimeData({
-                    success: false,
-                    sleep: new Date(),
-                    wakeup: new Date(),
-                });
-            }
+                    setTimeData({
+                        success: false,
+                        sleep: new Date(),
+                        wakeup: new Date(),
+                    });
+                }
             }
 
             setError("");
@@ -179,7 +175,7 @@ export function IsStudent({date, isMobile,}) {
                 )}>
                     오늘의 질문 목록 {!isMobile && `(${date.toLocaleDateString()})`}
                 </div>
-                {(answered && today.getDate() === date.getDate() && questionOK) && (
+                {(answered && today.getDate() === date.getDate()) && (
                     <div className="flex items-center gap-4">
                         <div className="font-bold text-red-600 items-center">
                             {error}
@@ -203,84 +199,83 @@ export function IsStudent({date, isMobile,}) {
                 universal
                 autoHide
             >
-                <div className={cn(
-                    "flex flex-col w-full h-full items-center p-1 space-y-4"
-                )}>
-                    {questionOK ? (
-                        <>
+                {(answered) ? (
+
+                    <div className={cn(
+                        "flex flex-col w-full h-full items-center p-1 space-y-4"
+                    )}>
+                        <div className={cn(
+                            "grid w-full gap-4",
+                            isMobile ? "grid-rows-2" : "grid-cols-2"
+                        )}>
                             <div className={cn(
-                                "grid w-full gap-4",
-                                isMobile ? "grid-rows-2" : "grid-cols-2"
+                                "items-center justify-center flex",
+                                {"flex-col": !isMobile}
                             )}>
-                                <div className={cn(
-                                    "items-center justify-center flex",
-                                    {"flex-col": !isMobile}
-                                )}>
-                                    <div className="text-xl font-semibold">
-                                        취침 시간
-                                    </div>
-                                    <TimeInput
-                                        className="w-fit p-1"
-                                        date={timeData}
-                                        keyName={"sleep"}
-                                        dateAction={setTimeData}
-                                        // onChange={() => setError("")}
-                                        selectorPointerEventsNone={!editAnswer}
-                                    />
+                                <div className="text-xl font-semibold">
+                                    취침 시간
                                 </div>
-                                <div className={cn(
-                                    "items-center justify-center flex",
-                                    {"flex-col": !isMobile}
-                                )}>
-                                    <div className="text-xl font-semibold">
-                                        기상 시간
-                                    </div>
-                                    <TimeInput
-                                        className="w-fit p-1"
-                                        date={timeData}
-                                        keyName={"wakeup"}
-                                        dateAction={setTimeData}
-                                        // onChange={() => setError("")}
-                                        selectorPointerEventsNone={!editAnswer}
-                                    />
+                                <TimeInput
+                                    className="w-fit p-1"
+                                    date={timeData}
+                                    keyName={"sleep"}
+                                    dateAction={setTimeData}
+                                    // onChange={() => setError("")}
+                                    selectorPointerEventsNone={!editAnswer}
+                                />
+                            </div>
+                            <div className={cn(
+                                "items-center justify-center flex",
+                                {"flex-col": !isMobile}
+                            )}>
+                                <div className="text-xl font-semibold">
+                                    기상 시간
                                 </div>
+                                <TimeInput
+                                    className="w-fit p-1"
+                                    date={timeData}
+                                    keyName={"wakeup"}
+                                    dateAction={setTimeData}
+                                    // onChange={() => setError("")}
+                                    selectorPointerEventsNone={!editAnswer}
+                                />
                             </div>
-                            <div className="w-full space-y-4">
-                                {aList.map(([q, a], i) => {
-                                    if (q !== "") {
-                                        return <div key={i}>
-                                            <div key={i}>
-                                                <label htmlFor="name" className="component-button-info">
-                                                    {q}
-                                                </label>
-                                                <TextareaAutosize
-                                                    readOnly={!editAnswer}
-                                                    className={cn(
-                                                        "component-input resize-none",
-                                                        {'bg-white': editAnswer}
-                                                    )}
-                                                    cacheMeasurements
-                                                    value={a || ""}
-                                                    onChange={(e) => {
-                                                        setAList((prev) => {
-                                                            const _arr = [...prev];
-                                                            _arr[i] = [q, e.target.value];
-                                                            return _arr;
-                                                        });
-                                                    }}
-                                                />
-                                            </div>
-                                        </div>
-                                    }
-                                })}
-                            </div>
-                        </>
-                    ) : (
-                        <div className="flex w-full h-full justify-center items-center text-xl font-bold">
-                            질문이 등록되지 않았습니다.
                         </div>
-                    )}
-                </div>
+                        <div className="w-full space-y-4">
+                            {aList.map(([q, a], i) => {
+                                if (q !== "") {
+                                    return <div key={i}>
+                                        <div key={i}>
+                                            <label htmlFor="name" className="component-button-info">
+                                                {q}
+                                            </label>
+                                            <TextareaAutosize
+                                                readOnly={!editAnswer}
+                                                className={cn(
+                                                    "component-input resize-none",
+                                                    {'bg-white': editAnswer}
+                                                )}
+                                                cacheMeasurements
+                                                value={a || ""}
+                                                onChange={(e) => {
+                                                    setAList((prev) => {
+                                                        const _arr = [...prev];
+                                                        _arr[i] = [q, e.target.value];
+                                                        return _arr;
+                                                    });
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                }
+                            })}
+                        </div>
+                    </div>
+                ) : (
+                    <div className="flex items-center justify-center w-full h-full text-xl font-bold">
+                        아직 응답하지 않았습니다.
+                    </div>
+                )}
             </Scrollbars>
         </div>
     );
