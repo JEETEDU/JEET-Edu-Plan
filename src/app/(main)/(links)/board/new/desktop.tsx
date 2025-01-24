@@ -151,11 +151,11 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
 
     useEffect(() => {
         (async () => {
-            const res: { success: boolean; class: IClassInfo } = await GET(`/api/class/${selectedClass.split('/')[0]}`);
+            const res: { success: boolean; class_: IClassInfo } = await GET(`/api/class/${selectedClass.split('/')[0]}`);
             if (res.success) {
-                setSubjects(res.class.subjects);
-                if ((res.class.subjects.length > 0) && (!prev)) {
-                    const s = res.class.subjects[0];
+                setSubjects(res.class_.subjects);
+                if ((res.class_.subjects.length > 0) && (!prev)) {
+                    const s = res.class_.subjects[0];
                     setSelectedSubject({label: s.name, value: String(s.id)});
                 }
             }

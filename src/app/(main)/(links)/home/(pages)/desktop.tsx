@@ -140,8 +140,8 @@ export default function Desktop() {
         <>
             <div className="h-full flex flex-col">
                 {(tab === 0) && (
-                    <div className="flex-1 grid grid-cols-3 overflow-hidden bg-gray-100"> {/* hear */}
-                        <div className="col-span-2 bg-white mt-2 mx-4 rounded-lg border">
+                    <div className="flex-1 grid grid-cols-3 overflow-hidden bg-gray-100 gap-4 pl-4 pr-3"> {/* hear */}
+                        <div className="col-span-2 bg-white rounded-lg border">
                             {(head !== 0) && (
                                 <Notice id={head}/>
                             )}
@@ -158,7 +158,7 @@ export default function Desktop() {
                             universal
                             autoHide
                         >
-                            <div className="p-2 space-y-2 flex flex-col h-full">
+                            <div className=" space-y-2 flex flex-col h-full mr-1">
                                 {notices.map((notice: IArticle) => (
                                     <ArticleItem
                                         article={notice}

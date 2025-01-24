@@ -12,7 +12,7 @@ export interface IClass {
     name: string;
     display: number;
     description: string;
-    selected? : boolean;
+    selected?: boolean;
 }
 
 interface IStudent {
@@ -25,10 +25,11 @@ interface IStudent {
     login_id: string;
 }
 
-interface ITeacher extends IStudent {
-    subject: {
-        id: number;
-    };
+interface ITeacher {
+    uid: number;
+    user_type: number;
+    name: string;
+    subjects: number[];
 }
 
 interface IClassInfo {
@@ -39,6 +40,7 @@ interface IClassInfo {
     subjects: {
         id: number;
         name: string;
+        teachers: number[];
     }[];
     students: IStudent[];
     teachers: ITeacher[];
@@ -63,7 +65,14 @@ export default function ClassSetting() {
     const [focusOnSearch, setFocusOnSearch] = useState<boolean>(false);
     const [head, setHead] = useState<number>(0);
 
-    const [selectedClass, setSelectedClass] = useState<IClassInfo>({display: 1, description: "", id: 0, name: "", students: [], subjects: [], teachers: []});
+    const [selectedClass, setSelectedClass] = useState<IClassInfo>({
+        display: 1,
+        description: "",
+        id: 0, name: "",
+        students: [],
+        subjects: [],
+        teachers: []
+    });
     const [subjectList, setSubjectList] = useState<ISubjectInfo[]>([]);
 
     const [edit, setEdit] = useState<boolean>(false);
@@ -72,7 +81,6 @@ export default function ClassSetting() {
     function refreshClasses(resetHead: boolean = false) {
         (async () => {
             const res: { success: boolean; classes: IClass[] } = await GET(`/api/admin/class?name=${search}`);
-            console.log('r', res)
             if (res.success) {
                 setClassList(res.classes);
                 if (resetHead) setHead(res.classes[0].id);
@@ -86,9 +94,9 @@ export default function ClassSetting() {
 
     function refreshClass() {
         (async () => {
-            const res: { success: boolean; class: IClassInfo } = await GET(`/api/class/${head}`);
+            const res: { success: boolean; class_: IClassInfo } = await GET(`/api/class/${head}`);
             if (res.success) {
-                setSelectedClass(res.class);
+                setSelectedClass(res.class_);
             }
             const resSubject: { success: boolean; subjects: ISubjectInfo[] } = await GET(`/api/admin/class/subject?class_id=${head}`);
             if (resSubject.success) {
@@ -98,7 +106,8 @@ export default function ClassSetting() {
     }
 
     useEffect(() => {
-        refreshClass();
+        console.log(head)
+        if (head !== 0) refreshClass();
     }, [head]);
 
     const updateClassInfo = async () => {
@@ -498,32 +507,35 @@ export default function ClassSetting() {
                                 return (
                                     <div
                                         key={t.uid}
-                                        className="border-2 rounded flex w-full justify-between p-2 gap-8 cursor-pointer hover:bg-white"
+                                        className="border-2 rounded flex w-full justify-between p-2 gap-8 cursor-pointer hover:bg-white items-center"
                                     >
-                                        <div className="flex items-center gap-4">
-                                            <div>
-                                                <div className="text-xl font-bold">
-                                                    {t.name as string}
-                                                </div>
-                                                <div className="text-sm text-gray-500">
-                                                    {t.login_id as string}
-                                                </div>
+                                        <div className="flex items-center gap-2">
+                                            <div className="text-xl font-bold">
+                                                {t.name}
                                             </div>
+                                            {(t.user_type === 3) && (
+                                                <div className="text-sm text-gray-500">
+                                                    관리자
+                                                </div>
+                                            )}
                                         </div>
-                                        <button
-                                            onClick={async () => {
-                                                const res = confirm(`${t.name} 선생님을 반에서 제외하시겠습니까?`);
-                                                if (res) {
-                                                    POST('/api/admin/class/quit/teacher', {
-                                                        class_id: selectedClass.id,
-                                                        user_id: t.uid
-                                                    }).then(refreshClass);
-                                                }
-                                            }}
-                                            className="p-1 border-2 border-red rounded hover:bg-red hover:text-white duration-200"
-                                        >
-                                            <div className="i-system-uicons-exit-right"/>
-                                        </button>
+                                        <div className="flex flex-row col-span-5 gap-2 justify-end items-center">
+                                            {t.subjects.length} 개 과목
+                                            <button
+                                                onClick={async () => {
+                                                    const res = confirm(`${t.name} 선생님을 반에서 제외하시겠습니까?`);
+                                                    if (res) {
+                                                        POST('/api/admin/class/quit/teacher', {
+                                                            class_id: selectedClass.id,
+                                                            user_id: t.uid
+                                                        }).then(refreshClass);
+                                                    }
+                                                }}
+                                                className="p-1 border-2 border-red rounded hover:bg-red hover:text-white duration-200"
+                                            >
+                                                <div className="i-system-uicons-exit-right"/>
+                                            </button>
+                                        </div>
                                     </div>
                                 )
                             })}
@@ -575,51 +587,52 @@ export default function ClassSetting() {
                                     >
                                         <div className="flex items-center gap-4">
                                             <div className="text-xl font-bold whitespace-nowrap">
-                                                {s.name as string}
+                                                {s.name}
                                             </div>
                                         </div>
                                         <div className="flex flex-row col-span-5 gap-2 justify-end">
-                                            <Scrollbars
-                                                className="flex-grow h-full"
-                                                universal
-                                                autoHide
-                                                autoHeight
-                                            >
-                                                <div className="flex flex-row gap-2 items-center justify-end">
-                                                    {(s.teachers.length > 0) && s.teachers.map((t) => {
-                                                        return (
-                                                            <div
-                                                                key={t.uid * s.id}
-                                                                className="border-2 rounded flex justify-between p-2 gap-4 cursor-pointer hover:bg-white"
-                                                            >
-                                                                <div className="flex items-center gap-4">
-                                                                    <div>
-                                                                        <div className="text-lg font-bold whitespace-nowrap">
-                                                                            {t.name as string}
+                                            {(s.teachers.length > 0) && (
+                                                <Scrollbars
+                                                    className="flex-grow h-full"
+                                                    universal
+                                                    autoHide
+                                                    autoHeight
+                                                >
+                                                    <div className="flex flex-row gap-2 items-center justify-end">
+                                                        {s.teachers.map((t) => {
+                                                            return (
+                                                                <div
+                                                                    key={t.uid * s.id}
+                                                                    className="border-2 rounded flex justify-between p-2 gap-4 cursor-pointer hover:bg-white"
+                                                                >
+                                                                    <div className="flex items-center gap-4">
+                                                                        <div>
+                                                                            <div className="text-lg font-bold whitespace-nowrap">
+                                                                                {t.name}
+                                                                            </div>
                                                                         </div>
                                                                     </div>
+                                                                    <button
+                                                                        onClick={async () => {
+                                                                            const res = confirm(`${t.name} 선생님을 ${selectedClass.name} 반의 ${s.name} 과목에서 제외하시겠습니까?`);
+                                                                            if (res) {
+                                                                                POST('/api/admin/class/quit/teacher', {
+                                                                                    class_id: selectedClass.id,
+                                                                                    user_id: t.uid,
+                                                                                    subject_id: s.id
+                                                                                }).then(refreshClass);
+                                                                            }
+                                                                        }}
+                                                                        className="p-1 border-2 border-red rounded hover:bg-red hover:text-white duration-200"
+                                                                    >
+                                                                        <div className="i-system-uicons-exit-right"/>
+                                                                    </button>
                                                                 </div>
-                                                                <button
-                                                                    onClick={async () => {
-                                                                        const res = confirm(`${t.name} 선생님을 ${selectedClass.name} 반의 ${s.name} 과목에서 제외하시겠습니까?`);
-                                                                        if (res) {
-                                                                            POST('/api/admin/class/quit/teacher', {
-                                                                                class_id: selectedClass.id,
-                                                                                user_id: t.uid,
-                                                                                subject_id: s.id
-                                                                            }).then(refreshClass);
-                                                                        }
-                                                                    }}
-                                                                    className="p-1 border-2 border-red rounded hover:bg-red hover:text-white duration-200"
-                                                                >
-                                                                    <div className="i-system-uicons-exit-right"/>
-                                                                </button>
-                                                            </div>
-                                                        )
-                                                    })}
-                                                </div>
-                                            </Scrollbars>
-
+                                                            )
+                                                        })}
+                                                    </div>
+                                                </Scrollbars>
+                                            )}
                                             <button
                                                 onClick={async () => {
                                                     const res = confirm(`${s.name} 과목을 제거하시겠습니까?`);

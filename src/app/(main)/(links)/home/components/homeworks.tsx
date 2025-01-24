@@ -249,7 +249,7 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
     const router = useRouter();
 
     return (
-        <div className="flex flex-col w-full h-full gap-4">
+        <div className="flex flex-col w-full h-full gap-2">
             <div className="flex flex-col w-full gap-2">
                 <div className="grid grid-cols-3 gap-2 items-end">
                     <Select
@@ -431,7 +431,6 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
                 autoHide
                 ref={scrollbars}
                 onScrollStop={() => {
-                    // console.log(scrollbars.current!.getScrollHeight() - scrollbars.current!.getClientHeight(), scrollbars.current!.getScrollTop())
                     if (scrollbars.current!.getScrollHeight() - scrollbars.current!.getClientHeight() <= scrollbars.current!.getScrollTop() + 10) {
                         if (homeworks.length === limit * page) setPage(p => p + 1);
                     }

@@ -629,7 +629,7 @@ export function IsAdmin(
                             autoHide
                             ref={scrollbars}
                             onScrollStop={async () => {
-                                if (scrollbars.current!.getScrollHeight() - scrollbars.current!.getClientHeight() <= scrollbars.current!.getScrollTop()) {
+                                if (scrollbars.current!.getScrollHeight() - scrollbars.current!.getClientHeight() <= scrollbars.current!.getScrollTop() + 10) {
                                     (async () => {
                                         nextPage();
                                         setPage((p) => p + 1);

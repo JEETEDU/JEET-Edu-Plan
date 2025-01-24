@@ -129,18 +129,27 @@ export default function Chatting({id}: { id: number }) {
                 {"h-full": screen === 2},
                 // {"max-h-1/4": screen < 2}
             )}>
-                <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between gap-2">
                     <h2 className="text-xl font-bold text-gray-800 mb-2 break-all">
                         {selectedArticle.title || ""}
                     </h2>
                     <div className="flex gap-1 w-fit items-center">
-                        <button className="p-1 border-2 rounded" onClick={() => setScreen(0)}>
+                        <button
+                            className={cn("p-1 border-2 rounded", {"bg-gray-200": (screen === 0)})}
+                            onClick={() => setScreen(0)}
+                        >
                             <div className="i-system-uicons-scale-contract"/>
                         </button>
-                        <button className="p-1 border-2 rounded" onClick={() => setScreen(1)}>
+                        <button
+                            className={cn("p-1 border-2 rounded", {"bg-gray-200": (screen === 1)})}
+                            onClick={() => setScreen(1)}
+                        >
                             <div className="i-system-uicons-scale"/>
                         </button>
-                        <button className="p-1 border-2 rounded" onClick={() => setScreen(2)}>
+                        <button
+                            className={cn("p-1 border-2 rounded", {"bg-gray-200": (screen === 2)})}
+                            onClick={() => setScreen(2)}
+                        >
                             <div className="i-system-uicons-scale-extend"/>
                         </button>
                         {(selectedArticle.user.id === uid) && (
