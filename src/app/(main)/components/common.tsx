@@ -381,15 +381,15 @@ export function TodayQuestion({device}: { device: string }) {
     }
 
     return (<>
-        {/*  */}
-        {(!answered && userType === 1) && (
+        {/* !answered &&  */}
+        {(userType === 1) && (
             <div className="fixed inset-0 flex items-end justify-end z-50 pointer-events-none">
                 <button
                     className={cn(
-                        "p-3 rounded-2xl bg-blue-400 shadow-2xl hover:bg-blue-500 border border-blueGray pointer-events-auto",
+                        "py-2 px-2 rounded bg-blue-500 hover:shadow-2xl hover:bg-blue-600 border border-blueGray pointer-events-auto text-white font-bold",
                         (device === 'desktop') ?
                             "m-8 text-xl" :
-                            cn("mr-3", (path === '/home') ? "mb-25" : "mb-15")
+                            "mr-3 mb-15"
                     )}
                     onClick={() => {
                         setShowQuestion(!showQuestion);
@@ -404,7 +404,7 @@ export function TodayQuestion({device}: { device: string }) {
         {showQuestion && (
             <div
                 className="fixed inset-0 bg-black/50 flex items-center justify-center z-60"
-                onClick={() => setShowQuestion(!showQuestion)} // 모달 바깥 클릭 시 닫힘
+                onClick={() => setShowQuestion(p => !p)} // 모달 바깥 클릭 시 닫힘
             >
                 <div
                     className="bg-white rounded-lg shadow-lg p-6 space-y-4 overflow-y-auto w-9/10 h-9/10 flex flex-col justify-between"
@@ -507,23 +507,31 @@ export function TodayQuestion({device}: { device: string }) {
                         <div className="text-red-600 font-bold">
                             {error}
                         </div>
-                        <button
-                            className="component-button"
-                            onClick={() => {
-                                register().then(r => {
-                                    if (r) {
-                                        setAnswered(!answered);
-                                        setShowQuestion(!showQuestion);
-                                    } else {
-                                        setError("정확한 정보를 입력해 주세요");
-                                    }
-                                    // console.log(r);
-                                    // console.log(answered)
-                                });
-                            }}
-                        >
-                            제출하기
-                        </button>
+                        <div className="w-full grid grid-cols-2 gap-4">
+                            <button
+                                className="component-button bg-red-500 hover:bg-red-600"
+                                onClick={() => setShowQuestion(p => !p)}
+                            >
+                                취소 (닫기)
+                            </button>
+                            <button
+                                className="component-button"
+                                onClick={() => {
+                                    register().then(r => {
+                                        if (r) {
+                                            setAnswered(!answered);
+                                            setShowQuestion(!showQuestion);
+                                        } else {
+                                            setError("정확한 정보를 입력해 주세요");
+                                        }
+                                        // console.log(r);
+                                        // console.log(answered)
+                                    });
+                                }}
+                            >
+                                제출하기
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
