@@ -23,6 +23,7 @@ export default function Body({children}: Readonly<{ children: React.ReactNode; }
         overflow: "hidden",
         touchAction: "none",
         position: "fixed",
+        backgroundColor: "rgb(243 244 246 / 1)"
     }}>
     {children}
     </body>

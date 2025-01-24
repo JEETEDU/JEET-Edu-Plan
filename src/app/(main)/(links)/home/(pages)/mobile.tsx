@@ -73,7 +73,7 @@ export default function Mobile() {
                         universal
                         autoHide
                     >
-                        <div className="p-2 space-y-2 flex flex-col h-full">
+                        <div className="p-2 space-y-2 flex flex-col">
                             {notices.map((notice) => (
                                 <Link
                                     key={notice.id}
@@ -90,8 +90,8 @@ export default function Mobile() {
                                     <div className="flex items-center justify-between gap-2">
                                         <Category category={notice.category}/>
                                         <Subject subject={notice.subject.name}/>
-                                        <p className="ml-3 text-gray-500 flex-1 flex justify-end">
-                                            여기엔 뭐넣지
+                                        <p className="ml-3 text-black flex-1 flex justify-end">
+                                            {notice.user.name} 선생님
                                         </p>
                                     </div>
                                 </Link>
