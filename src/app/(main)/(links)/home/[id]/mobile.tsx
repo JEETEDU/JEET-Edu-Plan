@@ -62,7 +62,7 @@ export default function Notice({id}: { id: number }) {
                 <Hr/>
                 <div className="flex flex-row gap-4 w-full justify-between items-center">
                     <Link
-                        className="p-1 rounded border-2 font-bold text-lg bg-blue-500 text-white border-blue-500"
+                        className="py-1 px-2 rounded font-bold text-lg bg-blue-500 text-white hover:bg-blue-600"
                         href={`/board/${selectedNotice.id}`}
                     >
                         게시물 바로가기
