@@ -234,30 +234,23 @@ export async function GET(req: NextRequest, {params}: {params: Promise<{class_id
             }
         }
 
-        const teachers = await db.select({
-            ...user_select_columns,
-            subject: {
-                id: schema.subjects.id
-            }
-        })
-            .from(schema.users)
-            .leftJoin(
-                schema.teacherClasses,
-                eq(schema.teacherClasses.user_id, schema.users.uid)
-            )
-            .leftJoin(
-                schema.subjects,
-                eq(schema.subjects.id, schema.teacherClasses.subject_id)
-            )
-            .where(
-                eq(schema.teacherClasses.class_id, class_id)
-            );
-
         const subjects = await db.select({
             id: schema.subjects.id,
-            name: schema.subjects.name
+            name: schema.subjects.name,
+            user_id: schema.teacherClasses.user_id,
+            user_type: schema.users.user_type,
+            user_name: schema.users.name,
+            subject_id: schema.teacherClasses.subject_id
         })
             .from(schema.subjects)
+            .leftJoin(
+                schema.teacherClasses,
+                eq(schema.teacherClasses.subject_id, schema.subjects.id)
+            )
+            .leftJoin(
+                schema.users,
+                eq(schema.users.uid, schema.teacherClasses.user_id)
+            )
             .where(
                 eq(schema.subjects.class_id, class_id)
             );
@@ -268,8 +261,25 @@ export async function GET(req: NextRequest, {params}: {params: Promise<{class_id
             description: class_.description,
             display: class_.display,
             students: students,
-            teachers: teachers,
-            subjects: subjects
+            subjects: subjects.reduce((acc: any, row: any) => {
+                let subject = acc.find((subject: any) => subject.id == row.id);
+                if (!subject) {
+                    subject = {
+                        id: row.id,
+                        name: row.name,
+                        teachers: []
+                    }
+                    acc.push(subject);
+                }
+                if (row.user_id) {
+                    subject.teachers.push({
+                        uid: row.user_id,
+                        user_type: row.user_type,
+                        name: row.user_name
+                    });
+                }
+                return acc;
+                }, [])
         }
 
         return NextResponse.json({

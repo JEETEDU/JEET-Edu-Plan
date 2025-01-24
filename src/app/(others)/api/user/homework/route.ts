@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server';
 import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
-import {and, eq, gte, lte, SQL, sql} from 'drizzle-orm';
+import {and, desc, eq, gte, lte, SQL, sql} from 'drizzle-orm';
 import {
     check_date_string,
     return_400,
@@ -182,7 +182,7 @@ export async function GET(req: NextRequest) {
         if(class_id) where_clause = and(where_clause, eq(schema.homeworks.class_id, class_id));
         if(subject_id) where_clause = and(where_clause, eq(schema.homeworks.subject_id, subject_id));
         query = query.where(where_clause).limit(limit).offset((page - 1) * limit)
-            .orderBy(schema.homeworks.due_date, 'DESC');
+            .orderBy(desc(schema.homeworks.due_date));
 
         const [homeworks] = await db.execute(query);
 
