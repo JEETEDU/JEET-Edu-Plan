@@ -92,6 +92,10 @@ export const boards = mysqlTable('board', {
 export const studentClasses = mysqlTable('student_class', {
     user_id: int().notNull().references(() => users.uid, { onDelete: 'cascade' }),
     class_id: int().notNull().references(() => classes.id, { onDelete: 'cascade' }),
+}, (table) => {
+    return {
+        pk: primaryKey(table.user_id, table.class_id)
+    };
 });
 
 // Homework table
