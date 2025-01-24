@@ -49,7 +49,6 @@ export default function Desktop() {
     const [page, setPage] = useState<number>(1);
 
     const [articles, setArticles] = useState<IArticle[]>([]);
-    const [limit, setLimit] = useState<number>(10);
 
     interface IClass {
         id: number;
@@ -83,18 +82,23 @@ export default function Desktop() {
 
     function reload(append: boolean = false) {
         (async () => {
-            const a = await loadArticle(selectedClass);
+            const a = await loadArticle(selectedClass, page);
             if (append) {
                 setArticles(prev => [...prev, ...a]);
-            }
-            setArticles(a);
-            if (a[0]) {
-                setHead(a[0].id || 0);
             } else {
-                setHead(0);
+                setArticles(a);
+                if (a[0]) {
+                    setHead(a[0].id || 0);
+                } else {
+                    setHead(0);
+                }
             }
         })();
     }
+
+    useEffect(() => {
+        if (page !== 1) reload(true);
+    }, [page]);
 
     useEffect(() => {
         reload();
@@ -122,9 +126,9 @@ export default function Desktop() {
                             universal
                             autoHide
                             ref={scrollbars}
-                            onScrollStop={() => {
+                            onScroll={() => {
                                 if (scrollbars.current!.getScrollHeight() - scrollbars.current!.getClientHeight() <= scrollbars.current!.getScrollTop() + 10) {
-                                    if (articles.length === limit * page) setPage(p => p + 1);
+                                    if (articles.length === 10 * page) setPage(p => p + 1);
                                 }
                             }}
                         >
@@ -139,16 +143,6 @@ export default function Desktop() {
                                 ))}
                             </div>
                         </Scrollbars>
-                        <div className="flex flex-row justify-center items-center text-xl w-full gap-10">
-                            <div
-                                className={cn((articles.length < limit * page) ? "text-gray" : "")}
-                                onClick={() => {
-                                    if (articles.length === limit * page) setPage(p => p + 1);
-                                }}
-                            >
-                                <div className="i-system-uicons:chevron-down-circle"/>
-                            </div>
-                        </div>
                     </div>
                 </div>
 

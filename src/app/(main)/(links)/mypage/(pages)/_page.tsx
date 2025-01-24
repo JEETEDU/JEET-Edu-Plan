@@ -220,13 +220,7 @@ export default function Page({isMobile}: { isMobile: boolean }) {
                             />
                         </div>
                     )}
-                    <div className="w-full h-full flex flex-col">
-                        {/*<div className="flex flex-row gap-2">*/}
-                        {/*    {(userType >= 2) && (*/}
-                        {/*        */}
-                        {/*    )}*/}
-                        {/*</div>*/}
-
+                    <div className="w-full h-full flex flex-col justify-center items-center">
                         {(userType === 1) && (
                             <IsStudent
                                 date={calendarValue}

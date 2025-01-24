@@ -1,11 +1,11 @@
 "use client";
 
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {cn, GET} from "@/app/(main)/components/functions";
 import Link from "next/link";
 import {IArticle, initArticle, loadArticleInfo} from "@/app/(main)/(links)/board/component";
 import Scrollbars from "react-custom-scrollbars-2";
-import {Author, Category, Class_, Delete, Hr, Subject, Time, Title, Update} from "@/app/(main)/(links)/home/(pages)/desktop";
+import {Author, Category, Class_, Delete, Hr, IResponseNotices, Subject, Time, Title, Update} from "@/app/(main)/(links)/home/(pages)/desktop";
 import Homeworks from "@/app/(main)/(links)/home/components/homeworks";
 
 // 더 할 작업
@@ -15,22 +15,36 @@ import Homeworks from "@/app/(main)/(links)/home/components/homeworks";
 
 export default function Mobile() {
     const [tab, setTab] = useState<number>(0);
-
     const [notices, setNotices] = useState<IArticle[]>([]);
+    const [page, setPage] = useState<number>(1);
 
-    useEffect(() => {
-        interface IResponseNotices {
-            success: boolean;
-            notices: IArticle[];
-        }
-
+    function reload(append: boolean = false) {
         (async () => {
-            const resClass: IResponseNotices = await GET('/api/user/notice');
-            if (resClass.success) {
-                setNotices(resClass.notices);
+            const res: IResponseNotices = await GET(`/api/user/notice?page=${page}`);
+            if (res.success) {
+                if (append) {
+                    setNotices(prev => [...prev, ...(res.notices)]);
+                } else {
+                    setNotices(res.notices);
+                }
+            } else {
+                setNotices([]);
             }
         })();
-    }, [])
+    }
+
+    useEffect(() => {
+        if (tab === 0) {
+            setPage(1);
+            reload();
+        }
+    }, [tab])
+
+    useEffect(() => {
+        if (page > 1) reload(true);
+    }, [page]);
+
+    const scrollbars = useRef<Scrollbars>(null);
 
     return (
         <div className="flex flex-col h-full">
@@ -72,19 +86,34 @@ export default function Mobile() {
                         className="w-full h-full" // bg-gray-100
                         universal
                         autoHide
+                        ref={scrollbars}
+                        onScroll={() => {
+                            if (scrollbars.current!.getScrollHeight() - scrollbars.current!.getClientHeight() <= scrollbars.current!.getScrollTop() + 10) {
+                                if (notices.length === 10 * page) {
+                                    setPage(p => p + 1);
+                                }
+                            }
+                        }}
                     >
                         <div className="p-2 space-y-2 flex flex-col">
                             {notices.map((notice) => (
                                 <Link
                                     key={notice.id}
-                                    className="p-4 block bg-white rounded-lg border border-gray-200 w-full"
+                                    className="p-2 block bg-white rounded border border-gray-200 w-full gap-2"
                                     href={`/home/${notice.id}`}
                                 >
-                                    <div className={cn(
-                                        "flex justify-between items-center",
-                                    )}>
-                                        <span className="font-semibold text-gray-800 text-lg">{notice.title}</span>
-                                        <span className="text-sm text-gray-500">{(new Date(notice.update_time)).toLocaleString()}</span>
+                                    <div className="flex justify-between items-center gap-2">
+                                        <div className="font-semibold text-gray-800 text-lg whitespace-nowrap truncate">
+                                            {notice.title}
+                                        </div>
+                                        <div className="flex flex-col items-end">
+                                            <div className="text-sm text-gray-500 whitespace-nowrap">
+                                                {(new Date(notice.update_time)).toLocaleDateString()}
+                                            </div>
+                                            <div className="text-sm text-gray-500 whitespace-nowrap">
+                                                {(new Date(notice.update_time)).toLocaleTimeString()}
+                                            </div>
+                                        </div>
                                     </div>
                                     <hr className="my-2 border-gray-300"/>
                                     <div className="flex items-center justify-between gap-2">
@@ -106,7 +135,7 @@ export default function Mobile() {
                 )}
                 {(tab === 1) && (
                     <div className="p-2 w-full h-full">
-                        <Homeworks isMobile={true} />
+                        <Homeworks isMobile={true}/>
                     </div>
                 )}
             </div>

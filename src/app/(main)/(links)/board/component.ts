@@ -9,7 +9,7 @@ export interface IArticle {
     attach_files_exist: number;
     attach_files?: { name: string; path: string; }[];
     category: number;
-    notice: number;
+    is_notice: number;
     due_date: string | null;
     comment_count: number;
     user: {
@@ -37,7 +37,7 @@ export const initArticle: IArticle = {
     create_time: "",
     due_date: null,
     id: 0,
-    notice: 0,
+    is_notice: 0,
     subject: {
         id: null,
         name: null
@@ -56,14 +56,14 @@ export const initArticle: IArticle = {
     }
 }
 
-export async function loadArticle(selectedClass: string): Promise<IArticle[]> {
+export async function loadArticle(selectedClass: string, page: number = 1): Promise<IArticle[]> {
     interface IResponseArticles {
         success: boolean;
         articles: IArticle[];
     }
 
     if (selectedClass) {
-        const resArticle: IResponseArticles = await GET(`/api/board?class_id=${selectedClass.split('/')[0]}`);
+        const resArticle: IResponseArticles = await GET(`/api/board?page=${page}&class_id=${selectedClass.split('/')[0]}`);
         if (resArticle.success) {
             return resArticle.articles;
         }

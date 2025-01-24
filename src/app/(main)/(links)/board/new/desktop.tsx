@@ -25,7 +25,7 @@ interface INewArticle {
     title: string;
     content: string;
     category: number;
-    notice: number;
+    is_notice: number;
     class_id: number;
     subject_id: number;
 }
@@ -34,7 +34,7 @@ const initContent: INewArticle = {
     category: 0,
     class_id: 0,
     content: "",
-    notice: 0,
+    is_notice: 0,
     subject_id: 0,
     title: ""
 }
@@ -111,7 +111,7 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
                 category: prev.category,
                 class_id: 1, // prev.class_.id
                 content: prev.content || "",
-                notice: prev.notice,
+                is_notice: prev.is_notice,
                 subject_id: prev.subject.id || 0,
                 title: prev.title,
             });
@@ -225,7 +225,8 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
             content: content.content,
             category: content.category,
             subject_id: content.subject_id,
-            attach_files: attachedFiles
+            attach_files: attachedFiles,
+            is_notice: content.is_notice,
         }));
         fileList.map((file: File) => {
             formData.append("files", file);
@@ -317,9 +318,9 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
                         <Select
                             className="w-full"
                             // menuPlacement="top"
-                            options={categories.filter(c => (c !== null)).map((c, i) => {
+                            options={categories.map((c, i) => {
                                 return {value: String(i), label: c}
-                            })}
+                            }).filter(c => c.label !== null)}
                             required
                             value={{value: String(content.category), label: categories[content.category]}}
                             placeholder="게시물 종류를 선택해 주세요"
@@ -362,7 +363,7 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
                                 noticeList[0]
                             ] : noticeList}
                             required
-                            value={noticeList[content.notice]}
+                            value={noticeList[content.is_notice]}
                             placeholder="과목을 선택해 주세요"
                             instanceId={1}
                             onChange={(e) => {

@@ -2,7 +2,7 @@
 
 import TextareaAutosize from "react-textarea-autosize";
 import React, {useEffect, useRef, useState} from "react";
-import {cn, getStoreData, POST, PUT} from "@/app/(main)/components/functions";
+import {cn, GET, getStoreData, POST, PUT} from "@/app/(main)/components/functions";
 import {TimeInput} from "@/app/(main)/components/common";
 import Select from "react-select";
 import Scrollbars from "react-custom-scrollbars-2";
@@ -432,10 +432,14 @@ export function IsAdmin(
 
     const nextPage = () => {
         (async () => {
-            const users: IListUser[] = (await getStoreData(`/api/admin/user?page=${page + 1}&${_param}`, 'user-list-student', true)).response.users;
-            setUserList((prev) => [...prev, ...users]);
+            const res: { success: boolean; users: IListUser[] } = await GET(`/api/admin/user?page=${page}&${_param}`);
+            if (res.success) setUserList((prev) => [...prev, ...(res.users)]);
         })();
     }
+
+    useEffect(() => {
+        if (page !== 1) nextPage();
+    }, [page]);
 
     const refreshNewUser = () => {
         (async () => {
@@ -630,11 +634,12 @@ export function IsAdmin(
                             ref={scrollbars}
                             onScrollStop={async () => {
                                 if (scrollbars.current!.getScrollHeight() - scrollbars.current!.getClientHeight() <= scrollbars.current!.getScrollTop() + 10) {
-                                    (async () => {
-                                        nextPage();
-                                        setPage((p) => p + 1);
-                                    })().then(() => {
-                                        scrollbars.current!.scrollTop(scrollbars.current!.getScrollTop() - 10);
+                                    setPage((p) => {
+                                        if (userList.length === 10 * p) {
+                                            return p + 1;
+                                        } else {
+                                            return p;
+                                        }
                                     });
                                 }
                             }}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {cn, GET, getStoreData} from "@/app/(main)/components/functions";
 import Link from "next/link";
 import {IArticle, loadArticle} from "@/app/(main)/(links)/board/component";
@@ -14,6 +14,8 @@ import Select from "react-select";
 
 export default function Mobile() {
     const [articles, setArticles] = useState<IArticle[]>([]);
+
+    const [page, setPage] = useState<number>(1);
 
     interface IClass {
         id: number;
@@ -50,12 +52,26 @@ export default function Mobile() {
         })();
     }, []);
 
-    useEffect(() => {
+    function reload(append: boolean = false) {
         (async () => {
-            const a = await loadArticle(selectedClass);
-            setArticles(a);
+            const a = await loadArticle(selectedClass, page);
+            if (append) {
+                setArticles(prev => [...prev, ...a]);
+            } else {
+                setArticles(a);
+            }
         })();
+    }
+
+    useEffect(() => {
+        reload();
     }, [selectedClass]);
+
+    useEffect(() => {
+        if (page !== 1) reload(true);
+    }, [page]);
+
+    const scrollbars = useRef<Scrollbars>(null);
 
     return (
         <div className="flex flex-col h-full bg-gray-100 gap-2">
@@ -77,26 +93,39 @@ export default function Mobile() {
                     className="w-full h-full"
                     universal
                     autoHide
+                    ref={scrollbars}
+                    onScroll={() => {
+                        if (scrollbars.current!.getScrollHeight() - scrollbars.current!.getClientHeight() <= scrollbars.current!.getScrollTop() + 10) {
+                            if (articles.length === 10 * page) setPage(p => p + 1);
+                        }
+                    }}
                 >
                     <div className="px-4">
                         {articles.map((article: IArticle) => (
                             <Link
                                 key={article.id}
-                                className="p-4 block mb-2 bg-white rounded-lg border border-gray-200 w-full"
+                                className="p-2 block mb-2 bg-white rounded border border-gray-200 w-full"
                                 href={`/board/${article.id}`}
                             >
-                                <div className={cn(
-                                    "flex justify-between items-center",
-                                )}>
-                                    <span className="font-semibold text-gray-800 text-lg">{article.title}</span>
-                                    <span className="text-sm text-gray-500">{article.update_time}</span>
+                                <div className="flex justify-between items-center gap-2">
+                                    <div className="font-semibold text-gray-800 text-lg whitespace-nowrap truncate">
+                                        {article.title}
+                                    </div>
+                                    <div className="flex flex-col items-end">
+                                        <div className="text-sm text-gray-500 whitespace-nowrap">
+                                            {article.update_time.split(' ')[0]}
+                                        </div>
+                                        <div className="text-sm text-gray-500 whitespace-nowrap">
+                                            {article.update_time.split(' ')[1]}
+                                        </div>
+                                    </div>
                                 </div>
                                 <hr className="my-2 border-gray-300"/>
                                 <div className="flex items-center justify-between gap-2">
                                     <Category category={article.category}/>
                                     <Subject subject={article.subject.name}/>
-                                    <p className="ml-3 text-gray-500 flex-1 flex justify-end">
-                                        여기엔 뭐넣지
+                                    <p className="ml-3 text-black flex-1 flex justify-end">
+                                        {article.user.name}
                                     </p>
                                 </div>
                             </Link>

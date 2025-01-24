@@ -74,7 +74,7 @@ export function Update({id}: { id: number }) {
 
 export function Title({title}: { title: string }) {
     return (
-        <div className="flex-1 text-2xl">
+        <div className="flex-1 text-2xl break-all">
             {title}
         </div>
     );
@@ -105,13 +105,13 @@ export function Hr() {
 
 export function Author({name}: { name: string }) {
     return (
-        <div className="text-black font-bold">
+        <div className="text-black font-bold py-1">
             {name} 선생님
         </div>
     )
 }
 
-interface IResponseNotices {
+export interface IResponseNotices {
     success: boolean;
     notices: IArticle[];
 }
@@ -120,21 +120,38 @@ export default function Desktop() {
     const [tab, setTab] = useState<number>(0);
     const [notices, setNotices] = useState<IArticle[]>([]);
     const [head, setHead] = useState<number>(0);
+    const [page, setPage] = useState<number>(1);
 
-    useEffect(() => {
-        if (tab === 0) {
-            (async () => {
-                const res: IResponseNotices = await GET('/api/user/notice');
-                if (res.success) {
+    function reload(append: boolean = false) {
+        (async () => {
+            const res: IResponseNotices = await GET(`/api/user/notice?page=${page}`);
+            if (res.success) {
+                if (append) {
+                    setNotices(prev => [...prev, ...(res.notices)]);
+                } else {
                     setNotices(res.notices);
                     if (res.notices.length > 0) {
                         setHead(res.notices[0].id);
                     }
                 }
-            })();
+            } else {
+                setNotices([]);
+            }
+        })();
+    }
+
+    useEffect(() => {
+        if (tab === 0) {
+            setPage(1);
+            reload();
         }
     }, [tab])
 
+    useEffect(() => {
+        if (page > 1) reload(true);
+    }, [page]);
+
+    const scrollbars = useRef<Scrollbars>(null);
 
     return (
         <>
@@ -157,8 +174,16 @@ export default function Desktop() {
                             className="w-full h-full" // bg-gray-100
                             universal
                             autoHide
+                            ref={scrollbars}
+                            onScroll={() => {
+                                if (scrollbars.current!.getScrollHeight() - scrollbars.current!.getClientHeight() <= scrollbars.current!.getScrollTop() + 10) {
+                                    if (notices.length === 10 * page) {
+                                        setPage(p => p + 1);
+                                    }
+                                }
+                            }}
                         >
-                            <div className=" space-y-2 flex flex-col h-full mr-1">
+                            <div className="space-y-2 flex flex-col mr-1 py-1">
                                 {notices.map((notice: IArticle) => (
                                     <ArticleItem
                                         article={notice}

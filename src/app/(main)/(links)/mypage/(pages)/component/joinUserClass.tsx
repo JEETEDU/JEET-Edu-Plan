@@ -1,6 +1,6 @@
 'use client';
 
-import {cn, GET, POST} from "@/app/(main)/components/functions";
+import {cn, GET, POST, PUT} from "@/app/(main)/components/functions";
 import Select from "react-select";
 import React, {useEffect, useRef, useState} from "react";
 import {IListUser} from "@/app/(main)/(links)/mypage/(pages)/common";
@@ -55,13 +55,17 @@ export default function JoinUserClass({text, className}: { text: string; classNa
 
     const nextPage = () => {
         (async () => {
-            const res: { success: boolean; users: IListUser[] } = await GET(`/api/admin/user?page=${page + 1}&${_param}`);
+            const res: { success: boolean; users: IListUser[] } = await GET(`/api/admin/user?page=${page}&${_param}`);
             if (res.success) {
                 const users: IListUser[] = res.users.filter(u => !wasUserSelected(u.uid));
                 setUserList((prev) => [...prev, ...users]);
             }
         })();
     }
+
+    useEffect(() => {
+        nextPage();
+    }, [page]);
 
     useEffect(() => {
         refreshUsers();
@@ -93,37 +97,27 @@ export default function JoinUserClass({text, className}: { text: string; classNa
         if (!res) return;
         setReg(true);
 
-        selectedUserList.map((u) => {
-            return selectedClassList.map(async (c) => {
-                if (u.user_type === 1) {
-                    const r: { success: boolean; message: string } = await POST('/api/admin/class/join/student', {
-                        class_id: c.id,
-                        user_id: u.uid,
-                    });
-                    console.log(r.success);
-                    if (!r.success) setResult((prev) => {
-                        return {success: false, count: prev.count + 1};
-                    });
-                } else {
-                    const r: { success: boolean; message: string } = await POST('/api/admin/class/join/teacher', {
-                        class_id: c.id,
-                        user_id: u.uid,
-                    });
-                    console.log(r.success);
-                    if (!r.success) setResult((prev) => {
-                        return {success: false, count: prev.count + 1};
-                    });
-                }
+        selectedClassList.map(async (c) => {
+            const r: { success: boolean; message: string } = await PUT('/api/admin/class/join/student', {
+                class_id: c.id,
+                user_id: selectedUserList.map(u => u.uid),
+            });
+            console.log(r.success);
+            if (!r.success) {
+                setResult((prev) => {
+                    return {success: false, count: prev.count + 1};
+                });
+            } else {
                 setResult((prev) => {
                     return {success: prev.success, count: prev.count + 1};
                 });
-            })
+            }
         })
     }
 
     useEffect(() => {
         console.log(result);
-        if ((result.count !== 0) && (result.count === (selectedUserList.length * selectedClassList.length))) {
+        if ((result.count !== 0) && (result.count === (selectedClassList.length))) {
             alert('등록이 완료되었습니다!');
             setReg(false);
             setShow(false);
@@ -231,11 +225,9 @@ export default function JoinUserClass({text, className}: { text: string; classNa
                                         ref={scrollUser}
                                         onScrollStop={async () => {
                                             if (scrollUser.current!.getScrollHeight() - scrollUser.current!.getClientHeight() <= scrollUser.current!.getScrollTop() + 10) {
-                                                (async () => {
-                                                    nextPage();
-                                                    setPage((p) => p + 1);
-                                                })().then(() => {
-                                                    scrollUser.current!.scrollTop(scrollUser.current!.getScrollTop() - 10);
+                                                setPage((p) => {
+                                                    if (userList.length + selectedUserList.length === p * 10) return p + 1;
+                                                    return p;
                                                 });
                                             }
                                         }}
@@ -400,16 +392,6 @@ export default function JoinUserClass({text, className}: { text: string; classNa
                                                 <Scrollbars
                                                     universal
                                                     autoHide
-                                                    onScrollStop={async () => {
-                                                        if (scrollUser.current!.getScrollHeight() - scrollUser.current!.getClientHeight() <= scrollUser.current!.getScrollTop()) {
-                                                            (async () => {
-                                                                nextPage();
-                                                                setPage((p) => p + 1);
-                                                            })().then(() => {
-                                                                scrollUser.current!.scrollTop(scrollUser.current!.getScrollTop() - 10);
-                                                            });
-                                                        }
-                                                    }}
                                                 >
                                                     <div className="flex flex-col w-full items-center space-y-2 pb-3 justify-center">
                                                         {selectedUserList.map((u) => {
