@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server';
 import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { NextResponse } from 'next/server';
-import {and, eq, gte, lte, SQL} from 'drizzle-orm';
+import {and, desc, eq, gte, lte, SQL} from 'drizzle-orm';
 import {
     check_date_string,
     return_400,
@@ -364,6 +364,7 @@ export async function GET(req: NextRequest) {
 
         let query = (new QueryBuilder())
             .select({
+                id: schema.todoes.id,
                 due_date: schema.todoes.due_date,
                 done: schema.todoes.done,
                 content: schema.todoes.content,
@@ -374,17 +375,18 @@ export async function GET(req: NextRequest) {
         if(done !== -1) where_clause = and(where_clause, eq(schema.todoes.done, done));
         if(start_due_date) where_clause = and(where_clause, gte(schema.todoes.due_date, new Date(start_due_date)));
         if(end_due_date) where_clause = and(where_clause, lte(schema.todoes.due_date, new Date(end_due_date)));
-        query = query.where(where_clause).limit(limit).offset((page - 1) * limit);
+        query = query.where(where_clause).limit(limit).offset((page - 1) * limit).orderBy(schema.todoes.due_date);
 
-        const [todoes] = await db.execute(query);
+        const [todos] = await db.execute(query);
 
         return NextResponse.json({
             success: true,
             // @ts-ignore
-            todoes: todoes?.map((h) => ({
+            todos: todos?.map((h) => ({
+                id: h.id,
                 due_date: h.due_date,
                 done: h.done,
-                contnet: h.content,
+                content: h.content,
             }))
         });
     } catch (e) {

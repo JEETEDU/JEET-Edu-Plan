@@ -17,7 +17,7 @@ interface ILesson {
     }
 }
 
-export default function JoinTeacherClass({text, className}: { text: string; className?: string }) {
+export default function TeacherClass({text, className}: { text: string; className?: string }) {
     const [show, setShow] = useState<boolean>(false);
     const [userParams, setUserParams] = useState({
         user_type: "2",

@@ -146,6 +146,112 @@ export const DatepickerWrapper = styled.div`
     }
 `
 
+export function DateRangePicker(
+    {
+        startDueDate,
+        setStartDueDateAction,
+        endDueDate,
+        setEndDueDateAction,
+        closeAction,
+        isMobile
+    }: {
+        startDueDate: Date | null;
+        setStartDueDateAction: React.Dispatch<React.SetStateAction<Date | null>>;
+        endDueDate: Date | null;
+        setEndDueDateAction: React.Dispatch<React.SetStateAction<Date | null>>;
+        closeAction: React.Dispatch<React.SetStateAction<boolean>>;
+        isMobile: boolean;
+    }
+) {
+    return (
+        <div
+            className="flex flex-col bg-gray-100 gap-4 p-4 rounded items-center"
+            onClick={(e) => e.stopPropagation()}
+        >
+            <div className="w-full flex items-center justify-center text-center text-xl font-bold">
+                {(startDueDate !== null) && ` ${startDueDate.toLocaleDateString()} `}
+                {((startDueDate !== null) || (endDueDate !== null)) && "~"}
+                {(endDueDate !== null) && ` ${endDueDate.toLocaleDateString()} `}
+                {((startDueDate === null) && (endDueDate === null)) && "전체 날짜"}
+            </div>
+            <div className={cn("flex gap-4", isMobile ? "flex-col" : "flex-row")}>
+                <DatepickerWrapper className="w-fit text-center flex gap-4 justify-center">
+                    <DatePicker
+                        className="outline-none"
+                        locale={ko}
+                        isClearable
+                        selected={startDueDate}
+                        onChange={(e) => {
+                            setStartDueDateAction(e);
+                            if ((e !== null) && (endDueDate !== null)) {
+                                if (e > endDueDate) {
+                                    setEndDueDateAction(e);
+                                }
+                            }
+                        }}
+                        dateFormat='yyyy-MM-dd'
+                        placeholderText="전체 기한"
+                        inline
+                    />
+                    {(isMobile) && (
+                        <div
+                            className="bg-green-500 px-1 text-white flex justify-center items-center rounded"
+                            onClick={() => setStartDueDateAction(null)}
+                        >
+                            <div className="i-system-uicons:cross-circle"/>
+                        </div>
+                    )}
+                </DatepickerWrapper>
+                <DatepickerWrapper className="w-fit text-center flex gap-4 justify-center">
+                    <DatePicker
+                        className="outline-none"
+                        locale={ko}
+                        isClearable
+                        selected={endDueDate}
+                        onChange={(e) => setEndDueDateAction(e)}
+                        dateFormat='yyyy-MM-dd'
+                        placeholderText="전체 기한"
+                        inline
+                        minDate={startDueDate || new Date("")}
+                    />
+                    {(isMobile) && (
+                        <div
+                            className="bg-green-500 px-1 text-white flex justify-center items-center rounded"
+                            onClick={() => setEndDueDateAction(null)}
+                        >
+                            <div className="i-system-uicons:cross-circle"/>
+                        </div>
+                    )}
+                </DatepickerWrapper>
+            </div>
+            <div className={cn("grid w-full", isMobile ? "grid-cols-2" : "grid-cols-4 gap-4")}>
+                {(!isMobile) && (
+                    <div
+                        className="flex items-center justify-center text-center bg-green-500 hover:bg-green-600 text-white py-1 rounded"
+                        onClick={() => setStartDueDateAction(null)}
+                    >
+                        시작 날짜 제거
+                    </div>
+                )}
+                <div
+                    className="col-span-2 flex items-center justify-center text-center bg-blue-500 hover:bg-blue-600 text-white py-1 rounded"
+                    onClick={() => closeAction(false)}
+                >
+                    저장하기
+                </div>
+                {(!isMobile) && (
+                    <div
+                        className="flex items-center justify-center text-center bg-green-500 hover:bg-green-600 text-white py-1 rounded"
+                        onClick={() => setEndDueDateAction(null)}
+                    >
+                        끝 날짜 제거
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
 export default function Homeworks({isMobile = false, setHeadAction = () => void null}: { isMobile?: boolean; setHeadAction?: (h: number) => void }) {
     const [homeworks, setHomeworks] = useState<IHomework[]>([]);
     const [classes, setClasses] = useState<IClass[]>([]);
@@ -182,7 +288,7 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
     useEffect(() => {
         setPage(1);
         if (param !== "") reload();
-    }, [param]);
+    }, [param,]);
 
     useEffect(() => {
         if (page > 1) reload(true);
@@ -232,7 +338,7 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
 
     useEffect(() => {
         console.log("Homeworks: ", homeworks);
-    }, [homeworks.length]);
+    }, [homeworks]);
 
     const [openDatePicker, setOpenDatePicker] = useState<boolean>(false);
 
@@ -240,7 +346,7 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
 
     useEffect(() => {
         setHeadAction(head)
-    }, [head]);
+    }, [head, setHeadAction]);
 
     const scrollbars = useRef<Scrollbars>(null);
 
@@ -264,7 +370,7 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
                         required
                         value={done}
                         instanceId={1}
-                        onChange={(e) => setDone(e)}
+                        onChange={(e) => setDone(e!)}
                         isSearchable={false}
                     />
 
@@ -284,7 +390,7 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
                             required
                             value={class_}
                             instanceId={1}
-                            onChange={(e) => setClass(e)}
+                            onChange={(e) => setClass(e!)}
                             isSearchable={false}
                         />
                         <Select
@@ -302,7 +408,7 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
                             required
                             value={subject}
                             instanceId={1}
-                            onChange={(e) => setSubject(e)}
+                            onChange={(e) => setSubject(e!)}
                             isSearchable={false}
                         />
                     </>)}
@@ -316,91 +422,14 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
                                     className="fixed inset-0 bg-black/50 flex items-center justify-center z-60"
                                     onClick={() => setOpenDatePicker(false)} // 모달 바깥 클릭 시 닫힘
                                 >
-                                    <div
-                                        className="flex flex-col bg-gray-100 gap-4 p-4 rounded items-center"
-                                        onClick={(e) => e.stopPropagation()}
-                                    >
-                                        <div className="w-full flex items-center justify-center text-center text-xl font-bold">
-                                            {(startDueDate !== null) && ` ${startDueDate.toLocaleDateString()} `}
-                                            {((startDueDate !== null) || (endDueDate !== null)) && "~"}
-                                            {(endDueDate !== null) && ` ${endDueDate.toLocaleDateString()} `}
-                                            {((startDueDate === null) && (endDueDate === null)) && "전체 날짜"}
-                                        </div>
-                                        <div className={cn("flex gap-4", isMobile ? "flex-col" : "flex-row")}>
-                                            <DatepickerWrapper className="w-fit text-center flex gap-4 justify-center">
-                                                <DatePicker
-                                                    className="outline-none"
-                                                    locale={ko}
-                                                    isClearable
-                                                    selected={startDueDate}
-                                                    onChange={(e) => {
-                                                        setStartDueDate(e);
-                                                        if ((e !== null) && (endDueDate !== null)) {
-                                                            if (e > endDueDate) {
-                                                                setEndDueDate(e);
-                                                            }
-                                                        }
-                                                    }}
-                                                    dateFormat='yyyy-MM-dd'
-                                                    placeholderText="전체 기한"
-                                                    inline
-                                                />
-                                                {(isMobile) && (
-                                                    <div
-                                                        className="bg-green-500 px-1 text-white flex justify-center items-center rounded"
-                                                        onClick={() => setStartDueDate(null)}
-                                                    >
-                                                        <div className="i-system-uicons:cross-circle"/>
-                                                    </div>
-                                                )}
-                                            </DatepickerWrapper>
-                                            <DatepickerWrapper className="w-fit text-center flex gap-4 justify-center">
-                                                <DatePicker
-                                                    className="outline-none"
-                                                    locale={ko}
-                                                    isClearable
-                                                    selected={endDueDate}
-                                                    onChange={(e) => setEndDueDate(e)}
-                                                    dateFormat='yyyy-MM-dd'
-                                                    placeholderText="전체 기한"
-                                                    inline
-                                                    minDate={startDueDate || new Date("")}
-                                                />
-                                                {(isMobile) && (
-                                                    <div
-                                                        className="bg-green-500 px-1 text-white flex justify-center items-center rounded"
-                                                        onClick={() => setEndDueDate(null)}
-                                                    >
-                                                        <div className="i-system-uicons:cross-circle"/>
-                                                    </div>
-                                                )}
-                                            </DatepickerWrapper>
-                                        </div>
-                                        <div className={cn("grid w-full", isMobile ? "grid-cols-2" : "grid-cols-4 gap-4")}>
-                                            {(!isMobile) && (
-                                                <div
-                                                    className="flex items-center justify-center text-center bg-green-500 hover:bg-green-600 text-white py-1 rounded"
-                                                    onClick={() => setStartDueDate(null)}
-                                                >
-                                                    시작 날짜 제거
-                                                </div>
-                                            )}
-                                            <div
-                                                className="col-span-2 flex items-center justify-center text-center bg-blue-500 hover:bg-blue-600 text-white py-1 rounded"
-                                                onClick={() => setOpenDatePicker(false)}
-                                            >
-                                                저장하기
-                                            </div>
-                                            {(!isMobile) && (
-                                                <div
-                                                    className="flex items-center justify-center text-center bg-green-500 hover:bg-green-600 text-white py-1 rounded"
-                                                    onClick={() => setEndDueDate(null)}
-                                                >
-                                                    끝 날짜 제거
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
+                                    <DateRangePicker
+                                        startDueDate={startDueDate}
+                                        setStartDueDateAction={setStartDueDate}
+                                        endDueDate={endDueDate}
+                                        setEndDueDateAction={setEndDueDate}
+                                        isMobile={isMobile}
+                                        closeAction={setOpenDatePicker}
+                                    />
                                 </div>
                             )}
                             <button
@@ -432,13 +461,6 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
                         <div
                             key={index}
                             className="flex flex-row w-ful w-full pr-1"
-                            onClick={() => {
-                                if (isMobile) {
-                                    router.push(`/board/${homework.article_id}`)
-                                } else {
-                                    setHead(homework.article_id)
-                                }
-                            }}
                         >
                             <div
                                 className={cn(
@@ -473,7 +495,16 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
                                     <div className="i-system-uicons:check-circle-outside"/>
                                 )}
                             </div>
-                            <div className={cn("h flex-1 border-y-2 border-r-2 rounded-r flex flex-row p-2 gap-2 hover:bg-white items-center", {"border-black": (homework.article_id === head)})}>
+                            <div
+                                className={cn("h flex-1 border-y-2 border-r-2 rounded-r flex flex-row p-2 gap-2 hover:bg-white items-center", {"border-black": (homework.article_id === head)})}
+                                onClick={() => {
+                                    if (isMobile) {
+                                        router.push(`/board/${homework.article_id}`)
+                                    } else {
+                                        setHead(homework.article_id)
+                                    }
+                                }}
+                            >
                                 <div className="text-xl font-bold flex-1">
                                     {homework.title}
                                 </div>
