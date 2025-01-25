@@ -60,6 +60,7 @@ export default function UserDetail({uid, date, refreshAction}: { uid: number, da
                 uid={uid}
                 userType={userInfo.user_type || 1}
             />
+            <Hr/>
         </div>
     );
 }

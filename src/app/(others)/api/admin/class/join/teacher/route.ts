@@ -1,7 +1,7 @@
-import type { NextRequest } from 'next/server';
-import { db } from '@/database';
+import type {NextRequest} from 'next/server';
+import {db} from '@/database';
 import * as schema from '@/database/schema';
-import { NextResponse } from 'next/server';
+import {NextResponse} from 'next/server';
 import {and, eq} from 'drizzle-orm';
 import {
     db_log,
@@ -111,8 +111,7 @@ export async function POST(req: NextRequest) {
                 if (decoded.user_type < UserType.ADMIN) { // not admin
                     return return_permission_denied();
                 }
-            }
-            else { // not logged in
+            } else { // not logged in
                 return return_not_logged_in();
             }
 
@@ -158,15 +157,19 @@ export async function POST(req: NextRequest) {
                 return return_400('Class not found');
             }
             if (class_.teacher_class) {
-                return return_400('User already joined class');
+                // return return_400('User already joined class');
+                return NextResponse.json({
+                    success: true,
+                    message: 'User already joined class'
+                });
             }
 
             const [subject] =
-                    await tx.select()
-                        .from(schema.subjects)
-                        .where(
-                            eq(schema.subjects.id, data.subject_id)
-                        );
+                await tx.select()
+                    .from(schema.subjects)
+                    .where(
+                        eq(schema.subjects.id, data.subject_id)
+                    );
 
             if (!subject) {
                 return return_400('Subject not found');

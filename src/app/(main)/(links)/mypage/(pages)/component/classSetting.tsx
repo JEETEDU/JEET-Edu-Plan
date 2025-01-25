@@ -5,7 +5,7 @@ import React, {useEffect, useState} from "react";
 import {cn, DELETE, GET, POST, PUT} from "@/app/(main)/components/functions";
 import {Hr} from "@/app/(main)/(links)/home/(pages)/desktop";
 import Select from "react-select";
-import JoinUserClass from "@/app/(main)/(links)/mypage/(pages)/component/joinUserClass";
+import StudentClass from "@/app/(main)/(links)/mypage/(pages)/component/studentClass";
 
 export interface IClass {
     id: number;
@@ -46,7 +46,7 @@ interface IClassInfo {
     teachers: ITeacher[];
 }
 
-interface ISubjectInfo {
+export interface ISubjectInfo {
     id: number;
     name: string;
     class_: {
@@ -455,8 +455,8 @@ export default function ClassSetting() {
                                 <label className="text-lg flex items-center justify-center font-bold">
                                     학생
                                 </label>
-                                <JoinUserClass
-                                    text="유저 추가하기"
+                                <StudentClass
+                                    text="학생 추가하기"
                                     className="bg-blue-500 hover:bg-blue-600 py-1 px-2 rounded font-bold text-sm text-white"
                                 />
                             </div>
