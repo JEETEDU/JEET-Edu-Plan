@@ -7,6 +7,7 @@ import {IArticle, loadArticle} from "@/app/(main)/(links)/board/component";
 import {ArticleItem} from "@/app/(main)/(links)/board/(pages)/desktop";
 import Notice from "@/app/(main)/(links)/home/[id]/mobile";
 import Homeworks from "@/app/(main)/(links)/home/components/homeworks";
+import Todo from "@/app/(main)/(links)/home/components/todo";
 
 export function Category({category}: { category: number }) {
     const text = [
@@ -214,12 +215,8 @@ export default function Desktop() {
                     </div>
                 )}
                 {(tab === 2) && (
-                    <div className="flex-1 grid grid-cols-2 overflow-hidden">
-                        <div className="overflow-hidden pt-4 px-4 bg-gray-100 flex flex-col">
-                            <div className="text-center text-2xl mb-4">
-                                내 할일 목록
-                            </div>
-                        </div>
+                    <div className="flex-1 overflow-hidden px-4 py-1">
+                        <Todo/>
                     </div>
                 )}
                 <div className="bg-gray-100 p-4 grid grid-cols-3 w-full items-center">
@@ -266,17 +263,6 @@ export default function Desktop() {
                             )}
                         </div>
                     </div>
-
-                    {(tab == 2) && (
-                        <div className="flex justify-end">
-                            <button
-                                className="bg-white hover:bg-gray-200 transition duration-200 h-fit rounded-lg text-center py-2 px-5"
-                                // onClick={}
-                            >
-                                내 할일 추가하기
-                            </button>
-                        </div>
-                    )}
                 </div>
 
             </div>

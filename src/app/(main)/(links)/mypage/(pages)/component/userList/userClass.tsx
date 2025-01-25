@@ -3,7 +3,7 @@
 import React, {useEffect, useState} from "react";
 import {GET, POST} from "@/app/(main)/components/functions";
 import StudentClass from "@/app/(main)/(links)/mypage/(pages)/component/studentClass";
-import JoinTeacherClass from "@/app/(main)/(links)/mypage/(pages)/component/teacherClass";
+import TeacherClass from "@/app/(main)/(links)/mypage/(pages)/component/teacherClass";
 
 interface IUser {
     uid: number;
@@ -73,7 +73,7 @@ export default function UserClass({uid, userType}: { uid: number; userType: numb
                             className="py-1 px-3 bg-blue-500 text-white rounded font-bold hover:bg-blue-600"
                         />
                     ) : (
-                        <JoinTeacherClass
+                        <TeacherClass
                             text='반 추가'
                             className="py-1 px-3 bg-blue-500 text-white rounded font-bold hover:bg-blue-600"
                         />

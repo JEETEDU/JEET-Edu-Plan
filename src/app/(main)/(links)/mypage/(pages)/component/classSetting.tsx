@@ -6,6 +6,7 @@ import {cn, DELETE, GET, POST, PUT} from "@/app/(main)/components/functions";
 import {Hr} from "@/app/(main)/(links)/home/(pages)/desktop";
 import Select from "react-select";
 import StudentClass from "@/app/(main)/(links)/mypage/(pages)/component/studentClass";
+import TeacherClass from "@/app/(main)/(links)/mypage/(pages)/component/teacherClass";
 
 export interface IClass {
     id: number;
@@ -505,9 +506,15 @@ export default function ClassSetting() {
                             })}
                         </div>
                         <div className="flex flex-col items-start w-full justify-start gap-1">
-                            <label className="text-lg flex items-center justify-center font-bold">
-                                선생님
-                            </label>
+                            <div className="flex w-full justify-between">
+                                <label className="text-lg flex items-center justify-center font-bold">
+                                    선생님
+                                </label>
+                                <TeacherClass
+                                    text="선생님 추가하기"
+                                    className="bg-blue-500 hover:bg-blue-600 py-1 px-2 rounded font-bold text-sm text-white"
+                                />
+                            </div>
                             {selectedClass.teachers.map((t) => {
                                 return (
                                     <div
