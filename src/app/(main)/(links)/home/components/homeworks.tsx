@@ -43,7 +43,7 @@ interface IClassInfo {
     subjects: ISubject[];
 }
 
-const DatepickerWrapper = styled.div`
+export const DatepickerWrapper = styled.div`
     .react-datepicker {
 
         padding: 10px 10px 0 10px;
@@ -345,12 +345,14 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
                                                     placeholderText="전체 기한"
                                                     inline
                                                 />
-                                                <div
-                                                    className="bg-green-500 px-1 text-white flex justify-center items-center rounded"
-                                                    onClick={() => setStartDueDate(null)}
-                                                >
-                                                    <div className="i-system-uicons:cross-circle"/>
-                                                </div>
+                                                {(isMobile) && (
+                                                    <div
+                                                        className="bg-green-500 px-1 text-white flex justify-center items-center rounded"
+                                                        onClick={() => setStartDueDate(null)}
+                                                    >
+                                                        <div className="i-system-uicons:cross-circle"/>
+                                                    </div>
+                                                )}
                                             </DatepickerWrapper>
                                             <DatepickerWrapper className="w-fit text-center flex gap-4 justify-center">
                                                 <DatePicker
@@ -364,12 +366,14 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
                                                     inline
                                                     minDate={startDueDate || new Date("")}
                                                 />
-                                                <div
-                                                    className="bg-green-500 px-1 text-white flex justify-center items-center rounded"
-                                                    onClick={() => setEndDueDate(null)}
-                                                >
-                                                    <div className="i-system-uicons:cross-circle"/>
-                                                </div>
+                                                {(isMobile) && (
+                                                    <div
+                                                        className="bg-green-500 px-1 text-white flex justify-center items-center rounded"
+                                                        onClick={() => setEndDueDate(null)}
+                                                    >
+                                                        <div className="i-system-uicons:cross-circle"/>
+                                                    </div>
+                                                )}
                                             </DatepickerWrapper>
                                         </div>
                                         <div className={cn("grid w-full", isMobile ? "grid-cols-2" : "grid-cols-4 gap-4")}>

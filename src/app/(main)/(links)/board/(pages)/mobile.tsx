@@ -85,6 +85,8 @@ export default function Mobile() {
                 value={{value: selectedClass, label: selectedClass.split('/')[1]}}
                 placeholder="반을 선택해 주세요"
                 instanceId={1}
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-expect-error
                 onChange={(e) => setSelectedClass(e.value)}
                 isSearchable={false}
             />
@@ -122,6 +124,11 @@ export default function Mobile() {
                                 </div>
                                 <hr className="my-2 border-gray-300"/>
                                 <div className="flex items-center justify-between gap-2">
+                                    {(article.is_notice === 1) && (
+                                        <div className="flex flex-col border-2 border-blue p-1 rounded justify-center items-end text-black">
+                                            공지
+                                        </div>
+                                    )}
                                     <Category category={article.category}/>
                                     <Subject subject={article.subject.name}/>
                                     <p className="ml-3 text-black flex-1 flex justify-end">
