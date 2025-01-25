@@ -34,6 +34,11 @@ export function ArticleItem({article, head = 0, setHead = null}: { article: IArt
             </div>
             <hr className="my-2 border-gray-300"/>
             <div className="flex items-center justify-start gap-2">
+                {(article.is_notice === 1) && (
+                    <div className="flex flex-col border-2 border-blue p-1 rounded justify-center items-end text-black">
+                        공지
+                    </div>
+                )}
                 <Category category={article.category}/>
                 <Subject subject={article.subject.name}/>
                 <p className="ml-3 text-black flex-1 flex justify-end">
@@ -112,7 +117,7 @@ export default function Desktop() {
                 <div className="grid grid-cols-3 overflow-hidden flex-grow gap-4 pl-4 pr-3 bg-gray-100">
                     <div className="col-span-2 flex flex-col">
                         <div className="flex-grow w-full">
-                            {(head !== 0) && <Chatting id={head}/>}
+                            {(head !== 0) && <Chatting id={head} reloadArticlesAction={reload}/>}
                             {(head === 0) && (
                                 <div className="w-full h-full bg-gray-100 flex justify-center items-center text-xl font-bold text-gray-700">
                                     게시글을 선택해 주세요

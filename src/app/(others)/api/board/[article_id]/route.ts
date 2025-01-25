@@ -46,6 +46,8 @@ import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
  *                       type: string
  *                     content:
  *                       type: string
+ *                     class_id:
+ *                       type: integer
  *                     create_time:
  *                       type: string
  *                     update_time:
@@ -137,6 +139,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ arti
         const [article] =
             await db.select({
                 id: schema.boards.id,
+                class_id: schema.boards.class_id,
                 title: schema.boards.title,
                 content: schema.boards.content,
                 create_time: schema.boards.create_time,
@@ -165,9 +168,10 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ arti
                 .leftJoin(schema.users, eq(schema.boards.user_id, schema.users.uid))
                 .leftJoin(schema.subjects, eq(schema.boards.subject_id, schema.subjects.id))
                 .where(eq(schema.boards.id, article_id));
-        if (!article) return return_400('Article not found');
+        if (!article.id) return return_400('Article not found');
         if (user_type !== UserType.ADMIN && article.user_class_count === 0) return return_permission_denied();
-        // @ts-ignore
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
         article.attach_files = article.attach_files ? JSON.parse(article.attach_files) : [];
 
         const comments = await db.select({
@@ -190,6 +194,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ arti
                 id: article.id,
                 title: article.title,
                 content: article.content,
+                class_id: article.class_id,
                 create_time: article.create_time,
                 update_time: article.update_time,
                 attach_files_exist: article.attach_files_exist,
@@ -209,7 +214,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ arti
                 }
             },
             comments: comments.map((comment) => {
-                // @ts-ignore
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-expect-error
                 comment.attach_files = comment.attach_files ? JSON.parse(comment.attach_files) : [];
                 return comment;
             })

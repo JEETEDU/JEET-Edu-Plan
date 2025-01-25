@@ -4,6 +4,7 @@ export interface IArticle {
     id: number;
     title: string;
     content?: string;
+    class_id: number;
     create_time: string;
     update_time: string;
     attach_files_exist: number;

@@ -16,7 +16,7 @@ export default function EditBoard({id}: { id: number }) {
             } = await loadArticleInfo(id);
 
             setPrevArticle(articleInfo.article);
-        })().then();
+        })();
     }, [id]);
 
     return (
