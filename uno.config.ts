@@ -31,7 +31,7 @@ export default defineConfig({
         "component-container":
             cn("flex items-center justify-center bg-gray-200 dark:bg-gray-900 text-black dark:text-white flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900"),
         "component-form":
-            cn("w-full max-w-md bg-white dark:bg-gray-800 rounded-lg p-8"),
+            cn("w-full bg-white dark:bg-gray-800 rounded-lg p-8"),
         "title-1":
             cn("text-2xl font-semibold text-center text-gray-700 dark:text-gray-200 mb-6"),
         "title-2":

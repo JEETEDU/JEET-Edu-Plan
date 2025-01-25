@@ -32,22 +32,22 @@ export function Navigation2() {
             <nav className="nav-bar">
                 <Link href="/home" className="nav-item">
                     <span className={cn("_nav-item", {"bg-white": path === '/home'})}>
-                        Home
+                        홈
                     </span>
                 </Link>
                 <Link href="/board" className="nav-item">
                     <span className={cn("_nav-item", {"bg-white": path === '/board'})}>
-                        Board
+                        게시판
                     </span>
                 </Link>
                 <Link href="/timeTable" className="nav-item">
                     <span className={cn("_nav-item", {"bg-white": path === '/timeTable'})}>
-                        Time Table
+                        시간표
                     </span>
                 </Link>
                 <Link href="/mypage" className="nav-item">
                     <span className={cn("_nav-item", {"bg-white": path === '/mypage'})}>
-                        My Page
+                        프로필
                     </span>
                 </Link>
             </nav>

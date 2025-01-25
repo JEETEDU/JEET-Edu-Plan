@@ -37,7 +37,7 @@ export default function Navigation() {
                     <div className="flex flex-1 justify-between items-center min-w-fit">
                         <Link href={"/home"} className="nav-item">
                         <span className={cn("_nav-item", {"bg-white": path === '/home'})}>
-                            공지사항
+                            홈
                         </span>
                         </Link>
                         <Link href={"/board"} className="nav-item">
