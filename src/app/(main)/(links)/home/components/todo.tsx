@@ -91,7 +91,7 @@ export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
                 <div className="grid grid-cols-3 gap-2 items-end">
                     <Select
                         // menuPlacement="top"
-                        className="text-center"
+                        className={cn("text-center", isMobile ? "text-sm" : "")}
                         components={{
                             IndicatorSeparator: () => null
                         }}
@@ -107,7 +107,7 @@ export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
                         isSearchable={false}
                     />
 
-                    <div className={cn("flex col-span-2", isMobile ? "items-start flex-col" : "gap-2 items-center flex-row")}>
+                    <div className={cn("flex flex-1 col-span-2", isMobile ? "items-start flex-col" : "gap-2 items-center flex-row")}>
                         <div className={isMobile ? "component-button-info w-full justify-start items-end h-fit" : "flex justify-end items-center"}>
                             마감일로 검색:
                         </div>
@@ -151,24 +151,26 @@ export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
                                     open: false
                                 });
                             } else {
-                                if (newTodo.id === 0) {
-                                    const res = await POST('/api/user/to_do', {
-                                        due_date: parseDate(newTodo.due_date),
-                                        content: newTodo.content
-                                    });
-                                    if (res.success) {
-                                        alert("할 일이 등록되었습니다!");
-                                        reload();
-                                    }
-                                } else {
-                                    const res = await PATCH('/api/user/to_do', {
-                                        todo_id: newTodo.id,
-                                        due_date: parseDate(newTodo.due_date),
-                                        content: newTodo.content
-                                    });
-                                    if (res.success) {
-                                        alert("할 일이 업데이트 되었습니다!");
-                                        reload();
+                                if (newTodo.content.trim()) {
+                                    if (newTodo.id === 0) {
+                                        const res = await POST('/api/user/to_do', {
+                                            due_date: parseDate(newTodo.due_date),
+                                            content: newTodo.content.trim()
+                                        });
+                                        if (res.success) {
+                                            alert("할 일이 등록되었습니다!");
+                                            reload();
+                                        }
+                                    } else {
+                                        const res = await PATCH('/api/user/to_do', {
+                                            todo_id: newTodo.id,
+                                            due_date: parseDate(newTodo.due_date),
+                                            content: newTodo.content.trim()
+                                        });
+                                        if (res.success) {
+                                            alert("할 일이 업데이트 되었습니다!");
+                                            reload();
+                                        }
                                     }
                                 }
                                 setNewTodo(null);
@@ -179,9 +181,9 @@ export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
                     </button>
                 </div>
                 {(newTodo !== null) && (
-                    <div className="bg-white border-2 p-2 rounded w-full grid grid-cols-5 gap-2">
+                    <div className="bg-white border-2 p-2 rounded w-full flex flex-row gap-2">
                         <div
-                            className="col-span-4 flex flex-col items-start"
+                            className="flex-1 flex flex-col items-start"
                         >
                             <div className="component-button-info">
                                 새로운 할 일
@@ -213,7 +215,7 @@ export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
                                 마감 기한
                             </div>
                             <div
-                                className="border-2 p-1 rounded w-full"
+                                className="border-2 p-1 rounded w-fit whitespace-nowrap"
                             >
                                 {parseDate(newTodo.due_date)}
                             </div>
@@ -292,8 +294,9 @@ export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
                             <div
                                 className={cn(
                                     "p-2 rounded-l flex items-center justify-center border-2 text-xl cursor-pointer",
-                                    (todo.done === 1) ? "bg-green-500 border-green-500 text-white hover:bg-red-500 hover:border-red-500"
-                                        : "hover:bg-blue hover:border-blue hover:text-white",
+                                    (todo.done === 1) ? "bg-green-500 border-green-500 text-white"
+                                        : "",
+                                    (!isMobile) ? (todo.done === 1) ? "hover:bg-red-500 hover:border-red-500" : "hover:bg-blue hover:border-blue hover:text-white" : ""
                                 )}
                                 onClick={async () => {
                                     if (todo.done === 0) {
@@ -321,41 +324,49 @@ export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
                                     <div className="i-system-uicons:check-circle-outside"/>
                                 )}
                             </div>
-                            <div className="h flex-1 border-y-2 border-r-2 rounded-r flex flex-row p-2 gap-2 hover:bg-white items-center">
+                            <div className={cn("flex-1 border-y-2 border-r-2 rounded-r flex p-2 gap-2 hover:bg-white items-center", isMobile ? "flex-col" : "flex-row")}>
                                 <TextareaAutosize
-                                    className="text-lg flex-1 resize-none bg-inherit outline-none"
+                                    className="text-lg w-full resize-none bg-inherit outline-none"
                                     value={todo.content}
                                     cacheMeasurements
                                     readOnly
                                 />
-                                <button
-                                    className="p-1 border-2 border-blue rounded hover:bg-blue hover:text-white duration-200"
-                                    onClick={() => {
-                                        setNewTodo({
-                                            id: todo.id,
-                                            content: todo.content,
-                                            due_date: new Date(todo.due_date),
-                                            open: false
-                                        })
-                                    }}
-                                >
-                                    <div className="i-system-uicons-write"/>
-                                </button>
-                                <button
-                                    className="p-1 border-2 border-red rounded hover:bg-red hover:text-white duration-200 mr-4"
-                                    onClick={async () => {
-                                        const r = confirm("할 일을 삭제하시겠습니까?");
-                                        if (r) {
-                                            const res = await DELETE(`/api/user/to_do?todo_id=${todo.id}`);
-                                            if (res.success) reload();
-                                        }
-                                    }}
-                                >
-                                    <div className="i-system-uicons-trash"/>
-                                </button>
-                                <div className="flex flex-col gap-2">
-                                    <div className="flex justify-end w-full text-gray-600">
-                                        마감일: {todo.due_date}
+                                <div className={cn("flex flex-row", isMobile ? "w-full justify-between" : "gap-6")}>
+                                    <div className="flex flex-row gap-2">
+                                        <button
+                                            className="p-1 border-2 border-blue rounded hover:bg-blue hover:text-white duration-200"
+                                            onClick={() => {
+                                                setNewTodo({
+                                                    id: todo.id,
+                                                    content: todo.content,
+                                                    due_date: new Date(todo.due_date),
+                                                    open: false
+                                                })
+                                            }}
+                                        >
+                                            <div className="i-system-uicons-write"/>
+                                        </button>
+                                        <button
+                                            className="p-1 border-2 border-red rounded hover:bg-red hover:text-white duration-200"
+                                            onClick={async () => {
+                                                const r = confirm("할 일을 삭제하시겠습니까?");
+                                                if (r) {
+                                                    const res = await DELETE(`/api/user/to_do?todo_id=${todo.id}`);
+                                                    if (res.success) {
+                                                        setPage(1);
+                                                        reload();
+                                                    }
+                                                }
+                                            }}
+                                        >
+                                            <div className="i-system-uicons-trash"/>
+                                        </button>
+                                    </div>
+
+                                    <div className="flex flex-col gap-2">
+                                        <div className="flex justify-end w-full text-gray-600">
+                                            마감일: {todo.due_date}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

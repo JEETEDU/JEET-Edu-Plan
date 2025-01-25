@@ -465,8 +465,9 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
                             <div
                                 className={cn(
                                     "p-2 rounded-l flex items-center justify-center border-2 text-xl cursor-pointer",
-                                    (homework.done === 1) ? "bg-green-500 border-green-500 text-white hover:bg-red-500 hover:border-red-500"
-                                        : "hover:bg-blue hover:border-blue hover:text-white",
+                                    (homework.done === 1) ? "bg-green-500 border-green-500 text-white"
+                                        : "",
+                                    (!isMobile) ? (homework.done === 1) ? "hover:bg-red-500 hover:border-red-500" : "hover:bg-blue hover:border-blue hover:text-white" : "",
                                     (homework.article_id === head) ? "border-black" : ""
                                 )}
                                 onClick={async () => {
