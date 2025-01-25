@@ -7,6 +7,7 @@ import {IArticle, initArticle, loadArticleInfo} from "@/app/(main)/(links)/board
 import Scrollbars from "react-custom-scrollbars-2";
 import {Author, Category, Class_, Delete, Hr, IResponseNotices, Subject, Time, Title, Update} from "@/app/(main)/(links)/home/(pages)/desktop";
 import Homeworks from "@/app/(main)/(links)/home/components/homeworks";
+import Todo from "@/app/(main)/(links)/home/components/todo";
 
 // 더 할 작업
 // 1. 공지사항은 종류에 따라 색으로 구분, 기한 표시 등등
@@ -144,6 +145,11 @@ export default function Mobile() {
                 {(tab === 1) && (
                     <div className="p-2 w-full h-full">
                         <Homeworks isMobile={true}/>
+                    </div>
+                )}
+                {(tab === 2) && (
+                    <div className="p-2 w-full h-full">
+                        <Todo isMobile={true}/>
                     </div>
                 )}
             </div>
