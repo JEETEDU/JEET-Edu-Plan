@@ -1,7 +1,7 @@
 "use client";
 
 import React, {useEffect, useRef, useState} from "react";
-import {cn, GET} from "@/app/(main)/components/functions";
+import {cn, GET, getStoreData} from "@/app/(main)/components/functions";
 import Link from "next/link";
 import {IArticle, initArticle, loadArticleInfo} from "@/app/(main)/(links)/board/component";
 import Scrollbars from "react-custom-scrollbars-2";
@@ -17,6 +17,7 @@ export default function Mobile() {
     const [tab, setTab] = useState<number>(0);
     const [notices, setNotices] = useState<IArticle[]>([]);
     const [page, setPage] = useState<number>(1);
+    const [userType, setUserType] = useState<number>(1);
 
     function reload(append: boolean = false) {
         (async () => {
@@ -41,43 +42,50 @@ export default function Mobile() {
     }, [tab])
 
     useEffect(() => {
+        (async () => {
+            setUserType((await getStoreData('/api/user/info', 'user-info')).response.user.user_type);
+        })();
+    }, []);
+
+    useEffect(() => {
         if (page > 1) reload(true);
     }, [page]);
 
     const scrollbars = useRef<Scrollbars>(null);
 
     return (
-        <div className="flex flex-col h-full">
-            <div className="h-fit">
-                <div className="static h-fit grid grid-cols-3 w-screen">
-                    <button
-                        className={cn({
-                            "bg-white pointer-events-none": (tab === 0),
-                            "bg-gray-300 hover:bg-gray-200 transition duration-200": (tab !== 0),
-                        }, "h-fit text-center p-2")}
-                        onClick={() => setTab(0)}
-                    >
-                        공지사항
-                    </button>
-                    <button
-                        className={cn({
-                            "bg-white pointer-events-none": (tab === 1),
-                            "bg-gray-300 hover:bg-gray-200 transition duration-200": (tab !== 1),
-                        }, "h-fit text-center p-2")}
-                        onClick={() => setTab(1)}
-                    >
-                        숙제
-                    </button>
-                    <button
-                        className={cn({
-                            "bg-white pointer-events-none": (tab === 2),
-                            "bg-gray-300 hover:bg-gray-200 transition duration-200": (tab !== 2),
-                        }, "h-fit text-center p-2")}
-                        onClick={() => setTab(2)}
-                    >
-                        할 일 목록
-                    </button>
-                </div>
+        <div className="flex flex-col h-full w-full">
+            <div className={cn("h-fit w-full", (userType === 1) ? "grid grid-cols-3" : "flex justify-center bg-white")}>
+                <button
+                    className={cn({
+                        "bg-white pointer-events-none": (tab === 0),
+                        "bg-gray-300 hover:bg-gray-200 transition duration-200": (tab !== 0),
+                    }, "h-fit text-center p-2")}
+                    onClick={() => setTab(0)}
+                >
+                    공지사항
+                </button>
+                {(userType === 1) && (<>
+                        <button
+                            className={cn({
+                                "bg-white pointer-events-none": (tab === 1),
+                                "bg-gray-300 hover:bg-gray-200 transition duration-200": (tab !== 1),
+                            }, "h-fit text-center p-2")}
+                            onClick={() => setTab(1)}
+                        >
+                            숙제
+                        </button>
+                        <button
+                            className={cn({
+                                "bg-white pointer-events-none": (tab === 2),
+                                "bg-gray-300 hover:bg-gray-200 transition duration-200": (tab !== 2),
+                            }, "h-fit text-center p-2")}
+                            onClick={() => setTab(2)}
+                        >
+                            할 일 목록
+                        </button>
+                    </>
+                )}
             </div>
 
             <div className="flex-grow overflow-hidden">

@@ -1,7 +1,7 @@
 "use client";
 
 import React, {useEffect, useRef, useState} from "react";
-import {cn, DELETE, GET} from "@/app/(main)/components/functions";
+import {cn, DELETE, GET, getStoreData} from "@/app/(main)/components/functions";
 import Scrollbars from "react-custom-scrollbars-2";
 import {IArticle, loadArticle} from "@/app/(main)/(links)/board/component";
 import {ArticleItem} from "@/app/(main)/(links)/board/(pages)/desktop";
@@ -121,6 +121,7 @@ export default function Desktop() {
     const [notices, setNotices] = useState<IArticle[]>([]);
     const [head, setHead] = useState<number>(0);
     const [page, setPage] = useState<number>(1);
+    const [userType, setUserType] = useState<number>(1);
 
     function reload(append: boolean = false) {
         (async () => {
@@ -139,6 +140,12 @@ export default function Desktop() {
             }
         })();
     }
+
+    useEffect(() => {
+        (async () => {
+            setUserType((await getStoreData('/api/user/info', 'user-info')).response.user.user_type);
+        })();
+    }, []);
 
     useEffect(() => {
         if (tab === 0) {
@@ -219,47 +226,48 @@ export default function Desktop() {
                     <div></div>
 
                     <div className="flex justify-center">
-                        <div className="p-0 rounded-2xl shadow-2xl pointer-events-auto grid grid-cols-3 component-form">
+                        <div className={cn("p-0 pointer-events-auto component-form items-center whitespace-nowrap", (userType === 1) ? " grid grid-cols-3" : "flex justify-center")}>
                             <button
                                 className={cn(
-                                    {
-                                        "bg-white pointer-events-none": (tab === 0),
-                                        "bg-gray-300 hover:bg-gray-200 transition duration-200": (tab !== 0),
-                                    },
-                                    "h-fit rounded-l-lg text-center p-2"
+                                    (tab === 0) ? "bg-white pointer-events-none" : "bg-gray-300 hover:bg-gray-200 transition duration-200",
+                                    (userType === 1) ? "h-fit rounded-l-lg text-center p-2" : "h-fit rounded-lg text-center p-2",
                                 )}
                                 onClick={() => setTab(0)}
                             >
                                 공지사항
                             </button>
-                            <button
-                                className={cn(
-                                    {
-                                        "bg-white pointer-events-none": (tab === 1),
-                                        "bg-gray-300 hover:bg-gray-200 transition duration-200": (tab !== 1),
-                                    },
-                                    "h-fit text-center p-2"
-                                )}
-                                onClick={() => setTab(1)}
-                            >
-                                숙제
-                            </button>
-                            <button
-                                className={cn(
-                                    {
-                                        "bg-white pointer-events-none": (tab === 2),
-                                        "bg-gray-300 hover:bg-gray-200 transition duration-200": (tab !== 2),
-                                    },
-                                    "h-fit rounded-r-lg text-center p-2"
-                                )}
-                                onClick={() => setTab(2)}
-                            >
-                                할 일 목록
-                            </button>
+                            {(userType === 1) && (
+                                <>
+                                    <button
+                                        className={cn(
+                                            {
+                                                "bg-white pointer-events-none": (tab === 1),
+                                                "bg-gray-300 hover:bg-gray-200 transition duration-200": (tab !== 1),
+                                            },
+                                            "h-fit text-center p-2"
+                                        )}
+                                        onClick={() => setTab(1)}
+                                    >
+                                        숙제
+                                    </button>
+                                    <button
+                                        className={cn(
+                                            {
+                                                "bg-white pointer-events-none": (tab === 2),
+                                                "bg-gray-300 hover:bg-gray-200 transition duration-200": (tab !== 2),
+                                            },
+                                            "h-fit rounded-r-lg text-center p-2"
+                                        )}
+                                        onClick={() => setTab(2)}
+                                    >
+                                        할 일 목록
+                                    </button>
+                                </>
+                            )}
                         </div>
                     </div>
 
-                    {!tab && (
+                    {(tab == 2) && (
                         <div className="flex justify-end">
                             <button
                                 className="bg-white hover:bg-gray-200 transition duration-200 h-fit rounded-lg text-center py-2 px-5"
