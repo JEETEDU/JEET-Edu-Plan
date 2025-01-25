@@ -9,8 +9,9 @@ import Scrollbars from "react-custom-scrollbars-2";
 import UserDetail from "@/app/(main)/(links)/mypage/(pages)/component/userList/userDetail";
 import Log from "@/app/(main)/(links)/mypage/(pages)/component/log";
 import ClassSetting from "@/app/(main)/(links)/mypage/(pages)/component/classSetting";
+import {Hr} from "@/app/(main)/(links)/home/(pages)/desktop";
 
-export function IsStudent({date, isMobile,}) {
+export function IsStudent({date, isMobile}: { date: Date; isMobile: boolean }) {
     const [editAnswer, setEditAnswer] = useState(false);
     const [error, setError] = useState("");
 
@@ -341,7 +342,7 @@ export function IsAdmin(
         (async () => {
             const users = (await getStoreData('/api/admin/user?user_type=1&order_by=name&order=ASC&limit=10', 'user-list-student')).response.users;
             setUserList(users || []);
-            setHead(users[0].uid || 0);
+            if (users) if (users.length > 0) setHead(users[0].uid || 0);
 
             const newUsers = (await getStoreData('/api/admin/user?user_type=0&order_by=name&order=ASC', 'user-list-student-new')).response.users;
             setNewUserList(newUsers.map((u) => {
@@ -386,13 +387,14 @@ export function IsAdmin(
     const [focusOnSearch, setFocusOnSearch] = useState(false);
 
     const [tab, setTab] = useState(0);
-    const tabList = [
-        "오늘의 질문",
-        "유저 목록",
-        "신규 유저 승인",
-        "반 설정",
-        "Log List"
-    ];
+    const [tabList, setTabList] = useState({
+        "오늘의 질문": true,
+        "유저 목록": true,
+        "신규 유저 승인": true,
+        "반 관리": true,
+        "설정": true,
+        "Log List": false
+    });
 
     useEffect(() => {
         refreshUser();
@@ -420,11 +422,14 @@ export function IsAdmin(
     const refreshUser = (refreshHead: boolean = true) => {
         setPage(1);
         (async () => {
-            const users: IListUser[] = (await getStoreData(`/api/admin/user?page${_param}`, 'user-list-student', true)).response.users;
-            setUserList(users || []);
-            if (refreshHead && users[0]) {
-                setHead(users[0].uid || 0);
+            const res: { success: boolean; users: IListUser[] } = await GET(`/api/admin/user?page${_param}`);
+            if (res.success) {
+                setUserList(res.users);
+                if (refreshHead && res.users.length > 0) {
+                    setHead(res.users[0].uid || 0);
+                }
             }
+
         })().then(() => {
             if (scrollbars.current) scrollbars.current.scrollToTop();
         });
@@ -454,9 +459,9 @@ export function IsAdmin(
         <div className="w-full h-full flex flex-col gap-4">
             <div
                 className="grid text-xl font-bold gap-2 items-center h-fit grid-cols-4"
-                style={{gridTemplateColumns: `repeat(${tabList.length}, minmax(0, 1fr))`}}
+                style={{gridTemplateColumns: `repeat(${Object.entries(tabList).filter(t => t[1]).length}, minmax(0, 1fr))`}}
             >
-                {tabList.map((t, i) => {
+                {Object.entries(tabList).filter(t => t[1]).map((t, i) => {
                     return (
                         <button
                             key={i}
@@ -466,7 +471,7 @@ export function IsAdmin(
                             )}
                             onClick={() => setTab(i)}
                         >
-                            {t}
+                            {t[0]}
                         </button>
                     )
                 })}
@@ -776,10 +781,59 @@ export function IsAdmin(
                 <ClassSetting/>
             )}
             {(tab === 4) && (
+                <>
+                    <div className="flex items-center w-full justify-between">
+                        <div className="text-3xl text-gray-800 font-semibold">
+                            설정
+                        </div>
+                    </div>
+                    <Scrollbars
+                        className="w-full flex-1"
+                        universal
+                        autoHide
+                    >
+                        <div className="flex flex-col w-full items-start p-1 space-y-4">
+                            <div className="flex items-center">
+                                <input
+                                    checked={tabList["Log List"]}
+                                    id="checked-checkbox"
+                                    type="checkbox"
+                                    className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                    onChange={() => setTabList(prev => {
+                                        return {
+                                            ...prev,
+                                            "Log List": !prev["Log List"],
+                                        }
+                                    })}
+                                />
+                                <label htmlFor="checked-checkbox" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">푸쉬 알림 동의</label>
+                            </div>
+                            <Hr/>
+                            <div className="text-xl text-gray-800 font-semibold">
+                                개발자 설정 (새로고침 시 초기화됩니다.)
+                            </div>
+                            <div className="flex items-center">
+                                <input
+                                    checked={tabList["Log List"]}
+                                    id="checked-checkbox"
+                                    type="checkbox"
+                                    className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                    onChange={() => setTabList(prev => {
+                                        return {
+                                            ...prev,
+                                            "Log List": !prev["Log List"],
+                                        }
+                                    })}
+                                />
+                                <label htmlFor="checked-checkbox" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">사용자 로그 보이기</label>
+                            </div>
+                        </div>
+                    </Scrollbars>
+                </>
+            )}
+            {(tab === 5) && (
                 <Log/>
             )}
         </div>
-        //     </Scrollbars>
-        // </div>
     );
 }

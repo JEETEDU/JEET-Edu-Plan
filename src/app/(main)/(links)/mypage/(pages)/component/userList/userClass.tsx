@@ -2,7 +2,8 @@
 
 import React, {useEffect, useState} from "react";
 import {GET, POST} from "@/app/(main)/components/functions";
-import JoinUserClass from "@/app/(main)/(links)/mypage/(pages)/component/joinUserClass";
+import StudentClass from "@/app/(main)/(links)/mypage/(pages)/component/studentClass";
+import JoinTeacherClass from "@/app/(main)/(links)/mypage/(pages)/component/teacherClass";
 
 interface IUser {
     uid: number;
@@ -63,10 +64,20 @@ export default function UserClass({uid, userType}: { uid: number; userType: numb
                     <div className="flex items-center text-lg text-red-700 font-bold">
                         {error}
                     </div>
-                    <JoinUserClass
-                        text='반 추가'
-                        className="py-1 px-3 bg-blue-500 text-white rounded font-bold hover:bg-blue-600"
-                    />
+                    <div className="flex items-center text-lg text-green-700 font-bold">
+                        {message}
+                    </div>
+                    {(userType === 1) ? (
+                        <StudentClass
+                            text='반 추가'
+                            className="py-1 px-3 bg-blue-500 text-white rounded font-bold hover:bg-blue-600"
+                        />
+                    ) : (
+                        <JoinTeacherClass
+                            text='반 추가'
+                            className="py-1 px-3 bg-blue-500 text-white rounded font-bold hover:bg-blue-600"
+                        />
+                    )}
                 </div>
             </div>
             <div className="flex flex-col w-full gap-2 items-end justify-between">
@@ -84,7 +95,7 @@ export default function UserClass({uid, userType}: { uid: number; userType: numb
                         </div>
                         <button
                             onClick={async () => {
-                                const res = confirm(`${c.name} 반에서 학생을 제외하시겠습니까?`);
+                                const res = confirm(`${c.name} 반에서 ${(userType === 1) ? "학생" : "선생님"}을 제외하시겠습니까?`);
                                 if (res) {
                                     if (user.user_type === 1) {
                                         POST('/api/admin/class/quit/student', {
