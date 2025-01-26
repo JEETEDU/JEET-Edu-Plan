@@ -6,7 +6,8 @@ type TX = MySqlTransaction<any, any, any, any>;
 export enum AlertType {
     NORMAL = 0,
     NOTICE = 1,
-    CALENDAR = 2
+    CALENDAR = 2,
+    HOMEWORK = 3
 }
 
 export async function register_alert(tx: TX, user_id: number | [number], message: string, alert_type: number = 0, article_id: number | null = null): Promise<void> {
@@ -41,4 +42,9 @@ export async function register_alert_for_class(tx: TX, class_id: number, message
 export async function delete_alert(tx: TX, user_id: number, alert_id: number): Promise<void> {
     await tx.delete(schema.alerts)
         .where(and(eq(schema.alerts.user_id, user_id), eq(schema.alerts.id, alert_id)));
+}
+
+export async function delete_alerts_by_article(tx: TX, article_id: number, alert_type: number): Promise<void> {
+    await tx.delete(schema.alerts)
+        .where(and(eq(schema.alerts.article_id, article_id), eq(schema.alerts.alert_type, alert_type)));
 }

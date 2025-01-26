@@ -13,7 +13,12 @@ import {
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
 import {QueryBuilder} from "drizzle-orm/mysql-core";
 import {delete_files, save_files, SavedFileList, update_files} from "@/app/(others)/api/(tools)/files";
-import {AlertType, register_alert, register_alert_for_class} from "@/app/(others)/api/(tools)/alerts";
+import {
+    AlertType,
+    delete_alerts_by_article,
+    register_alert,
+    register_alert_for_class
+} from "@/app/(others)/api/(tools)/alerts";
 import {ArticleCategory} from "@/app/(others)/api/board/tools";
 
 /**
@@ -225,6 +230,9 @@ export async function POST(req: NextRequest) {
  *                   subject_id:
  *                     type: integer
  *                     example: 3
+ *                   is_notice:
+ *                     type: integer
+ *                     example: 0
  *                   attach_files:
  *                     type: array
  *                     items:
@@ -290,13 +298,15 @@ export async function PATCH(req: NextRequest) {
             const category: number = parseInt(article_json.category ?? -1);
             const subject_id: number = parseInt(article_json.subject_id ?? -1);
             const attach_files: SavedFileList = article_json.attach_files ?? [];
+            const is_notice: number = parseInt(article_json.is_notice ?? 0);
 
             if (!article_id) return return_400("article_id is required");
             if (title && title.length > 255) return return_400("title is too long");
             if (Number.isNaN(category)) return return_400("category should be a number");
-            if (ArticleCategory[category] === undefined) return return_400("Invalid category");
+            if (ArticleCategory[category] === undefined && category !== -1) return return_400("Invalid category");
             if (category === ArticleCategory.HOMEWORK) return return_400("Cannot update into homework category");
             if (Number.isNaN(subject_id)) return return_400("subject_id should be a number");
+            if (Number.isNaN(is_notice) || is_notice !== 1 && is_notice !== 0) return return_400("is_notice should be 0 or 1");
 
             const [article_] =
                 await tx.select()
@@ -335,10 +345,25 @@ export async function PATCH(req: NextRequest) {
             const files_path: SavedFileList = await update_files(tx, files, JSON.parse(article_.attach_files?.toString() ?? '[]'), attach_files);
             if (files_path.length > 0) update_data['attach_files'] = files_path;
             if (article_.attach_files && article_.attach_files != files_path) update_data['attach_files'] = files_path;
+            if (is_notice === 1 && article_.notice === 0) {
+                if (user_type < UserType.TEACHER) return return_permission_denied();
+                update_data['notice'] = 1;
+                await register_alert_for_class(tx, article_.class_id, `새 공지사항이 등록되었습니다.\n${title}`, AlertType.NOTICE, article_id);
+            }
+            else if (is_notice === 0 && article_.notice === 1) {
+                if (user_type < UserType.TEACHER) return return_permission_denied();
+                update_data['notice'] = 0;
+                await delete_alerts_by_article(tx, article_id, AlertType.NOTICE);
+            }
 
-            await tx.update(schema.boards)
-                .set(update_data)
-                .where(eq(schema.boards.id, article_id))
+            try {
+                await tx.update(schema.boards)
+                    .set(update_data)
+                    .where(eq(schema.boards.id, article_id))
+            } catch (e: any) {
+                if (e.message == "No values to set") return return_400("No values to set");
+                throw e;
+            }
 
             return NextResponse.json({ success: true });
         });
