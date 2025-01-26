@@ -171,7 +171,7 @@ export async function POST(req: NextRequest) {
                 subject_id: subject_id === 0 ? null : subject_id
             })));
 
-            await register_alert_for_class(tx, class_id, `새 과제가 등록되었습니다.\n${title}`, AlertType.NOTICE, article_id.id);
+            await register_alert_for_class(tx, class_id, `새 과제가 등록되었습니다.\n${title}`, AlertType.HOMEWORK, article_id.id);
 
             return NextResponse.json({
                 success: true,
