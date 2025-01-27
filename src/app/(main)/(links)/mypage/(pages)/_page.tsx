@@ -3,7 +3,7 @@
 import {clearSessionStorage, cn, getSessionItem, getStoreData, POST, setSessionItem} from "@/app/(main)/components/functions";
 import React, {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
-import {IsAdmin, IsStudent} from "@/app/(main)/(links)/mypage/(pages)/common";
+import {IsAdmin, IsStudent, IsTeacher} from "@/app/(main)/(links)/mypage/(pages)/common";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import {Hr} from "@/app/(main)/(links)/home/(pages)/desktop";
@@ -19,13 +19,6 @@ export default function Page({isMobile}: { isMobile: boolean }) {
     const [school, setSchool] = useState("Loading...");
     const [userType, setUserType] = useState(0);
 
-    // const [answered, setAnswered] = useState(false);
-
-    const [qList, setQList] = useState({});
-
-    // const [userList, setUserList] = useState([]);
-    // const [newUserList, setNewUserList] = useState([]);
-
     const [calendarValue, setCalendarValue] = useState(() => {
         const date = getSessionItem('calendar-value');
         if (date) {
@@ -35,25 +28,16 @@ export default function Page({isMobile}: { isMobile: boolean }) {
         }
     });
 
-    // const userInfo = useUserInfo();
 
     useEffect(() => {
         (async () => {
             setSessionItem('calendar-value', calendarValue.toLocaleDateString());
-            // sessionStorage.setItem('calendar-value', calendarValue.toLocaleDateString());
-
-            // const params = `date=${calendarValue.getFullYear()}-${String(calendarValue.getMonth() + 1).padStart(2, '0')}-${String(calendarValue.getDate()).padStart(2, '0')}`
-            // console.log(params)
 
             const userInfo = (await getStoreData('/api/user/info', 'user-info')).response.user;
-            // console.log(userInfo);
-
             setName(userInfo.name);
             setGrade(`${userInfo.first_year} | ${userInfo.joined_term}`);
             setSchool(userInfo.school);
             setUserType(userInfo.user_type);
-
-            // const today = new Date();
         })();
     }, [calendarValue]);
 
@@ -108,7 +92,6 @@ export default function Page({isMobile}: { isMobile: boolean }) {
                                 className="p-2 rounded text-lg font-bold bg-gray-500 text-white hover:bg-gray-600"
                                 onClick={() => setShowCalendar((prev) => !prev)}
                             >
-                                {/*{showCalendar ? "달력 숨기기" : "달력 보이기"}*/}
                                 <div className='i-clarity-calendar-line'/>
                             </button>
                         )}
@@ -177,8 +160,10 @@ export default function Page({isMobile}: { isMobile: boolean }) {
                             <Calendar
                                 locale="ko"
                                 value={calendarValue}
-                                onChange={setCalendarValue}
-                                formatDay={(locale, date): string => {
+                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                // @ts-expect-error
+                                onChange={(e) => setCalendarValue(e)}
+                                formatDay={(_, date): string => {
                                     const day = date.getDate();
                                     return day.toString().padStart(2, '0');
                                 }}
@@ -209,8 +194,10 @@ export default function Page({isMobile}: { isMobile: boolean }) {
                             <Calendar
                                 locale="ko"
                                 value={calendarValue}
-                                onChange={setCalendarValue}
-                                formatDay={(locale, date): string => {
+                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                // @ts-expect-error
+                                onChange={(e) => setCalendarValue(e)}
+                                formatDay={(_, date): string => {
                                     const day = date.getDate();
                                     return day.toString().padStart(2, '0');
                                 }}
@@ -227,10 +214,11 @@ export default function Page({isMobile}: { isMobile: boolean }) {
                                 isMobile={isMobile}
                             />
                         )}
-                        {(userType >= 2) && (
+                        {(userType === 2) && (
+                            <IsTeacher/>
+                        )}
+                        {(userType === 3) && (
                             <IsAdmin
-                                qList={qList}
-                                setQList={setQList}
                                 date={calendarValue}
                             />
                         )}
