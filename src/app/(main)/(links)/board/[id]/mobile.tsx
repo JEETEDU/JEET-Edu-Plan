@@ -12,7 +12,13 @@ import dynamic from "next/dynamic";
 import {useRouter} from "next/navigation";
 import {IUserInfo} from "@/app/(main)/(links)/mypage/(pages)/component/userList/userDetail";
 
-const ReactQuill = dynamic(() => import('react-quill-new'), {ssr: false})
+import 'react-quill/dist/quill.bubble.css'
+import Loading from "@/app/(main)/loading";
+
+const ReactQuill = dynamic(() => import('react-quill-new'), {
+    ssr: false,
+    loading: () => <Loading/>,
+});
 
 // eslint-disable-next-line @next/next/no-async-client-component
 export default function Chatting({id, reloadArticlesAction = null}: { id: number; reloadArticlesAction?: (() => void) | null }) {
@@ -195,9 +201,9 @@ export default function Chatting({id, reloadArticlesAction = null}: { id: number
                 {(screen > 0) && (<>
                         <ReactQuill
                             className={cn(
-                                "text-gray-600 break-all",
-                                {"grow overflow-y-auto": screen === 2},
-                                {"overflow-hidden truncate": screen < 2}
+                                "h-full max-h-full flex flex-col",
+                                // {"grow": screen === 2},
+                                // {"overflow-hidden truncate": screen < 2}
                             )}
                             value={selectedArticle.content}
                             readOnly
