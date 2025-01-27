@@ -341,10 +341,6 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
         }
     }, [class_]);
 
-    useEffect(() => {
-        console.log("Homeworks: ", homeworks);
-    }, [homeworks]);
-
     const [openDatePicker, setOpenDatePicker] = useState<boolean>(false);
 
     const [head, setHead] = useState<number>(0);

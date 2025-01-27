@@ -120,7 +120,6 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
     ];
 
     useEffect(() => {
-        console.log(prev)
         if (prev !== null) {
             setContent({
                 category: prev.category,
@@ -164,11 +163,6 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
         })();
         setStorage(sessionStorage);
     }, [])
-
-    useEffect(() => {
-        console.log(content);
-        // if (content.title !== JSON.parse(prev).title) router.refresh();
-    }, [content]);
 
     useEffect(() => {
         (async () => {
@@ -226,7 +220,6 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
         if (!content.title.trim()) return;
         if (!content.content.trim()) return;
         const formData = new FormData();
-        console.log(content)
         formData.append("article", JSON.stringify(content));
         fileList.map((file: File) => {
             formData.append("files", file);

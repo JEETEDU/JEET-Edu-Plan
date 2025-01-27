@@ -338,7 +338,7 @@ export function TodayQuestion({device}: { device: string }) {
                 }
             }
 
-        })()/*.then(r => console.log(r))*/;
+        })();
     }, [answered]);
 
     const register = async () => {
@@ -369,14 +369,11 @@ export function TodayQuestion({device}: { device: string }) {
             sleep: (new Date(timeData.sleep.getFullYear(), timeData.sleep.getMonth(), timeData.sleep.getDate(), timeData.sleep.getHours() + 9)).toISOString(),
             wakeup: (new Date(timeData.wakeup.getFullYear(), timeData.wakeup.getMonth(), timeData.wakeup.getDate(), timeData.wakeup.getHours() + 9)).toISOString(),
         });
-        // console.log(r1)
         if (!r1.success) {
-            // alert("error occurred while put sleep / wakeup time");
             return false;
         }
 
-        const r2 = await PUT('/api/user/today/question', body)
-        // console.log(r2)
+        const r2 = await PUT('/api/user/today/question', body);
         if (r2.success) {
             const today = new Date();
             const param = `date=${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`
@@ -408,8 +405,6 @@ export function TodayQuestion({device}: { device: string }) {
                     )}
                     onClick={() => {
                         setShowQuestion(!showQuestion);
-                        // console.log(userType)
-                        // console.log(qList)
                     }}
                 >
                     오늘의 질문 답하기

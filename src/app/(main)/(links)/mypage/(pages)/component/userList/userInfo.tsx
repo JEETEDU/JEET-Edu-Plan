@@ -7,7 +7,7 @@ import {IUserInfo} from "./userDetail";
 export interface CUserInfo {
     uid: number;
     userInfo: IUserInfo;
-    setUserInfo: (userInfo: IUserInfo) => void;
+    setUserInfo: React.Dispatch<React.SetStateAction<IUserInfo>>;
     refresh: (refreshHead?: boolean) => void;
 }
 
@@ -26,8 +26,7 @@ export default function UserInfo(
             first_year: userInfo.first_year,
             school: userInfo.school,
             joined_term: userInfo.joined_term,
-        }).then((r) => {
-            console.log(r);
+        }).then(() => {
             refresh(false);
         });
     }

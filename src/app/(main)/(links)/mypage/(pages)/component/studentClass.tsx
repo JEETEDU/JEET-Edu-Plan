@@ -105,7 +105,6 @@ export default function StudentClass({text, className}: { text: string; classNam
                 class_id: c.id,
                 user_id: selectedUserList.map(u => u.uid),
             });
-            console.log(r.success);
             if (!r.success) {
                 setResult((prev) => {
                     return {success: false, count: prev.count + 1};
@@ -119,7 +118,6 @@ export default function StudentClass({text, className}: { text: string; classNam
     }
 
     useEffect(() => {
-        console.log(result);
         if ((result.count !== 0) && (result.count === (selectedClassList.length))) {
             alert('등록이 완료되었습니다!');
             setReg(false);
@@ -168,7 +166,7 @@ export default function StudentClass({text, className}: { text: string; classNam
                                             onChange={(e) => {
                                                 setUserParams((prev) => {
                                                     const obj = {...prev};
-                                                    obj.search_by = e.value;
+                                                    obj.search_by = e!.value;
                                                     return obj;
                                                 })
                                             }}

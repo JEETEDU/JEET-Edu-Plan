@@ -90,7 +90,6 @@ export default function Chatting({id, reloadArticlesAction = null}: { id: number
             method: "POST",
             body: formData
         }).then(r => r.json()).then(r => {
-            console.log(r);
             reload();
         });
         setNewComments(""); // 입력란 초기화
@@ -113,7 +112,6 @@ export default function Chatting({id, reloadArticlesAction = null}: { id: number
             method: "PATCH",
             body: formData
         }).then(r => r.blob()).then(r => {
-            console.log(r);
             reload();
         });
         setNewComments(""); // 입력란 초기화
@@ -132,10 +130,7 @@ export default function Chatting({id, reloadArticlesAction = null}: { id: number
     const delete_ = () => {
         const res = confirm("게시물을 삭제하시겠습니까?");
         if (res) {
-            console.log(selectedArticle.id);
-            DELETE(`/api/board?article_id=${selectedArticle.id}`).then(r => {
-                console.log(r);
-            }).then(() => {
+            DELETE(`/api/board?article_id=${selectedArticle.id}`).then(() => {
                 if (reloadArticlesAction !== null) {
                     reloadArticlesAction();
                 } else {
@@ -390,7 +385,6 @@ export default function Chatting({id, reloadArticlesAction = null}: { id: number
                                                     if (prev === null) return prev;
                                                     const obj = {...prev};
                                                     obj.attach_files = obj.attach_files.filter((e) => e.path !== file.path);
-                                                    // console.log(arr);
                                                     return obj;
                                                 });
                                             }}

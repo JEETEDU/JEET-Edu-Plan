@@ -107,7 +107,6 @@ export default function ClassSetting() {
     }
 
     useEffect(() => {
-        console.log(head)
         if (head !== 0) refreshClass();
     }, [head]);
 

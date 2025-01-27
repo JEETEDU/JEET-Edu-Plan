@@ -123,7 +123,6 @@ export default function TeacherClass({text, className}: { text: string; classNam
                     user_id: u.uid,
                     subject_id: l.subject.id,
                 });
-                console.log(r.success);
                 if (!r.success) {
                     setResult((prev) => {
                         return {success: false, count: prev.count + 1};
@@ -138,7 +137,6 @@ export default function TeacherClass({text, className}: { text: string; classNam
     }
 
     useEffect(() => {
-        console.log(result);
         if ((result.count !== 0) && (result.count === (selectedLessonList.length * selectedUserList.length))) {
             alert('등록이 완료되었습니다!');
             setReg(false);

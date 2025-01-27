@@ -10,11 +10,14 @@ export default function Mobile() {
     const [isLogin, setIsLogin] = useState(true);
     const [error, setError] = useState({message: "", color: ""});
     const router = useRouter();
+    const [id, setId] = useState("");
+    const [pw, setPw] = useState("");
+    const [name, setName] = useState("");
 
     const login = async () => {
         const res = await POST('/api/user/login', {
-            login_id: document.getElementById("id").value,
-            pw: document.getElementById("password").value
+            login_id: id,
+            pw: pw
         })
         if (res.success) {
             router.push('/home');
@@ -25,9 +28,9 @@ export default function Mobile() {
 
     const register = async () => {
         const res = await POST('/api/user/register', {
-            name: document.getElementById("name").value,
-            login_id: document.getElementById("id").value,
-            pw: document.getElementById("password").value
+            name: name,
+            login_id: id,
+            pw: pw
         })
         if (res.success) {
             router.refresh();
@@ -71,7 +74,8 @@ export default function Mobile() {
                             </label>
                             <input
                                 type="text"
-                                id="name"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
                                 className="component-input text-sm"
                                 placeholder="이름을 입력해 주세요"
                                 required
@@ -85,7 +89,8 @@ export default function Mobile() {
                         </label>
                         <input
                             type="text"
-                            id="id"
+                            value={id}
+                            onChange={(e) => setId(e.target.value)}
                             className="component-input text-sm"
                             placeholder="아이디를 입력해주세요"
                             required
@@ -99,7 +104,8 @@ export default function Mobile() {
                         <div className="relative">
                             <input
                                 type={showPassword ? "text" : "password"}
-                                id="password"
+                                value={pw}
+                                onChange={(e) => setPw(e.target.value)}
                                 className="component-input"
                                 placeholder="비밀번호를 입력해주세요"
                                 required
