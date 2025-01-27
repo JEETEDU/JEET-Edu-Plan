@@ -153,7 +153,9 @@ export function DateRangePicker(
         endDueDate,
         setEndDueDateAction,
         closeAction,
-        isMobile
+        isMobile,
+        minDate,
+        maxDate
     }: {
         startDueDate: Date | null;
         setStartDueDateAction: React.Dispatch<React.SetStateAction<Date | null>>;
@@ -161,6 +163,8 @@ export function DateRangePicker(
         setEndDueDateAction: React.Dispatch<React.SetStateAction<Date | null>>;
         closeAction: React.Dispatch<React.SetStateAction<boolean>>;
         isMobile: boolean;
+        minDate?: Date;
+        maxDate?: Date;
     }
 ) {
     return (
@@ -192,6 +196,7 @@ export function DateRangePicker(
                         dateFormat='yyyy-MM-dd'
                         placeholderText="전체 기한"
                         inline
+                        minDate={minDate}
                     />
                     {(isMobile) && (
                         <div
@@ -206,13 +211,13 @@ export function DateRangePicker(
                     <DatePicker
                         className="outline-none"
                         locale={ko}
-                        isClearable
                         selected={endDueDate}
                         onChange={(e) => setEndDueDateAction(e)}
                         dateFormat='yyyy-MM-dd'
                         placeholderText="전체 기한"
                         inline
                         minDate={startDueDate || new Date("")}
+                        maxDate={maxDate}
                     />
                     {(isMobile) && (
                         <div
