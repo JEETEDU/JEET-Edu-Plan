@@ -33,7 +33,7 @@ interface ITeacher {
     subjects: number[];
 }
 
-interface IClassInfo {
+export interface IClassInfo {
     id: number;
     name: string;
     description: string;

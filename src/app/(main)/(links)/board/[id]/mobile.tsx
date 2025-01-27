@@ -10,6 +10,7 @@ import Link from "next/link";
 import 'react-quill-new/dist/quill.snow.css';
 import dynamic from "next/dynamic";
 import {useRouter} from "next/navigation";
+import {IUserInfo} from "@/app/(main)/(links)/mypage/(pages)/component/userList/userDetail";
 
 const ReactQuill = dynamic(() => import('react-quill-new'), {ssr: false})
 
@@ -21,12 +22,20 @@ export default function Chatting({id, reloadArticlesAction = null}: { id: number
     const [editComment, setEditComment] = useState<IComment | null>(null);
     const [fileList, setFileList] = useState<File[]>([]);
 
-    const [uid, setUid] = useState<number>(0);
+    const [user, setUser] = useState<IUserInfo>({
+        first_year: "",
+        joined_term: "",
+        login_id: "",
+        name: "",
+        school: "",
+        uid: 0,
+        user_type: 1
+    });
 
     useEffect(() => {
         (async () => {
             const userInfo = (await getStoreData('/api/user/info', 'user-info')).response.user;
-            setUid(userInfo.uid);
+            setUser(userInfo);
         })();
     }, []);
 
@@ -161,7 +170,7 @@ export default function Chatting({id, reloadArticlesAction = null}: { id: number
                             >
                                 <div className="i-system-uicons-scale-extend"/>
                             </button>
-                            {(selectedArticle.user.id === uid) && (
+                            {((selectedArticle.user.id === user.uid) || (user.user_type! > 1)) && (
                                 <>
                                     <Link
                                         href={`/board/edit/${selectedArticle.id}`}
@@ -249,12 +258,12 @@ export default function Chatting({id, reloadArticlesAction = null}: { id: number
                                     <div className="flex flex-row justify-between items-center gap-4 w-full text-sm">
                                         <div className={cn(
                                             "p-1 border-2 border-green rounded h-full text-black",
-                                            {'bg-green font-bold': (comment.user_id === uid)}
+                                            {'bg-green font-bold': (comment.user_id === user.uid)}
                                         )}>
                                             {comment.user_name}
                                         </div>
                                         <div>
-                                            {(comment.user_id === uid) && (
+                                            {(comment.user_id === user.uid) && (
                                                 <div className="flex gap-1 w-fit items-center">
                                                     <div
                                                         className={cn(
@@ -372,7 +381,7 @@ export default function Chatting({id, reloadArticlesAction = null}: { id: number
                                             className="hover:bg-red p-1 rounded hover:text-white duration-200"
                                             onClick={() => {
                                                 setEditComment((prev) => {
-                                                    if (prev === null) return;
+                                                    if (prev === null) return prev;
                                                     const obj = {...prev};
                                                     obj.attach_files = obj.attach_files.filter((e) => e.path !== file.path);
                                                     // console.log(arr);

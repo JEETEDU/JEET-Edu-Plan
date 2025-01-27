@@ -2,19 +2,13 @@ import React, {useEffect, useRef, useState} from "react";
 import {IListUser} from "@/app/(main)/(links)/mypage/(pages)/common";
 import {IClass, ISubjectInfo} from "@/app/(main)/(links)/mypage/(pages)/component/classSetting";
 import Scrollbars from "react-custom-scrollbars-2";
-import {cn, GET, POST, PUT} from "@/app/(main)/components/functions";
+import {cn, GET, POST} from "@/app/(main)/components/functions";
 import Select from "react-select";
 import {Hr} from "@/app/(main)/(links)/home/(pages)/desktop";
 
 interface ILesson {
-    class_: {
-        id: number;
-        name: string;
-    };
-    subject: {
-        id: number;
-        name: string;
-    }
+    class_: IClass;
+    subject: ISubjectInfo;
 }
 
 export default function TeacherClass({text, className}: { text: string; className?: string }) {
@@ -145,7 +139,7 @@ export default function TeacherClass({text, className}: { text: string; classNam
 
     useEffect(() => {
         console.log(result);
-        if ((result.count !== 0) && (result.count === (selectedLessonList.length * userList.length))) {
+        if ((result.count !== 0) && (result.count === (selectedLessonList.length * selectedUserList.length))) {
             alert('등록이 완료되었습니다!');
             setReg(false);
             setShow(false);
@@ -192,7 +186,7 @@ export default function TeacherClass({text, className}: { text: string; classNam
                                             onChange={(e) => {
                                                 setUserParams((prev) => {
                                                     const obj = {...prev};
-                                                    obj.user_type = e.value;
+                                                    obj.user_type = e!.value;
                                                     return obj;
                                                 })
                                             }}
@@ -404,14 +398,8 @@ export default function TeacherClass({text, className}: { text: string; classNam
                                                                     onClick={() => {
                                                                         if (!wasLessonSelected(s.id)) {
                                                                             setSelectedLessonList((prev) => [...prev, {
-                                                                                class_: {
-                                                                                    id: selectedClass.id,
-                                                                                    name: selectedClass.name
-                                                                                },
-                                                                                subject: {
-                                                                                    id: s.id,
-                                                                                    name: s.name,
-                                                                                }
+                                                                                class_: selectedClass,
+                                                                                subject: s
                                                                             }]);
                                                                         }
                                                                     }}
@@ -429,14 +417,8 @@ export default function TeacherClass({text, className}: { text: string; classNam
                                                             subjectList.map(s => {
                                                                 if (!wasLessonSelected(s.id)) {
                                                                     setSelectedLessonList((prev) => [...prev, {
-                                                                        class_: {
-                                                                            id: selectedClass.id,
-                                                                            name: selectedClass.name
-                                                                        },
-                                                                        subject: {
-                                                                            id: s.id,
-                                                                            name: s.name,
-                                                                        }
+                                                                        class_: selectedClass,
+                                                                        subject: s
                                                                     }]);
                                                                 }
                                                             })
@@ -551,13 +533,7 @@ export default function TeacherClass({text, className}: { text: string; classNam
                                                 </Scrollbars>
                                                 <div
                                                     className="w-full flex px-2 py-2 bg-red-500 hover:bg-red-600 justify-center items-center rounded text-white font-bold cursor-pointer"
-                                                    onClick={() => {
-                                                        (async () => {
-                                                            selectedLessonList.map(c => {
-                                                                setClassList((prev) => [...prev, c]);
-                                                            })
-                                                        })().then(() => setSelectedLessonList([]));
-                                                    }}
+                                                    onClick={() => setSelectedLessonList([])}
                                                 >
                                                     전체 선택 취소
                                                 </div>

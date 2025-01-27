@@ -39,7 +39,7 @@ export function Subject({subject}: { subject: string | null }) {
 
 export function Class_({class_}: { class_: string | null }) {
     if (class_) return (
-        <div className="flex flex-col border-2 border-blue p-1 rounded justify-center items-end text-black bg-blue">
+        <div className="flex flex-col border-2 border-blue p-1 rounded justify-center items-end">
             {class_}
         </div>
     );
