@@ -21,7 +21,7 @@ export function IsStudent({date, isMobile}: { date: Date; isMobile: boolean }) {
         sleep: new Date()
     });
 
-    const _a = [
+    const _a: string[] = [
         "answer_1",
         "answer_2",
         "answer_3",
@@ -102,6 +102,8 @@ export function IsStudent({date, isMobile}: { date: Date; isMobile: boolean }) {
 
             const body = aList.reduce((obj, val, idx) => {
                 if (val[0] !== "") {
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-expect-error
                     obj[_a[idx]] = val[1];
                 }
                 return obj;
@@ -113,10 +115,10 @@ export function IsStudent({date, isMobile}: { date: Date; isMobile: boolean }) {
             const questions = await getStoreData(`/api/user/today/question?${params}`, `question-list-${params}`, true);
 
             //---
-            const _q = Object.values(questions.response.answers[0].questions);
-            const qArr = _q.concat("오늘의 학원 과제는?", "어젯밤 공부한 내용은?", "오늘의 학교 과제는?");
-            const aArr = Object.values(questions.response.answers[0].answers);
-            const qaArr: Array = qArr.map((q, i) => {
+            const _q: string[] = Object.values(questions.response.answers[0].questions);
+            const qArr: string[] = _q.concat("오늘의 학원 과제는?", "어젯밤 공부한 내용은?", "오늘의 학교 과제는?");
+            const aArr: string[] = Object.values(questions.response.answers[0].answers);
+            const qaArr: [string, string][] = qArr.map((q, i) => {
                 return [q || "", aArr[i]];
             });
             console.log(qaArr)
@@ -167,117 +169,245 @@ export function IsStudent({date, isMobile}: { date: Date; isMobile: boolean }) {
         setEditAnswer(!editAnswer)
     }
 
+    const [tab, setTab] = useState(0);
+    const tabList = {
+        "오늘의 질문": true,
+        "설정": true,
+    };
+
     return (
         <div className="w-full h-full flex flex-col gap-4">
-            <div className="flex items-center w-full justify-between">
-                <div className={cn(
-                    "text-gray-800 font-semibold",
-                    isMobile ? "text-2xl" : "text-3xl"
-                )}>
-                    오늘의 질문 목록 {!isMobile && `(${date.toLocaleDateString()})`}
-                </div>
-                {(answered && today.getDate() === date.getDate()) && (
-                    <div className="flex items-center gap-4">
-                        <div className="font-bold text-red-600 items-center">
-                            {error}
-                        </div>
-                        <button
-                            className={cn(
-                                "text-white rounded-lg font-semibold p-1",
-                                {"bg-blue hover:bg-blue-700": !editAnswer},
-                                {"bg-blue-700 hover:bg-blue": editAnswer},
-                                {"text-lg": !isMobile}
-                            )}
-                            onClick={update}
-                        >
-                            {(editAnswer) ? "응답 저장하기" : "응답 수정하기"}
-                        </button>
-                    </div>
-                )}
-            </div>
-            <Scrollbars
-                className="w-full flex-1"
-                universal
-                autoHide
+            <div
+                className="grid text-xl font-bold gap-2 items-center h-fit grid-cols-4"
+                style={{gridTemplateColumns: `repeat(${Object.entries(tabList).filter(t => t[1]).length}, minmax(0, 1fr))`}}
             >
-                {(answered) ? (
-
-                    <div className={cn(
-                        "flex flex-col w-full h-full items-center p-1 space-y-4"
-                    )}>
+                {Object.entries(tabList).filter(t => t[1]).map((t, i) => {
+                    return (
+                        <button
+                            key={i}
+                            className={cn(
+                                "flex justify-center hover:bg-gray-300 p-1 rounded",
+                                {"border-2 border-gray": (i === tab)}
+                            )}
+                            onClick={() => setTab(i)}
+                        >
+                            {t[0]}
+                        </button>
+                    )
+                })}
+            </div>
+            {(tab === 0) && (
+                <>
+                    <div className="flex items-center w-full justify-between">
                         <div className={cn(
-                            "grid w-full gap-4",
-                            isMobile ? "grid-rows-2" : "grid-cols-2"
+                            "text-gray-800 font-semibold",
+                            isMobile ? "text-2xl" : "text-3xl"
                         )}>
-                            <div className={cn(
-                                "items-center justify-center flex",
-                                {"flex-col": !isMobile}
-                            )}>
-                                <div className="text-xl font-semibold">
-                                    취침 시간
-                                </div>
-                                <TimeInput
-                                    className="w-fit p-1"
-                                    date={timeData}
-                                    keyName={"sleep"}
-                                    dateAction={setTimeData}
-                                    // onChange={() => setError("")}
-                                    selectorPointerEventsNone={!editAnswer}
-                                />
-                            </div>
-                            <div className={cn(
-                                "items-center justify-center flex",
-                                {"flex-col": !isMobile}
-                            )}>
-                                <div className="text-xl font-semibold">
-                                    기상 시간
-                                </div>
-                                <TimeInput
-                                    className="w-fit p-1"
-                                    date={timeData}
-                                    keyName={"wakeup"}
-                                    dateAction={setTimeData}
-                                    // onChange={() => setError("")}
-                                    selectorPointerEventsNone={!editAnswer}
-                                />
-                            </div>
+                            오늘의 질문 목록 {!isMobile && `(${date.toLocaleDateString()})`}
                         </div>
-                        <div className="w-full space-y-4">
-                            {aList.map(([q, a], i) => {
-                                if (q !== "") {
-                                    return <div key={i}>
-                                        <div key={i}>
-                                            <label htmlFor="name" className="component-button-info">
-                                                {q}
-                                            </label>
-                                            <TextareaAutosize
-                                                readOnly={!editAnswer}
-                                                className={cn(
-                                                    "component-input resize-none",
-                                                    {'bg-white': editAnswer}
-                                                )}
-                                                cacheMeasurements
-                                                value={a || ""}
-                                                onChange={(e) => {
-                                                    setAList((prev) => {
-                                                        const _arr = [...prev];
-                                                        _arr[i] = [q, e.target.value];
-                                                        return _arr;
-                                                    });
-                                                }}
-                                            />
+                        {(answered && today.getDate() === date.getDate()) && (
+                            <div className="flex items-center gap-4">
+                                <div className="font-bold text-red-600 items-center">
+                                    {error}
+                                </div>
+                                <button
+                                    className={cn(
+                                        "text-white rounded-lg font-semibold p-1",
+                                        {"bg-blue hover:bg-blue-700": !editAnswer},
+                                        {"bg-blue-700 hover:bg-blue": editAnswer},
+                                        {"text-lg": !isMobile}
+                                    )}
+                                    onClick={update}
+                                >
+                                    {(editAnswer) ? "응답 저장하기" : "응답 수정하기"}
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                    <Scrollbars
+                        className="w-full flex-1"
+                        universal
+                        autoHide
+                    >
+                        {(answered) ? (
+
+                            <div className={cn(
+                                "flex flex-col w-full h-full items-center p-1 space-y-4"
+                            )}>
+                                <div className={cn(
+                                    "grid w-full gap-4",
+                                    isMobile ? "grid-rows-2" : "grid-cols-2"
+                                )}>
+                                    <div className={cn(
+                                        "items-center justify-center flex",
+                                        {"flex-col": !isMobile}
+                                    )}>
+                                        <div className="text-xl font-semibold">
+                                            취침 시간
                                         </div>
+                                        <TimeInput
+                                            className="w-fit p-1"
+                                            date={timeData}
+                                            keyName={"sleep"}
+                                            dateAction={setTimeData}
+                                            // onChange={() => setError("")}
+                                            selectorPointerEventsNone={!editAnswer}
+                                        />
                                     </div>
-                                }
-                            })}
+                                    <div className={cn(
+                                        "items-center justify-center flex",
+                                        {"flex-col": !isMobile}
+                                    )}>
+                                        <div className="text-xl font-semibold">
+                                            기상 시간
+                                        </div>
+                                        <TimeInput
+                                            className="w-fit p-1"
+                                            date={timeData}
+                                            keyName={"wakeup"}
+                                            dateAction={setTimeData}
+                                            // onChange={() => setError("")}
+                                            selectorPointerEventsNone={!editAnswer}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="w-full space-y-4">
+                                    {aList.map(([q, a], i) => {
+                                        if (q !== "") {
+                                            return <div key={i}>
+                                                <div key={i}>
+                                                    <label htmlFor="name" className="component-button-info">
+                                                        {q}
+                                                    </label>
+                                                    <TextareaAutosize
+                                                        readOnly={!editAnswer}
+                                                        className={cn(
+                                                            "component-input resize-none",
+                                                            {'bg-white': editAnswer}
+                                                        )}
+                                                        cacheMeasurements
+                                                        value={a || ""}
+                                                        onChange={(e) => {
+                                                            setAList((prev) => {
+                                                                const _arr = [...prev];
+                                                                _arr[i] = [q, e.target.value];
+                                                                return _arr;
+                                                            });
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        }
+                                    })}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="flex items-center justify-center w-full h-full text-xl font-bold">
+                                아직 응답하지 않았습니다.
+                            </div>
+                        )}
+                    </Scrollbars>
+                </>
+            )}
+            {(tab === 1) && (
+                <>
+                    <div className="flex items-center w-full justify-between">
+                        <div className="text-3xl text-gray-800 font-semibold">
+                            설정
                         </div>
                     </div>
-                ) : (
-                    <div className="flex items-center justify-center w-full h-full text-xl font-bold">
-                        아직 응답하지 않았습니다.
+                    <Scrollbars
+                        className="w-full flex-1"
+                        universal
+                        autoHide
+                    >
+                        <div className="flex flex-col w-full items-start p-1 space-y-4">
+                            <div className="flex items-center">
+                                <input
+                                    // checked={tabList["Log List"]}
+                                    id="checked-checkbox"
+                                    type="checkbox"
+                                    className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                    // onChange={() => setTabList(prev => {
+                                    //     return {
+                                    //         ...prev,
+                                    //         "Log List": !prev["Log List"],
+                                    //     }
+                                    // })}
+                                />
+                                <label htmlFor="checked-checkbox" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                    푸쉬 알림 동의
+                                </label>
+                            </div>
+                        </div>
+                    </Scrollbars>
+                </>
+            )}
+        </div>
+    );
+}
+
+export function IsTeacher() {
+    const [tab, setTab] = useState(0);
+    const tabList = {
+        "설정": true,
+    };
+
+    return (
+        <div className="w-full h-full flex flex-col gap-4">
+            <div
+                className="grid text-xl font-bold gap-2 items-center h-fit grid-cols-4"
+                style={{gridTemplateColumns: `repeat(${Object.entries(tabList).filter(t => t[1]).length}, minmax(0, 1fr))`}}
+            >
+                {Object.entries(tabList).filter(t => t[1]).map((t, i) => {
+                    return (
+                        <button
+                            key={i}
+                            className={cn(
+                                "flex justify-center hover:bg-gray-300 p-1 rounded",
+                                {"border-2 border-gray": (i === tab)}
+                            )}
+                            onClick={() => setTab(i)}
+                        >
+                            {t[0]}
+                        </button>
+                    )
+                })}
+            </div>
+            {(tab === 0) && (
+                <>
+                    <div className="flex items-center w-full justify-between">
+                        <div className="text-3xl text-gray-800 font-semibold">
+                            설정
+                        </div>
                     </div>
-                )}
-            </Scrollbars>
+                    <Scrollbars
+                        className="w-full flex-1"
+                        universal
+                        autoHide
+                    >
+                        <div className="flex flex-col w-full items-start p-1 space-y-4">
+                            <div className="flex items-center">
+                                <input
+                                    // checked={tabList["Log List"]}
+                                    id="checked-checkbox"
+                                    type="checkbox"
+                                    className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                    // onChange={() => setTabList(prev => {
+                                    //     return {
+                                    //         ...prev,
+                                    //         "Log List": !prev["Log List"],
+                                    //     }
+                                    // })}
+                                />
+                                <label htmlFor="checked-checkbox" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                    푸쉬 알림 동의
+                                </label>
+                            </div>
+                        </div>
+                    </Scrollbars>
+                </>
+            )}
         </div>
     );
 }
@@ -297,12 +427,8 @@ export interface IListUser {
     selected?: boolean;
 }
 
-export function IsAdmin(
-    {
-        qList, setQList,
-        date,
-    }
-) {
+export function IsAdmin({date}: { date: Date }) {
+    const [qList, setQList] = useState({});
     const [editQuestion, setEditQuestion] = useState(false);
     const today = new Date();
     const dateString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
