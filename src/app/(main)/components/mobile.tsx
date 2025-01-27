@@ -31,22 +31,22 @@ export function Navigation2() {
             {/* 네비게이션 링크 (하단 고정) */}
             <nav className="nav-bar">
                 <Link href="/home" className="nav-item">
-                    <span className={cn("_nav-item", {"bg-white": path === '/home'})}>
+                    <span className={cn("_nav-item border-2", {"bg-white": path === '/home'})}>
                         홈
                     </span>
                 </Link>
                 <Link href="/board" className="nav-item">
-                    <span className={cn("_nav-item", {"bg-white": path === '/board'})}>
+                    <span className={cn("_nav-item border-2", {"bg-white": path === '/board'})}>
                         게시판
                     </span>
                 </Link>
                 <Link href="/timeTable" className="nav-item">
-                    <span className={cn("_nav-item", {"bg-white": path === '/timeTable'})}>
+                    <span className={cn("_nav-item border-2", {"bg-white": path === '/timeTable'})}>
                         시간표
                     </span>
                 </Link>
                 <Link href="/mypage" className="nav-item">
-                    <span className={cn("_nav-item", {"bg-white": path === '/mypage'})}>
+                    <span className={cn("_nav-item border-2", {"bg-white": path === '/mypage'})}>
                         프로필
                     </span>
                 </Link>

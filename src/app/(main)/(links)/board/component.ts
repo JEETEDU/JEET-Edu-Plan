@@ -30,6 +30,7 @@ export interface IArticle {
 }
 
 export const initArticle: IArticle = {
+    class_id: 0,
     attach_files_exist: 0,
     attach_files: [],
     category: 0,

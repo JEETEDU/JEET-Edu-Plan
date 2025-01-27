@@ -6,17 +6,30 @@ import {IArticle, initArticle, loadArticleInfo} from "@/app/(main)/(links)/board
 import {Author, Category, Class_, Hr, Subject, Time, Title} from "@/app/(main)/(links)/home/(pages)/desktop";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import {IClassInfo} from "@/app/(main)/(links)/mypage/(pages)/component/classSetting";
+import {GET} from "@/app/(main)/components/functions";
 
 const ReactQuill = dynamic(() => import('react-quill-new'), {ssr: false})
 
 // eslint-disable-next-line @next/next/no-async-client-component
 export default function Notice({id}: { id: number }) {
     const [selectedNotice, setSelectedNotice] = useState<IArticle>(initArticle);
+    const [selectedClass, setSelectedClass] = useState<IClassInfo>({
+        display: 1,
+        description: "",
+        id: 0, name: "",
+        students: [],
+        subjects: [],
+        teachers: []
+    });
 
     useEffect(() => {
         (async () => {
-            const res = await loadArticleInfo(id);
-            setSelectedNotice(res.article);
+            const resArticle = await loadArticleInfo(id);
+            setSelectedNotice(resArticle.article);
+
+            const resClass: { success: boolean; class_: IClassInfo } = await GET(`/api/class/${resArticle.article.class_id}`);
+            if (resClass.success) setSelectedClass(resClass.class_);
         })();
     }, [id]);
 
@@ -24,12 +37,14 @@ export default function Notice({id}: { id: number }) {
         <div className="flex flex-col gap-4 h-full w-full justify-between p-4">
             <>
                 <div className="flex flex-row gap-4 w-full justify-between items-start">
-                    <Class_ class_={selectedNotice.class_?.name || ""}/>
-                    <Subject subject={selectedNotice.subject.name || ""}/>
-                    <Category category={selectedNotice.category}/>
-                    <Title title={selectedNotice.title}/>
+                    <div className="flex flex-row gap-2">
+                        <Class_ class_={selectedClass.name || ""}/>
+                        <Subject subject={selectedNotice.subject.name || ""}/>
+                        <Category category={selectedNotice.category}/>
+                    </div>
                     <Author name={selectedNotice.user.name}/>
                 </div>
+                <Title title={selectedNotice.title}/>
                 <Hr/>
             </>
             <Scrollbars>
