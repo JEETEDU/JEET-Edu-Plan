@@ -25,6 +25,10 @@ interface ITodo {
     content: string
 }
 
+export function parseDate(date: Date): string {
+    return `${date.getFullYear()}-${(String(date.getMonth() + 1)).padStart(2, '0')}-${(String(date.getDate())).padStart(2, '0')}`;
+}
+
 export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
     const [todos, setTodos] = useState<ITodo[]>([]);
 
@@ -60,10 +64,6 @@ export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
     useEffect(() => {
         if (page > 1) reload(true);
     }, [page]);
-
-    function parseDate(date: Date): string {
-        return `${date.getFullYear()}-${(String(date.getMonth() + 1)).padStart(2, '0')}-${(String(date.getDate())).padStart(2, '0')}`;
-    }
 
     useEffect(() => {
         let p = ``;

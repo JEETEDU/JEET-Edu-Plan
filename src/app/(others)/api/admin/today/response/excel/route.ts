@@ -204,7 +204,7 @@ export async function GET(req: NextRequest) {
             headers: {
                 'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                 'Content-Disposition': 'attachment; filename="response.xlsx"'
-            }
+            },
         });
     } catch (e) {
         console.error(e);

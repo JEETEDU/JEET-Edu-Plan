@@ -10,6 +10,8 @@ import UserDetail from "@/app/(main)/(links)/mypage/(pages)/component/userList/u
 import Log from "@/app/(main)/(links)/mypage/(pages)/component/log";
 import ClassSetting from "@/app/(main)/(links)/mypage/(pages)/component/classSetting";
 import {Hr} from "@/app/(main)/(links)/home/(pages)/desktop";
+import {DateRangePicker} from "@/app/(main)/(links)/home/components/homeworks";
+import Excel from "@/app/(main)/components/excel";
 
 export function IsStudent({date, isMobile}: { date: Date; isMobile: boolean }) {
     const [editAnswer, setEditAnswer] = useState(false);
@@ -412,7 +414,7 @@ export function IsTeacher() {
     );
 }
 
-export interface IListUser {
+interface _IUser {
     uid: number;
     login_id: string;
     user_type: number;
@@ -425,6 +427,11 @@ export interface IListUser {
         name: string;
     }[];
     selected?: boolean;
+}
+
+export interface IListUser extends _IUser {
+    accept?: boolean;
+    reject?: boolean;
 }
 
 export function IsAdmin({date}: { date: Date }) {
@@ -470,14 +477,17 @@ export function IsAdmin({date}: { date: Date }) {
             setUserList(users || []);
             if (users) if (users.length > 0) setHead(users[0].uid || 0);
 
-            const newUsers = (await getStoreData('/api/admin/user?user_type=0&order_by=name&order=ASC', 'user-list-student-new')).response.users;
-            setNewUserList(newUsers.map((u) => {
-                return {
-                    ...u,
-                    accept: false,
-                    reject: false
-                }
-            }));
+            const res: { success: boolean; users: _IUser[] } = await GET('/api/admin/user?user_type=0&order_by=name&order=ASC');
+            if (res.success) {
+                setNewUserList(res.users.map((u) => {
+                    return {
+                        ...u,
+                        accept: false,
+                        reject: false
+                    }
+                }));
+            }
+
         })();
     }, []);
 
@@ -485,7 +495,11 @@ export function IsAdmin({date}: { date: Date }) {
         if (editQuestion) {
             const body = {date: dateString};
             Array.from({length: 3, 0: 1}).map((_, i) => {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-expect-error
                 if (qList[`question_${i + 1}`] !== "") {
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-expect-error
                     body[`question_${i + 1}`] = qList[`question_${i + 1}`];
                 }
             });
@@ -574,7 +588,7 @@ export function IsAdmin({date}: { date: Date }) {
 
     const refreshNewUser = () => {
         (async () => {
-            const newUsers = (await getStoreData('/api/admin/user?user_type=0&order_by=name&order=ASC', 'user-list-student-new', true)).response.users;
+            const newUsers: _IUser[] = (await getStoreData('/api/admin/user?user_type=0&order_by=name&order=ASC', 'user-list-student-new', true)).response.users;
             setNewUserList(newUsers.map((u) => {
                 return {...u, accept: false}
             }));
@@ -608,28 +622,31 @@ export function IsAdmin({date}: { date: Date }) {
                         <div className="text-3xl text-gray-800 font-semibold">
                             오늘의 질문 목록 ({date.toLocaleDateString()})
                         </div>
-                        {(today.getDate() === date.getDate()) && (
-                            <button
-                                className={cn(
-                                    "px-3 py-1 text-white text-lg font-bold rounded w-fit",
-                                    {"bg-blue hover:bg-blue-700": !editQuestion},
-                                    {"bg-blue-700 hover:bg-blue": editQuestion}
-                                )}
-                                onClick={updateQuestion}
-                            >
-                                {(
-                                    editQuestion
-                                ) ? (
-                                    "저장하기"
-                                ) : (
-                                    questionOK
-                                ) ? (
-                                    "수정하기"
-                                ) : (
-                                    "등록하기"
-                                )}
-                            </button>
-                        )}
+                        <div className="flex flex-row gap-4">
+                            <Excel/>
+                            {(today.getDate() === date.getDate()) && (
+                                <button
+                                    className={cn(
+                                        "px-3 py-1 text-white text-lg font-bold rounded w-fit",
+                                        {"bg-blue hover:bg-blue-700": !editQuestion},
+                                        {"bg-blue-700 hover:bg-blue": editQuestion}
+                                    )}
+                                    onClick={updateQuestion}
+                                >
+                                    {(
+                                        editQuestion
+                                    ) ? (
+                                        "저장하기"
+                                    ) : (
+                                        questionOK
+                                    ) ? (
+                                        "수정하기"
+                                    ) : (
+                                        "등록하기"
+                                    )}
+                                </button>
+                            )}
+                        </div>
                     </div>
                     <Scrollbars
                         className="w-full flex-1"
@@ -652,7 +669,9 @@ export function IsAdmin({date}: { date: Date }) {
                                             onChange={(e) => {
                                                 setQList((prev) => {
                                                     const obj = {...prev};
-                                                    obj[key] = e.target.value || "";
+                                                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                                    // @ts-expect-error
+                                                    obj[key] = String(e.target.value) || "";
                                                     return obj;
                                                 });
                                             }}
@@ -697,7 +716,7 @@ export function IsAdmin({date}: { date: Date }) {
                             onChange={(e) => {
                                 setUserParams((prev) => {
                                     const obj = {...prev};
-                                    obj.user_type = e.value;
+                                    obj.user_type = e!.value;
                                     return obj;
                                 })
                             }}
@@ -705,6 +724,7 @@ export function IsAdmin({date}: { date: Date }) {
                                 IndicatorSeparator: () => null
                             }}
                             isSearchable={false}
+                            required
                         />
                         <Select
                             options={[
@@ -717,10 +737,11 @@ export function IsAdmin({date}: { date: Date }) {
                             onChange={(e) => {
                                 setUserParams((prev) => {
                                     const obj = {...prev};
-                                    obj.search_by = e.value;
+                                    obj.search_by = e!.value;
                                     return obj;
                                 })
                             }}
+                            required
                             defaultValue={{value: "name", label: "이름 (ex. 나태양)"}}
                             components={{
                                 IndicatorSeparator: () => null
@@ -752,7 +773,7 @@ export function IsAdmin({date}: { date: Date }) {
                         </div>
                         <button
                             className="px-3 py-1 bg-blue-500 text-white text-lg font-bold rounded hover:bg-blue-600 w-fit"
-                            onClick={refreshUser}
+                            onClick={() => refreshUser()}
                         >
                             새로고침
                         </button>
@@ -801,7 +822,7 @@ export function IsAdmin({date}: { date: Date }) {
                                             </div>
                                             <div className="flex flex-col">
                                                 <div className="flex items-center justify-end">
-                                                    {u.first_year as string} {u.joined_term as string}
+                                                    {String(u.first_year)} {u.joined_term as string}
                                                 </div>
                                                 <div className="flex items-center justify-end">
                                                     {u.school as string}

@@ -2,10 +2,10 @@
 
 import {cn, DELETE, GET, getStoreData, PUT} from "@/app/(main)/components/functions";
 import React, {useEffect, useState} from "react";
-import {usePathname} from "next/navigation";
 import TextareaAutosize from "react-textarea-autosize";
 import Select from "react-select";
 import Scrollbars from "react-custom-scrollbars-2";
+import Link from "next/link";
 
 export function Alert({path, isMobile}: { path: string, isMobile: boolean }) {
     const [isModalOpen, setModalOpen] = useState<boolean>(false);
@@ -43,8 +43,8 @@ export function Alert({path, isMobile}: { path: string, isMobile: boolean }) {
     }
 
     useEffect(() => {
-        loadAlerts();
-    }, [getOnlyUnread]);
+        if (isModalOpen) loadAlerts();
+    }, [getOnlyUnread, isModalOpen]);
 
     function ReadAllAlerts() {
         return <button
@@ -66,14 +66,22 @@ export function Alert({path, isMobile}: { path: string, isMobile: boolean }) {
     function Shortcut({alert}: { alert: IAlert }) {
         return <>
             {(alert.article_id) && (
-                <button
+                <Link
                     className={cn(isMobile ? "w-full" : "w-fit", "border-2 rounded p-1 flex flex-col items-center gap-1 border-blue-500 bg-blue-500 text-white")}
-                    onClick={() => window.alert(`바로가기: ${alert.article_id}`)}
+                    onClick={async () => {
+                        const r = await PUT('/api/user/alert/read', {
+                            alert: [alert.id]
+                        });
+                        if (r.success) {
+                            setModalOpen(false);
+                        }
+                    }}
+                    href={`/board/${alert.article_id}`}
                 >
                     <div className="w-fit whitespace-nowrap h-full flex items-center font-bold">
                         바로가기
                     </div>
-                </button>
+                </Link>
             )}
         </>
     }
@@ -163,9 +171,9 @@ export function Alert({path, isMobile}: { path: string, isMobile: boolean }) {
                                         <div key={alert.id} className={cn("flex flex-col gap-3 justify-between w-full", {"border p-2 rounded": isMobile})}>
                                             <div className={cn("flex flex-row gap-3 justify-between w-full", {"border p-2 rounded": !isMobile})}>
                                                 <div className={cn(
-                                                    "w-fit border-2 rounded p-1 flex flex-col items-center gap-1 text-white font-bold text-sm whitespace-break-spaces align-middle justify-center",
-                                                    {"border-green-500 bg-green-500": (alert.alert_type === 0)},
-                                                    {"border-blue-500 bg-blue-500": (alert.alert_type === 1)}
+                                                    "w-fit rounded p-1 flex flex-col items-center gap-1 text-white font-bold text-sm whitespace-break-spaces align-middle justify-center bg-black",
+                                                    {"bg-green-500": (alert.alert_type === 0)},
+                                                    {"bg-blue-500": (alert.alert_type === 1)},
                                                 )}
                                                 >
                                                     {(alert.alert_type === 0) ? "일\n반" : (alert.alert_type === 1) ? "공\n지" : "기\n타"}
@@ -297,7 +305,6 @@ export function TimeInput(
 }
 
 export function TodayQuestion({device}: { device: string }) {
-    const path = usePathname();
     const [answered, setAnswered] = useState(false);
     const [showQuestion, setShowQuestion] = useState(false);
     const [userType, setUserType] = useState(0);
@@ -335,16 +342,24 @@ export function TodayQuestion({device}: { device: string }) {
     }, [answered]);
 
     const register = async () => {
-        // console.log(timeData)
+
         const body = {
-            answer_lastday: document.getElementById('y').value,
-            answer_school: document.getElementById('s').value,
-            answer_academy: document.getElementById('a').value
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            answer_lastday: document.getElementById('y')!.value,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            answer_school: document.getElementById('s')!.value,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            answer_academy: document.getElementById('a')!.value
         };
 
         Object.entries(qList).map(([key, value], index) => {
             if (value !== null) {
-                body[`answer_${index + 1}`] = document.getElementById(key).value;
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-expect-error
+                body[`answer_${index + 1}`] = document.getElementById(key)!.value;
             }
         });
 
@@ -489,7 +504,7 @@ export function TodayQuestion({device}: { device: string }) {
                                     // eslint-disable-next-line react/jsx-key
                                     <div key={key}>
                                         <label htmlFor="name" className="component-button-info">
-                                            {value.toString()}
+                                            {value!.toString()}
                                         </label>
                                         <TextareaAutosize
                                             id={key}
@@ -524,8 +539,6 @@ export function TodayQuestion({device}: { device: string }) {
                                         } else {
                                             setError("정확한 정보를 입력해 주세요");
                                         }
-                                        // console.log(r);
-                                        // console.log(answered)
                                     });
                                 }}
                             >
