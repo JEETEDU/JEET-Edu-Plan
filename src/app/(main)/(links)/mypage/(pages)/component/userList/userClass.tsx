@@ -39,7 +39,6 @@ export default function UserClass({uid, userType}: { uid: number; userType: numb
                 success: boolean;
                 users: IUser[];
             } = await GET(`/api/admin/user?search_by=user_id&search_string=${uid}`);
-            console.log("?", res);
             if (res.success) {
                 setUser(res.users[0]);
             }
@@ -47,7 +46,6 @@ export default function UserClass({uid, userType}: { uid: number; userType: numb
     }
 
     useEffect(() => {
-        console.log(uid)
         setMessage(["", ""]);
         setError("");
         getClassList();

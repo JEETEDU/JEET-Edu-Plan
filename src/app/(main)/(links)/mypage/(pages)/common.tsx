@@ -48,8 +48,6 @@ export function IsStudent({date, isMobile}: { date: Date; isMobile: boolean }) {
                 questions = await getStoreData(`/api/user/today/question?${_params}`, `question-list-${_params}`, true)
             }
 
-            console.log(questions);
-
             if (questions.response.success) {
                 //----------------------------------------------
                 const _q: string[] = Object.values(questions.response.answers[0].questions);
@@ -58,7 +56,6 @@ export function IsStudent({date, isMobile}: { date: Date; isMobile: boolean }) {
                 const qaArr: [string, string][] = qArr.map((q, i) => {
                     return [q || "", aArr[i]];
                 });
-                console.log(qaArr)
                 //----------------------------------------------
                 setAList(qaArr);
                 setAnswered(Boolean(questions.response.answers[0].answers.answer_1 !== null));
@@ -80,7 +77,6 @@ export function IsStudent({date, isMobile}: { date: Date; isMobile: boolean }) {
             if (new Date(times.last_update).getDate() !== today.getDate()) {
                 times = await getStoreData(`/api/user/today/sleep?${_params}`, `sleep-time-${_params}`, true);
             }
-            console.log('t', times);
 
             if (times.response.success) {
                 setTimeData({
@@ -110,7 +106,6 @@ export function IsStudent({date, isMobile}: { date: Date; isMobile: boolean }) {
                 }
                 return obj;
             }, {});
-            console.log(body)
 
             const r1 = await PUT('/api/user/today/question', body);
 
@@ -123,7 +118,6 @@ export function IsStudent({date, isMobile}: { date: Date; isMobile: boolean }) {
             const qaArr: [string, string][] = qArr.map((q, i) => {
                 return [q || "", aArr[i]];
             });
-            console.log(qaArr)
             setAList(qaArr);
 
             if (timeData.sleep > timeData.wakeup) timeData.sleep.setDate(timeData.sleep.getDate() - 1);
@@ -459,7 +453,6 @@ export function IsAdmin({date}: { date: Date }) {
             if (questions.response.success) {
                 setQuestionOK(true);
                 setQList(questions.response.today_questions);
-                console.log(questions.response.today_questions)
             } else {
                 setQuestionOK(false);
                 setQList({
@@ -503,7 +496,6 @@ export function IsAdmin({date}: { date: Date }) {
                     body[`question_${i + 1}`] = qList[`question_${i + 1}`];
                 }
             });
-            console.log(body)
             await PUT('/api/admin/today/question', body);
 
             const questions = await getStoreData(`/api/admin/today/question?${params}`, `question-list-${params}`, true);

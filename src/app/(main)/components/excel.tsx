@@ -25,9 +25,8 @@ export default function Excel() {
                     (res) => {
                         return res;
                     }
-                )
+                );
 
-                console.log(res)
                 const data = new Blob([res], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
                 const url = URL.createObjectURL(data);
                 const link = document.createElement("a");

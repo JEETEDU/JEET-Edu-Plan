@@ -10,7 +10,6 @@ import Select from "react-select";
 import {Category, Subject} from "@/app/(main)/(links)/home/(pages)/desktop";
 
 export function ArticleItem({article, head = 0, setHead = null}: { article: IArticle, head?: number | null; setHead?: ((id: number) => void) | null }) {
-    // console.log(article)
     return (
         <button
             key={article.id}
@@ -75,7 +74,6 @@ export default function Desktop() {
             if (resClass.success) {
                 setClasses(resClass.classes);
                 const c = resClass.classes[0];
-                console.log(resClass.classes)
                 setSelectedClass(`${c.id}/${c.name} | ${c.description}`);
             }
         })();

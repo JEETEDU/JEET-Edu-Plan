@@ -70,14 +70,9 @@ export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
         if (done.value !== "") p += `&done=${done.value}`;
         if (startDueDate !== null) p += `&start_due_date=${parseDate(startDueDate)}`;
         if (endDueDate !== null) p += `&end_due_date=${parseDate(endDueDate)}`;
-        console.log(p);
 
         setParam(p);
     }, [done, startDueDate, endDueDate]);
-
-    useEffect(() => {
-        console.log("Homeworks: ", todos);
-    }, [todos]);
 
     const [openDatePicker, setOpenDatePicker] = useState<boolean>(false);
 
