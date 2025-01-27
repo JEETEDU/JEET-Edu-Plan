@@ -11,8 +11,14 @@ import {IArticle} from "@/app/(main)/(links)/board/component";
 import DatePicker from "react-datepicker";
 import {ko} from "date-fns/locale";
 import {DatepickerWrapper} from "@/app/(main)/(links)/home/components/homeworks";
+import Loading from "@/app/(main)/loading";
 
-const ReactQuill = dynamic(() => import('react-quill-new'), {ssr: false})
+import 'react-quill/dist/quill.snow.css';
+
+const ReactQuill = dynamic(() => import('react-quill-new'), {
+    ssr: false,
+    loading: () => <Loading/>,
+});
 
 interface IUserInfo {
     uid: number;
@@ -281,53 +287,54 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
     const today = new Date();
 
     return (
-        <>{(dueDate.open) && (
-            <div
-                className="fixed inset-0 bg-black/50 flex items-center justify-center z-60"
-                onClick={() => setDueDate({
-                    due: dueDate.due,
-                    open: false
-                })} // 모달 바깥 클릭 시 닫힘
-            >
+        <>
+            {(dueDate.open) && (
                 <div
-                    className="flex flex-col bg-gray-100 gap-4 p-4 rounded items-center"
-                    onClick={(e) => e.stopPropagation()}
+                    className="fixed inset-0 bg-black/50 flex items-center justify-center z-60"
+                    onClick={() => setDueDate({
+                        due: dueDate.due,
+                        open: false
+                    })} // 모달 바깥 클릭 시 닫힘
                 >
-                    <div className="w-full flex items-center justify-center text-center text-xl font-bold">
-                        {dueDate.due.toDateString()}
-                    </div>
-                    <DatepickerWrapper className="w-fit text-center flex gap-4 justify-center">
-                        <DatePicker
-                            className="outline-none"
-                            locale={ko}
-                            selected={dueDate.due}
-                            onChange={(e) => {
-                                setDueDate(prev => {
-                                    return {
-                                        due: e || today,
-                                        open: prev.open
-                                    }
-                                });
-                            }}
-                            dateFormat='yyyy-MM-dd'
-                            placeholderText="전체 기한"
-                            inline
-                            minDate={today}
-                        />
-                    </DatepickerWrapper>
                     <div
-                        className="w-full flex items-center justify-center text-center bg-blue-500 hover:bg-blue-600 text-white py-1 rounded"
-                        onClick={() => setDueDate({
-                            due: dueDate.due,
-                            open: false
-                        })}
+                        className="flex flex-col bg-gray-100 gap-4 p-4 rounded items-center"
+                        onClick={(e) => e.stopPropagation()}
                     >
-                        저장하기
+                        <div className="w-full flex items-center justify-center text-center text-xl font-bold">
+                            {dueDate.due.toDateString()}
+                        </div>
+                        <DatepickerWrapper className="w-fit text-center flex gap-4 justify-center">
+                            <DatePicker
+                                className="outline-none"
+                                locale={ko}
+                                selected={dueDate.due}
+                                onChange={(e) => {
+                                    setDueDate(prev => {
+                                        return {
+                                            due: e || today,
+                                            open: prev.open
+                                        }
+                                    });
+                                }}
+                                dateFormat='yyyy-MM-dd'
+                                placeholderText="전체 기한"
+                                inline
+                                minDate={today}
+                            />
+                        </DatepickerWrapper>
+                        <div
+                            className="w-full flex items-center justify-center text-center bg-blue-500 hover:bg-blue-600 text-white py-1 rounded"
+                            onClick={() => setDueDate({
+                                due: dueDate.due,
+                                open: false
+                            })}
+                        >
+                            저장하기
+                        </div>
                     </div>
                 </div>
-            </div>
-        )}
-            <div className="p-6 space-y-4 h-screen flex flex-col bg-white">
+            )}
+            <div className="p-6 space-y-2 h-full flex flex-col">
                 {/* 제목과 버튼 */}
                 <div className="flex w-full justify-between items-center gap-2">
                     <input
@@ -340,7 +347,7 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
                     <div className="flex flex-row gap-2 h-full font-bold text-lg">
                         <button
                             onClick={fileInput}
-                            className="px-3  rounded-lg hover:bg-gray-100 border-x-2 transition"
+                            className="px-3  rounded-lg hover:bg-gray-200 border-x-2 transition bg-white"
                         >
                             첨부파일 추가
                         </button>
@@ -366,7 +373,7 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
                 </div>
 
                 <div className="flex flex-row w-full justify-between items-center gap-4">
-                    <div className="flex-1 grid grid-cols-4 gap-2">
+                    <div className="flex-grow grid grid-cols-4 gap-2">
                         <div className="flex flex-col items-start w-full justify-start">
                             <label className="component-button-info">
                                 게시할 반 (ex. G3-S)
@@ -390,8 +397,8 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
                                 placeholder="반을 선택해 주세요"
                                 instanceId={1}
                                 onChange={(e) => {
-                                    setSelectedClass(e.value);
-                                    setContent({...content, class_id: Number(e.value.split('/')[0])});
+                                    setSelectedClass(e!.value);
+                                    setContent({...content, class_id: Number(e!.value.split('/')[0])});
                                 }}
                                 isSearchable={false}
                             />
@@ -403,10 +410,10 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
                             <Select
                                 className="w-full"
                                 // menuPlacement="top"
-                                options={(content.category !== 1) ? (
+                                options={(prev?.category !== 1) ? (
                                     categories.map((c, i) => {
                                         return {value: String(i), label: c}
-                                    }).filter(c => (user.user_type !== 1) || (c.value !== '1')).filter(c => (content.category !== 1) || (c.value !== '1'))
+                                    }).filter(c => (user.user_type !== 1) || (c.value !== '1')).filter(c => (prev?.category !== 1) || (c.value !== '1'))
                                 ) : ([
                                     {value: "1", label: "숙제"}
                                 ])}
@@ -415,13 +422,13 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
                                 placeholder="게시물 종류를 선택해 주세요"
                                 instanceId={1}
                                 onChange={(e) => {
-                                    setContent({...content, category: Number(e.value)});
+                                    setContent({...content, category: Number(e!.value)});
                                 }}
                                 isSearchable={false}
                             />
                             {(content.category === 1) && (
                                 <button
-                                    className="w-full border-2 rounded flex flex-row items-center py-1 px-2 mt-1"
+                                    className="w-full border-2 rounded flex flex-row items-center py-1 px-2 mt-1 bg-white"
                                     onClick={() => setDueDate({
                                         due: dueDate.due,
                                         open: true
@@ -446,8 +453,8 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
                                 placeholder="과목을 선택해 주세요"
                                 instanceId={1}
                                 onChange={(e) => {
-                                    setSelectedSubject(e);
-                                    setContent({...content, subject_id: Number(e.value)});
+                                    setSelectedSubject(e!);
+                                    setContent({...content, subject_id: Number(e!.value)});
                                 }}
                                 isSearchable={false}
                             />
@@ -467,7 +474,7 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
                                 placeholder="과목을 선택해 주세요"
                                 instanceId={1}
                                 onChange={(e) => {
-                                    setContent({...content, is_notice: Number(e.value)});
+                                    setContent({...content, is_notice: Number(e!.value)});
                                 }}
                                 isSearchable={false}
                             />
@@ -507,7 +514,7 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
                     </Scrollbars>
                 </div>
                 {/* 에디터 */}
-                <div className="flex-1 flex flex-col">
+                <div className="flex-1 max-h-full">
                     <ReactQuill
                         theme="snow"
                         modules={{
@@ -532,7 +539,7 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
                                 ['clean'], // remove formatting button
                             ],
                         }}
-                        className="h-4/5"
+                        className="h-full max-h-full flex flex-col bg-white"
                         onChange={(_content, _delta, _source, editor) => {
                             setContent((prev) => {
                                 const obj = {...prev};
@@ -544,18 +551,18 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
                         value={content.content}
                     />
                 </div>
-                <input
-                    type="file"
-                    style={{display: "none"}}
-                    id="fileUpload"
-                    onChange={(e) => {
-                        if (e.target.files) {
-                            setFileList(Array.from(e.target.files));
-                        }
-                    }}
-                    multiple
-                />
             </div>
+            <input
+                type="file"
+                style={{display: "none"}}
+                id="fileUpload"
+                onChange={(e) => {
+                    if (e.target.files) {
+                        setFileList(Array.from(e.target.files));
+                    }
+                }}
+                multiple
+            />
         </>
     );
 }

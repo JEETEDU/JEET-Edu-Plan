@@ -9,7 +9,13 @@ import dynamic from "next/dynamic";
 import {IClassInfo} from "@/app/(main)/(links)/mypage/(pages)/component/classSetting";
 import {GET} from "@/app/(main)/components/functions";
 
-const ReactQuill = dynamic(() => import('react-quill-new'), {ssr: false})
+const ReactQuill = dynamic(() => import('react-quill-new'), {
+    ssr: false,
+    loading: () => <Loading/>,
+});
+
+import 'react-quill/dist/quill.bubble.css'
+import Loading from "@/app/(main)/loading";
 
 // eslint-disable-next-line @next/next/no-async-client-component
 export default function Notice({id}: { id: number }) {
@@ -47,14 +53,12 @@ export default function Notice({id}: { id: number }) {
                 <Title title={selectedNotice.title}/>
                 <Hr/>
             </>
-            <Scrollbars>
-                <ReactQuill
-                    className="text-gray-600 break-all grow"
-                    value={selectedNotice.content}
-                    readOnly
-                    theme={'bubble'}
-                />
-            </Scrollbars>
+            <ReactQuill
+                className="h-full max-h-full flex flex-col"
+                value={selectedNotice.content}
+                readOnly
+                theme={'bubble'}
+            />
             <>
                 <Scrollbars
                     className="w-full h-fit"
