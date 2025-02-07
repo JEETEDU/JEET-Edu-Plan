@@ -40,7 +40,7 @@ export const userRelations = relations(
             sleeps: many(sleeps),
             todayAnswers: many(todayAnswers),
             todos: many(todoes),
-            logs: many(logs)
+            logs: many(logs),
         })
 );
 
@@ -219,7 +219,16 @@ export const studentClassesRelations = relations(
     })
 );
 
-export const file = mysqlTable('file', {
+export const files = mysqlTable('file', {
     id: char({length: 12}).primaryKey(),
     name: varchar({length: 255}).notNull(),
 });
+
+export const books = mysqlTable('book', {
+    id: int().autoincrement().primaryKey(),
+    title: varchar({length: 255}).notNull(),
+    user_id: int().notNull().references(() => users.uid, {onDelete: 'cascade'}),
+    content: text().notNull(),
+    author: varchar({length: 255}),
+    publisher: varchar({length: 255})
+})

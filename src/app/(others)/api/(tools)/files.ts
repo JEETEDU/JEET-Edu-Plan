@@ -23,7 +23,7 @@ export async function save_files(tx: TX, files: FileList): Promise<SavedFileList
         file.arrayBuffer().then((buffer) => {
             fs.writeFileSync(file_path, Buffer.from(buffer));
         });
-        await tx.insert(schema.file).values({
+        await tx.insert(schema.files).values({
             id: file_name,
             name: file.name
         });
@@ -45,7 +45,7 @@ export async function update_files(tx: TX, files: FileList, original: SavedFileL
         file.arrayBuffer().then((buffer) => {
             fs.writeFileSync(file_path, Buffer.from(buffer));
         });
-        await tx.insert(schema.file).values({
+        await tx.insert(schema.files).values({
             id: file_name,
             name: file.name
         });
@@ -56,8 +56,8 @@ export async function update_files(tx: TX, files: FileList, original: SavedFileL
             fs.unlink(save_path + '/' + file.path.split('/').pop(), (err) => {
                 if (err) console.error(err);
             });
-            await tx.delete(schema.file)
-                .where(eq(schema.file.id, file.path.split('/').pop()?.split('.').shift() ?? ''));
+            await tx.delete(schema.files)
+                .where(eq(schema.files.id, file.path.split('/').pop()?.split('.').shift() ?? ''));
         }
     }
     return files_path;
@@ -68,7 +68,7 @@ export async function delete_files(tx: TX, files: SavedFileList) {
         fs.unlink(save_path + '/' + file.path.split('/').pop(), (err) => {
             if (err) console.error(err);
         });
-        await tx.delete(schema.file)
-            .where(eq(schema.file.id, file.path.split('/').pop()?.split('.').shift() ?? ''));
+        await tx.delete(schema.files)
+            .where(eq(schema.files.id, file.path.split('/').pop()?.split('.').shift() ?? ''));
     }
 }
