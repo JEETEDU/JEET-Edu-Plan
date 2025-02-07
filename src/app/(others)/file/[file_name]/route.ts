@@ -52,8 +52,8 @@ export async function GET(req: NextRequest, { params }: { params: { file_name: s
     console.log(file_id);
     const [file_name] =
         await db.select()
-            .from(schema.file)
-            .where(eq(schema.file.id, file_id));
+            .from(schema.files)
+            .where(eq(schema.files.id, file_id));
 
     if(!file_name) return NextResponse.json({ success: false, message: "File not found" }, { status: 404 });
 
