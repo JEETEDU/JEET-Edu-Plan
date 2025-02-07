@@ -10,7 +10,6 @@ import UserDetail from "@/app/(main)/(links)/mypage/(pages)/component/userList/u
 import Log from "@/app/(main)/(links)/mypage/(pages)/component/log";
 import ClassSetting from "@/app/(main)/(links)/mypage/(pages)/component/classSetting";
 import {Hr} from "@/app/(main)/(links)/home/(pages)/desktop";
-import {DateRangePicker} from "@/app/(main)/(links)/home/components/homeworks";
 import Excel from "@/app/(main)/components/excel";
 
 export function IsStudent({date, isMobile}: { date: Date; isMobile: boolean }) {

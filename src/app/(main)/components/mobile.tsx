@@ -5,7 +5,7 @@ import {usePathname} from "next/navigation";
 import {cn} from "@/app/(main)/components/functions"
 import React from "react";
 import {Alert, TodayQuestion} from "@/app/(main)/components/common";
-import logo from "@/app/(others)/file/images/LOGO.png";
+import logo from "@/images/LOGO.png";
 import Image from "next/image";
 
 export function Navigation1() {

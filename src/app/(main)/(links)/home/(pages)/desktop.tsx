@@ -60,19 +60,6 @@ export function Delete({id}: { id: number }) {
     );
 }
 
-export function Update({id}: { id: number }) {
-    return (
-        <button
-            className="p-1 rounded border-2 font-bold text-lg bg-blue-500 text-white border-blue-500"
-            onClick={() => {
-                alert("아직 구현 안함")
-            }}
-        >
-            수정
-        </button>
-    );
-}
-
 export function Title({title}: { title: string }) {
     return (
         <div className="flex-1 text-2xl break-all">
@@ -163,7 +150,7 @@ export default function Desktop() {
 
     return (
         <>
-            <div className="h-full flex flex-col">
+            <div className="h-full flex flex-col space-y-4 pb-4">
                 {(tab === 0) && (
                     <div className="flex-1 grid grid-cols-3 overflow-hidden bg-gray-100 gap-4 pl-4 pr-3"> {/* hear */}
                         <div className="col-span-2 bg-white rounded-lg border">
@@ -219,52 +206,50 @@ export default function Desktop() {
                         <Todo/>
                     </div>
                 )}
-                <div className="bg-gray-100 p-4 grid grid-cols-3 w-full items-center">
-                    <div></div>
+                {(userType === 1) && (
+                    <div className="bg-gray-100 grid grid-cols-3 w-full items-center">
+                        <div></div>
 
-                    <div className="flex justify-center">
-                        <div className={cn("p-0 pointer-events-auto component-form items-center whitespace-nowrap", (userType === 1) ? " grid grid-cols-3" : "flex justify-center")}>
-                            <button
-                                className={cn(
-                                    (tab === 0) ? "bg-white pointer-events-none" : "bg-gray-300 hover:bg-gray-200 transition duration-200",
-                                    (userType === 1) ? "h-fit rounded-l-lg text-center p-2" : "h-fit rounded-lg text-center p-2",
-                                )}
-                                onClick={() => setTab(0)}
-                            >
-                                공지사항
-                            </button>
-                            {(userType === 1) && (
-                                <>
-                                    <button
-                                        className={cn(
-                                            {
-                                                "bg-white pointer-events-none": (tab === 1),
-                                                "bg-gray-300 hover:bg-gray-200 transition duration-200": (tab !== 1),
-                                            },
-                                            "h-fit text-center p-2"
-                                        )}
-                                        onClick={() => setTab(1)}
-                                    >
-                                        숙제
-                                    </button>
-                                    <button
-                                        className={cn(
-                                            {
-                                                "bg-white pointer-events-none": (tab === 2),
-                                                "bg-gray-300 hover:bg-gray-200 transition duration-200": (tab !== 2),
-                                            },
-                                            "h-fit rounded-r-lg text-center p-2"
-                                        )}
-                                        onClick={() => setTab(2)}
-                                    >
-                                        할 일 목록
-                                    </button>
-                                </>
-                            )}
+                        <div className="flex justify-center">
+                            <div className={cn("p-0 pointer-events-auto component-form items-center whitespace-nowrap", " grid grid-cols-3")}>
+                                <button
+                                    className={cn(
+                                        (tab === 0) ? "bg-white pointer-events-none" : "bg-gray-300 hover:bg-gray-200 transition duration-200",
+                                        "h-fit rounded-l-lg text-center p-2",
+                                    )}
+                                    onClick={() => setTab(0)}
+                                >
+                                    공지사항
+                                </button>
+
+                                <button
+                                    className={cn(
+                                        {
+                                            "bg-white pointer-events-none": (tab === 1),
+                                            "bg-gray-300 hover:bg-gray-200 transition duration-200": (tab !== 1),
+                                        },
+                                        "h-fit text-center p-2"
+                                    )}
+                                    onClick={() => setTab(1)}
+                                >
+                                    숙제
+                                </button>
+                                <button
+                                    className={cn(
+                                        {
+                                            "bg-white pointer-events-none": (tab === 2),
+                                            "bg-gray-300 hover:bg-gray-200 transition duration-200": (tab !== 2),
+                                        },
+                                        "h-fit rounded-r-lg text-center p-2"
+                                    )}
+                                    onClick={() => setTab(2)}
+                                >
+                                    할 일 목록
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-
+                )}
             </div>
         </>
     );
