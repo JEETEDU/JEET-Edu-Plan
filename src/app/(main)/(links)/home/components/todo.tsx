@@ -326,7 +326,7 @@ export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
                                     cacheMeasurements
                                     readOnly
                                 />
-                                <div className={cn("flex flex-row", isMobile ? "w-full justify-between" : "gap-6")}>
+                                <div className={cn("flex flex-row h-full", isMobile ? "w-full justify-between" : "gap-6")}>
                                     <div className="flex flex-row gap-2">
                                         <button
                                             className="p-1 border-2 border-blue rounded hover:bg-blue hover:text-white duration-200"
@@ -358,10 +358,8 @@ export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
                                         </button>
                                     </div>
 
-                                    <div className="flex flex-col gap-2">
-                                        <div className="flex justify-end w-full text-gray-600">
-                                            마감일: {todo.due_date}
-                                        </div>
+                                    <div className="flex justify-end w-full text-gray-600 whitespace-nowrap h-full items-center">
+                                        마감일: {todo.due_date}
                                     </div>
                                 </div>
                             </div>
