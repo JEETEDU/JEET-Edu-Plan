@@ -14,7 +14,7 @@ import {and, count, desc, eq, like, sql} from 'drizzle-orm';
 
 /**
  * @swagger
- * /api/user/book:
+ * /api/admin/user/book:
  *   get:
  *     summary: Get books
  *     description: Retrieves a list of books for the user, with optional filtering by title.
