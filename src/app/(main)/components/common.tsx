@@ -205,7 +205,7 @@ export function Alert({path, isMobile}: { path: string, isMobile: boolean }) {
                             {isMobile && <ReadAllAlerts/>}
                             <button
                                 onClick={toggleModal}
-                                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                                className="bg-blue-500 text-white px-4 py-2 rounded lg:hover:bg-blue-600"
                             >
                                 닫기
                             </button>
@@ -398,7 +398,7 @@ export function TodayQuestion({device}: { device: string }) {
             <div className="fixed inset-0 flex items-end justify-end z-5 pointer-events-none">
                 <button
                     className={cn(
-                        "py-2 px-2 rounded bg-blue-500 hover:shadow-2xl hover:bg-blue-600 border border-blueGray pointer-events-auto text-white font-bold",
+                        "py-2 px-2 rounded bg-blue-500 lg:hover:shadow-2xl lg:hover:bg-blue-600 border border-blueGray pointer-events-auto text-white font-bold",
                         (device === 'desktop') ?
                             "m-8 text-xl" :
                             "mr-3 mb-15"
@@ -519,7 +519,7 @@ export function TodayQuestion({device}: { device: string }) {
                         </div>
                         <div className="w-full grid grid-cols-2 gap-4">
                             <button
-                                className="component-button bg-red-500 hover:bg-red-600"
+                                className="component-button bg-red-500 lg:hover:bg-red-600"
                                 onClick={() => setShowQuestion(p => !p)}
                             >
                                 취소 (닫기)

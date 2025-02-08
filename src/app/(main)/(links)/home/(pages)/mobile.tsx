@@ -9,11 +9,6 @@ import {Category, IResponseNotices, Subject} from "@/app/(main)/(links)/home/(pa
 import Homeworks from "@/app/(main)/(links)/home/components/homeworks";
 import Todo from "@/app/(main)/(links)/home/components/todo";
 
-// 더 할 작업
-// 1. 공지사항은 종류에 따라 색으로 구분, 기한 표시 등등
-// 3. 디자인 좀 수정해야됨...(그림자 빼기 등)
-// 3.1. 지금도 나쁘지 않을지도..?
-
 export default function Mobile() {
     const [tab, setTab] = useState<number>(0);
     const [notices, setNotices] = useState<IArticle[]>([]);
@@ -60,7 +55,7 @@ export default function Mobile() {
                 <button
                     className={cn({
                         "bg-white pointer-events-none": (tab === 0),
-                        "bg-gray-300 hover:bg-gray-200 transition duration-200": (tab !== 0),
+                        "bg-gray-300 lg:lg:hover:bg-gray-200 transition duration-200": (tab !== 0),
                     }, "h-fit text-center p-2")}
                     onClick={() => setTab(0)}
                 >
@@ -70,7 +65,7 @@ export default function Mobile() {
                         <button
                             className={cn({
                                 "bg-white pointer-events-none": (tab === 1),
-                                "bg-gray-300 hover:bg-gray-200 transition duration-200": (tab !== 1),
+                                "bg-gray-300 lg:lg:hover:bg-gray-200 transition duration-200": (tab !== 1),
                             }, "h-fit text-center p-2")}
                             onClick={() => setTab(1)}
                         >
@@ -79,7 +74,7 @@ export default function Mobile() {
                         <button
                             className={cn({
                                 "bg-white pointer-events-none": (tab === 2),
-                                "bg-gray-300 hover:bg-gray-200 transition duration-200": (tab !== 2),
+                                "bg-gray-300 lg:lg:hover:bg-gray-200 transition duration-200": (tab !== 2),
                             }, "h-fit text-center p-2")}
                             onClick={() => setTab(2)}
                         >

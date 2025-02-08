@@ -232,21 +232,21 @@ export function DateRangePicker(
             <div className={cn("grid w-full", isMobile ? "grid-cols-2" : "grid-cols-4 gap-4")}>
                 {(!isMobile) && (
                     <div
-                        className="flex items-center justify-center text-center bg-green-500 hover:bg-green-600 text-white py-1 rounded"
+                        className="flex items-center justify-center text-center bg-green-500 lg:lg:hover:bg-green-600 text-white py-1 rounded"
                         onClick={() => setStartDueDateAction(null)}
                     >
                         시작 날짜 제거
                     </div>
                 )}
                 <div
-                    className="col-span-2 flex items-center justify-center text-center bg-blue-500 hover:bg-blue-600 text-white py-1 rounded"
+                    className="col-span-2 flex items-center justify-center text-center bg-blue-500 lg:lg:hover:bg-blue-600 text-white py-1 rounded"
                     onClick={() => closeAction(false)}
                 >
                     저장하기
                 </div>
                 {(!isMobile) && (
                     <div
-                        className="flex items-center justify-center text-center bg-green-500 hover:bg-green-600 text-white py-1 rounded"
+                        className="flex items-center justify-center text-center bg-green-500 lg:lg:hover:bg-green-600 text-white py-1 rounded"
                         onClick={() => setEndDueDateAction(null)}
                     >
                         끝 날짜 제거
@@ -468,7 +468,7 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
                                     "p-2 rounded-l flex items-center justify-center border-2 text-xl cursor-pointer",
                                     (homework.done === 1) ? "bg-green-500 border-green-500 text-white"
                                         : "",
-                                    (!isMobile) ? (homework.done === 1) ? "hover:bg-red-500 hover:border-red-500" : "hover:bg-blue hover:border-blue hover:text-white" : "",
+                                    (!isMobile) ? (homework.done === 1) ? "lg:lg:hover:bg-red-500 lg:hover:border-red-500" : "lg:hover:bg-blue lg:hover:border-blue lg:hover:text-white" : "",
                                     (homework.article_id === head) ? "border-black" : ""
                                 )}
                                 onClick={async () => {
@@ -498,7 +498,7 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
                                 )}
                             </div>
                             <div
-                                className={cn("flex-1 border-y-2 border-r-2 rounded-r flex flex-row p-2 gap-2 hover:bg-white items-center", {"border-black": (homework.article_id === head)})}
+                                className={cn("flex-1 border-y-2 border-r-2 rounded-r flex flex-row p-2 gap-2 lg:hover:bg-white items-center", {"border-black": (homework.article_id === head)})}
                                 onClick={() => {
                                     if (isMobile) {
                                         router.push(`/board/${homework.article_id}`)

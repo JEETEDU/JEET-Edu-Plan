@@ -136,7 +136,7 @@ export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
                 </div>
                 <div className="w-full flex justify-end">
                     <button
-                        className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 hover:rounded-3xl duration-200 font-bold"
+                        className="p-2 bg-blue-500 text-white rounded lg:lg:hover:bg-blue-600 lg:lg:hover:rounded-3xl duration-200 font-bold"
                         onClick={async () => {
                             if (newTodo === null) {
                                 setNewTodo({
@@ -252,7 +252,7 @@ export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
                                             />
                                         </DatepickerWrapper>
                                         <div
-                                            className="w-full flex items-center justify-center text-center bg-blue-500 hover:bg-blue-600 text-white py-1 rounded"
+                                            className="w-full flex items-center justify-center text-center bg-blue-500 lg:lg:hover:bg-blue-600 text-white py-1 rounded"
                                             onClick={() => setNewTodo({
                                                 id: newTodo.id,
                                                 content: newTodo.content,
@@ -291,7 +291,7 @@ export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
                                     "p-2 rounded-l flex items-center justify-center border-2 text-xl cursor-pointer",
                                     (todo.done === 1) ? "bg-green-500 border-green-500 text-white"
                                         : "",
-                                    (!isMobile) ? (todo.done === 1) ? "hover:bg-red-500 hover:border-red-500" : "hover:bg-blue hover:border-blue hover:text-white" : ""
+                                    (!isMobile) ? (todo.done === 1) ? "lg:lg:hover:bg-red-500 lg:lg:hover:border-red-500" : "lg:lg:hover:bg-blue lg:lg:hover:border-blue lg:hover:text-white" : ""
                                 )}
                                 onClick={async () => {
                                     if (todo.done === 0) {
@@ -319,17 +319,17 @@ export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
                                     <div className="i-system-uicons:check-circle-outside"/>
                                 )}
                             </div>
-                            <div className={cn("flex-1 border-y-2 border-r-2 rounded-r flex p-2 gap-2 hover:bg-white items-center", isMobile ? "flex-col" : "flex-row")}>
+                            <div className={cn("flex-1 border-y-2 border-r-2 rounded-r flex p-2 gap-2 lg:hover:bg-white items-center", isMobile ? "flex-col" : "flex-row")}>
                                 <TextareaAutosize
                                     className="text-lg w-full resize-none bg-inherit outline-none"
                                     value={todo.content}
                                     cacheMeasurements
                                     readOnly
                                 />
-                                <div className={cn("flex flex-row h-full", isMobile ? "w-full justify-between" : "gap-6")}>
+                                <div className={cn("flex", isMobile ? "w-full justify-between flex-row h-fit items-center" : "items-end gap-2 justify-between h-full flex-col")}>
                                     <div className="flex flex-row gap-2">
                                         <button
-                                            className="p-1 border-2 border-blue rounded hover:bg-blue hover:text-white duration-200"
+                                            className="p-1 border-2 border-blue rounded lg:hover:bg-blue lg:hover:text-white duration-200 h-fit"
                                             onClick={() => {
                                                 setNewTodo({
                                                     id: todo.id,
@@ -342,7 +342,7 @@ export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
                                             <div className="i-system-uicons-write"/>
                                         </button>
                                         <button
-                                            className="p-1 border-2 border-red rounded hover:bg-red hover:text-white duration-200"
+                                            className="p-1 border-2 border-red rounded lg:hover:bg-red lg:hover:text-white duration-200 h-fit"
                                             onClick={async () => {
                                                 const r = confirm("할 일을 삭제하시겠습니까?");
                                                 if (r) {
@@ -358,7 +358,7 @@ export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
                                         </button>
                                     </div>
 
-                                    <div className="flex justify-end w-full text-gray-600 whitespace-nowrap h-full items-center">
+                                    <div className="flex justify-end w-full text-gray-600 whitespace-nowrap h-fit items-center">
                                         마감일: {todo.due_date}
                                     </div>
                                 </div>

@@ -8,12 +8,13 @@ const config: Config = {
     ],
     theme: {
         extend: {
-            colors: {
-                background: "var(--background)",
-                foreground: "var(--foreground)",
+            screens: {
             },
         },
     },
     plugins: [],
+    future: {
+        hoverOnlyWhenSupported: true,
+    }
 };
 export default config;

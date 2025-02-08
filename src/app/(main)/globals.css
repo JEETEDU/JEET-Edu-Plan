@@ -35,3 +35,9 @@
         }
     }
 }
+
+/*@media (lg:hover: none), (pointer: none), (pointer: coarse) {*/
+/*    *:hover {*/
+/*        pointer-events: none;*/
+/*    }*/
+/*}*/
