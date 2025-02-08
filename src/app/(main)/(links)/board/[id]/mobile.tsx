@@ -175,13 +175,13 @@ export default function Chatting({id, reloadArticlesAction = null}: { id: number
                                 <>
                                     <Link
                                         href={`/board/edit/${selectedArticle.id}`}
-                                        className="p-1 border-2 border-blue rounded lg:lg:hover:bg-blue lg:lg:hover:text-white duration-200"
+                                        className="p-1 border-2 border-blue rounded lg:hover:bg-blue lg:hover:text-white duration-200"
                                     >
                                         <div className="i-system-uicons-write"/>
                                     </Link>
                                     <button
                                         onClick={delete_}
-                                        className="p-1 border-2 border-red rounded lg:lg:hover:bg-red lg:lg:hover:text-white duration-200"
+                                        className="p-1 border-2 border-red rounded lg:hover:bg-red lg:hover:text-white duration-200"
                                     >
                                         <div className="i-system-uicons-trash"/>
                                     </button>
@@ -269,7 +269,7 @@ export default function Chatting({id, reloadArticlesAction = null}: { id: number
                                                     <div
                                                         className={cn(
                                                             "p-1 border-2 border-blue rounded h-full cursor-pointer duration-200",
-                                                            ((editComment === null) || (comment.id !== editComment.id)) ? "lg:lg:hover:bg-blue lg:lg:hover:text-white" : "lg:lg:hover:bg-white lg:lg:hover:text-black bg-blue text-white"
+                                                            ((editComment === null) || (comment.id !== editComment.id)) ? "lg:hover:bg-blue lg:hover:text-white" : "lg:hover:bg-white lg:hover:text-black bg-blue text-white"
                                                         )}
                                                         onClick={() => {
                                                             if (editComment === null) {

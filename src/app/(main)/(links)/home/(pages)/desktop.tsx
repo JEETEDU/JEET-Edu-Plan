@@ -214,7 +214,7 @@ export default function Desktop() {
                             <div className={cn("p-0 pointer-events-auto component-form items-center whitespace-nowrap", " grid grid-cols-3")}>
                                 <button
                                     className={cn(
-                                        (tab === 0) ? "bg-white pointer-events-none" : "bg-gray-300 lg:lg:hover:bg-gray-200 transition duration-200",
+                                        (tab === 0) ? "bg-white pointer-events-none" : "bg-gray-300 lg:hover:bg-gray-200 transition duration-200",
                                         "h-fit rounded-l-lg text-center p-2",
                                     )}
                                     onClick={() => setTab(0)}
@@ -226,7 +226,7 @@ export default function Desktop() {
                                     className={cn(
                                         {
                                             "bg-white pointer-events-none": (tab === 1),
-                                            "bg-gray-300 lg:lg:hover:bg-gray-200 transition duration-200": (tab !== 1),
+                                            "bg-gray-300 lg:hover:bg-gray-200 transition duration-200": (tab !== 1),
                                         },
                                         "h-fit text-center p-2"
                                     )}
@@ -238,7 +238,7 @@ export default function Desktop() {
                                     className={cn(
                                         {
                                             "bg-white pointer-events-none": (tab === 2),
-                                            "bg-gray-300 lg:lg:hover:bg-gray-200 transition duration-200": (tab !== 2),
+                                            "bg-gray-300 lg:hover:bg-gray-200 transition duration-200": (tab !== 2),
                                         },
                                         "h-fit rounded-r-lg text-center p-2"
                                     )}

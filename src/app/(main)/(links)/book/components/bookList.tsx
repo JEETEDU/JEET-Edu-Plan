@@ -13,7 +13,7 @@ interface IBook {
     content: string;
 }
 
-export default function BookList({isMobile = false, setHeadAction = () => void null}: { isMobile?: boolean; setHeadAction?: (h: number) => void }) {
+export default function BookList({isMobile = false, setHeadAction = () => void null, _head = 0}: { isMobile?: boolean; setHeadAction?: (h: number) => void; _head?: number }) {
     const [books, setBooks] = useState<IBook[]>([]);
     const [search, setSearch] = useState<string>('');
     const [focusOnSearch, setFocusOnSearch] = useState<boolean>(false);
@@ -38,7 +38,7 @@ export default function BookList({isMobile = false, setHeadAction = () => void n
     useEffect(() => {
         setPage(1);
         reload();
-    }, [search,]);
+    }, [search]);
 
     useEffect(() => {
         if (page > 1) reload(true);
@@ -47,6 +47,10 @@ export default function BookList({isMobile = false, setHeadAction = () => void n
     useEffect(() => {
         setHeadAction(head);
     }, [head]);
+
+    useEffect(() => {
+        if (_head !== head) reload();
+    }, [_head]);
 
     const router = useRouter();
 
@@ -95,7 +99,7 @@ export default function BookList({isMobile = false, setHeadAction = () => void n
                             className="flex flex-row w-full pr-1"
                         >
                             <div
-                                className={cn("h flex-1 border-2 rounded flex flex-row p-2 gap-2 lg:lg:hover:bg-white items-center justify-between", {"border-black": (book.id === head)})}
+                                className={cn("h flex-1 border-2 rounded flex flex-row p-2 gap-2 lg:hover:bg-white items-center justify-between", {"border-black": (book.id === head)})}
                                 onClick={() => {
                                     if (isMobile) {
                                         router.push(`/book/${book.id}`);

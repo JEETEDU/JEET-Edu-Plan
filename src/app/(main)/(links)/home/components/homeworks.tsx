@@ -232,21 +232,21 @@ export function DateRangePicker(
             <div className={cn("grid w-full", isMobile ? "grid-cols-2" : "grid-cols-4 gap-4")}>
                 {(!isMobile) && (
                     <div
-                        className="flex items-center justify-center text-center bg-green-500 lg:lg:hover:bg-green-600 text-white py-1 rounded"
+                        className="flex items-center justify-center text-center bg-green-500 lg:hover:bg-green-600 text-white py-1 rounded"
                         onClick={() => setStartDueDateAction(null)}
                     >
                         시작 날짜 제거
                     </div>
                 )}
                 <div
-                    className="col-span-2 flex items-center justify-center text-center bg-blue-500 lg:lg:hover:bg-blue-600 text-white py-1 rounded"
+                    className="col-span-2 flex items-center justify-center text-center bg-blue-500 lg:hover:bg-blue-600 text-white py-1 rounded"
                     onClick={() => closeAction(false)}
                 >
                     저장하기
                 </div>
                 {(!isMobile) && (
                     <div
-                        className="flex items-center justify-center text-center bg-green-500 lg:lg:hover:bg-green-600 text-white py-1 rounded"
+                        className="flex items-center justify-center text-center bg-green-500 lg:hover:bg-green-600 text-white py-1 rounded"
                         onClick={() => setEndDueDateAction(null)}
                     >
                         끝 날짜 제거
@@ -359,7 +359,7 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
                 <div className="grid grid-cols-3 gap-2 items-end">
                     <Select
                         // menuPlacement="top"
-                        className="text-center"
+                        className={cn("text-center", {"text-sm": isMobile})}
                         components={{
                             IndicatorSeparator: () => null
                         }}
@@ -468,7 +468,7 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
                                     "p-2 rounded-l flex items-center justify-center border-2 text-xl cursor-pointer",
                                     (homework.done === 1) ? "bg-green-500 border-green-500 text-white"
                                         : "",
-                                    (!isMobile) ? (homework.done === 1) ? "lg:lg:hover:bg-red-500 lg:hover:border-red-500" : "lg:hover:bg-blue lg:hover:border-blue lg:hover:text-white" : "",
+                                    (!isMobile) ? (homework.done === 1) ? "lg:hover:bg-red-500 lg:hover:border-red-500" : "lg:hover:bg-blue lg:hover:border-blue lg:hover:text-white" : "",
                                     (homework.article_id === head) ? "border-black" : ""
                                 )}
                                 onClick={async () => {
@@ -507,19 +507,19 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
                                     }
                                 }}
                             >
-                                <div className="text-xl font-bold flex-1">
+                                <div className="text-lg font-bold flex-1">
                                     {homework.title}
                                 </div>
-                                <div className="flex flex-col gap-2">
+                                <div className="flex flex-col gap-2 items-end">
                                     <div className="flex flex-row items-center gap-2">
-                                        <div className="border-2 border-blue p-2 rounded text-lg font-bold">
+                                        <div className="border-2 border-blue p-1 rounded font-bold">
                                             {homework.class_.name}
                                         </div>
-                                        <div className="border-2 border-green-500 p-2 rounded text-lg font-bold">
+                                        <div className="border-2 border-green-500 p-1 rounded font-bold">
                                             {homework.subject.name}
                                         </div>
                                     </div>
-                                    <div className="flex justify-end w-full text-gray-600">
+                                    <div className="flex justify-end w-full text-gray-600 text-sm">
                                         마감일: {homework.due_date}
                                     </div>
                                 </div>
