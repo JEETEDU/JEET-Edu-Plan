@@ -55,7 +55,7 @@ export default function Mobile() {
                 <button
                     className={cn({
                         "bg-white pointer-events-none": (tab === 0),
-                        "bg-gray-300 lg:lg:hover:bg-gray-200 transition duration-200": (tab !== 0),
+                        "bg-gray-300 lg:hover:bg-gray-200 transition duration-200": (tab !== 0),
                     }, "h-fit text-center p-2")}
                     onClick={() => setTab(0)}
                 >
@@ -65,7 +65,7 @@ export default function Mobile() {
                         <button
                             className={cn({
                                 "bg-white pointer-events-none": (tab === 1),
-                                "bg-gray-300 lg:lg:hover:bg-gray-200 transition duration-200": (tab !== 1),
+                                "bg-gray-300 lg:hover:bg-gray-200 transition duration-200": (tab !== 1),
                             }, "h-fit text-center p-2")}
                             onClick={() => setTab(1)}
                         >
@@ -74,7 +74,7 @@ export default function Mobile() {
                         <button
                             className={cn({
                                 "bg-white pointer-events-none": (tab === 2),
-                                "bg-gray-300 lg:lg:hover:bg-gray-200 transition duration-200": (tab !== 2),
+                                "bg-gray-300 lg:hover:bg-gray-200 transition duration-200": (tab !== 2),
                             }, "h-fit text-center p-2")}
                             onClick={() => setTab(2)}
                         >

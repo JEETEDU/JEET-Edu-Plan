@@ -301,26 +301,26 @@ export async function DELETE(req: NextRequest) {
  *           schema:
  *             type: object
  *             properties:
- *               book_id:
+ *               id:
  *                 type: integer
  *                 description: The ID of the book to update
  *                 example: 1
  *               title:
  *                 type: string
  *                 description: The title of the book
- *                 example: "Updated Book Title"
+ *                 example: "New Book Title"
  *               author:
  *                 type: string
  *                 description: The author of the book
- *                 example: "Updated Author Name"
+ *                 example: "New Author Name"
  *               publisher:
  *                 type: string
  *                 description: The publisher of the book
- *                 example: "Updated Publisher Name"
+ *                 example: "New Publisher Name"
  *               content:
  *                 type: string
  *                 description: The content of the book
- *                 example: "Updated book content"
+ *                 example: "New book content"
  *     responses:
  *       200:
  *         description: Book updated successfully
@@ -347,7 +347,7 @@ export async function PUT(req: NextRequest) {
             if (!decoded) return return_not_logged_in();
 
             const data = await req.json();
-            const book_id = data.book_id;
+            const book_id = data.id;
             const title = data.title ?? '';
             const author = data.author ?? '';
             const publisher = data.publisher ?? '';

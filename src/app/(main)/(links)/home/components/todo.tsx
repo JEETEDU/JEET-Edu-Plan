@@ -136,7 +136,7 @@ export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
                 </div>
                 <div className="w-full flex justify-end">
                     <button
-                        className="p-2 bg-blue-500 text-white rounded lg:lg:hover:bg-blue-600 lg:lg:hover:rounded-3xl duration-200 font-bold"
+                        className="p-2 bg-blue-500 text-white rounded lg:hover:bg-blue-600 lg:hover:rounded-3xl duration-200 font-bold"
                         onClick={async () => {
                             if (newTodo === null) {
                                 setNewTodo({
@@ -252,7 +252,7 @@ export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
                                             />
                                         </DatepickerWrapper>
                                         <div
-                                            className="w-full flex items-center justify-center text-center bg-blue-500 lg:lg:hover:bg-blue-600 text-white py-1 rounded"
+                                            className="w-full flex items-center justify-center text-center bg-blue-500 lg:hover:bg-blue-600 text-white py-1 rounded"
                                             onClick={() => setNewTodo({
                                                 id: newTodo.id,
                                                 content: newTodo.content,
@@ -291,7 +291,7 @@ export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
                                     "p-2 rounded-l flex items-center justify-center border-2 text-xl cursor-pointer",
                                     (todo.done === 1) ? "bg-green-500 border-green-500 text-white"
                                         : "",
-                                    (!isMobile) ? (todo.done === 1) ? "lg:lg:hover:bg-red-500 lg:lg:hover:border-red-500" : "lg:lg:hover:bg-blue lg:lg:hover:border-blue lg:hover:text-white" : ""
+                                    (!isMobile) ? (todo.done === 1) ? "lg:hover:bg-red-500 lg:hover:border-red-500" : "lg:hover:bg-blue lg:hover:border-blue lg:hover:text-white" : ""
                                 )}
                                 onClick={async () => {
                                     if (todo.done === 0) {
@@ -321,7 +321,7 @@ export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
                             </div>
                             <div className={cn("flex-1 border-y-2 border-r-2 rounded-r flex p-2 gap-2 lg:hover:bg-white items-center", isMobile ? "flex-col" : "flex-row")}>
                                 <TextareaAutosize
-                                    className="text-lg w-full resize-none bg-inherit outline-none"
+                                    className="w-full resize-none bg-inherit outline-none"
                                     value={todo.content}
                                     cacheMeasurements
                                     readOnly

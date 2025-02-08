@@ -316,7 +316,7 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
                             />
                         </DatepickerWrapper>
                         <div
-                            className="w-full flex items-center justify-center text-center bg-blue-500 lg:lg:hover:bg-blue-600 text-white py-1 rounded"
+                            className="w-full flex items-center justify-center text-center bg-blue-500 lg:hover:bg-blue-600 text-white py-1 rounded"
                             onClick={() => setDueDate({
                                 due: dueDate.due,
                                 open: false
@@ -340,25 +340,25 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
                     <div className="flex flex-row gap-2 h-full font-bold text-lg">
                         <button
                             onClick={fileInput}
-                            className="px-3  rounded-lg lg:lg:hover:bg-gray-200 border-x-2 transition bg-white"
+                            className="px-3  rounded-lg lg:hover:bg-gray-200 border-x-2 transition bg-white"
                         >
                             첨부파일 추가
                         </button>
                         <button
                             onClick={save}
-                            className="px-3 bg-yellow-400 rounded-lg lg:lg:hover:bg-yellow-500 transition"
+                            className="px-3 bg-yellow-400 rounded-lg lg:hover:bg-yellow-500 transition"
                         >
                             임시 저장
                         </button>
                         <button
                             onClick={load}
-                            className="px-3 bg-yellow-400 rounded-lg lg:lg:hover:bg-yellow-500 transition"
+                            className="px-3 bg-yellow-400 rounded-lg lg:hover:bg-yellow-500 transition"
                         >
                             불러오기
                         </button>
                         <button
                             onClick={(prev === null) ? upload : update}
-                            className="px-3 bg-blue-500 text-white rounded-lg lg:lg:hover:bg-blue-600 transition"
+                            className="px-3 bg-blue-500 text-white rounded-lg lg:hover:bg-blue-600 transition"
                         >
                             {(prev === null) ? "게시하기" : "저장하기"}
                         </button>
@@ -487,7 +487,7 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
                                 <div key={index} className="flex gap-1 items-center border rounded whitespace-nowrap pl-1">
                                     {file.name}
                                     <div
-                                        className="lg:lg:hover:bg-red p-1 rounded lg:lg:hover:text-white duration-200"
+                                        className="lg:hover:bg-red p-1 rounded lg:hover:text-white duration-200"
                                         onClick={() => {
                                             setAttachedFiles((prev) => {
                                                 return prev.filter((p) => p.path !== file.path);
