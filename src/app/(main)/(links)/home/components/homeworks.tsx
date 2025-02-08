@@ -461,7 +461,7 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
                     {homeworks.map((homework, index) => (
                         <div
                             key={index}
-                            className="flex flex-row w-ful w-full pr-1"
+                            className="flex flex-row w-full pr-1"
                         >
                             <div
                                 className={cn(
@@ -498,7 +498,7 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
                                 )}
                             </div>
                             <div
-                                className={cn("h flex-1 border-y-2 border-r-2 rounded-r flex flex-row p-2 gap-2 hover:bg-white items-center", {"border-black": (homework.article_id === head)})}
+                                className={cn("flex-1 border-y-2 border-r-2 rounded-r flex flex-row p-2 gap-2 hover:bg-white items-center", {"border-black": (homework.article_id === head)})}
                                 onClick={() => {
                                     if (isMobile) {
                                         router.push(`/board/${homework.article_id}`)

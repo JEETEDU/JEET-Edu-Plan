@@ -3,9 +3,9 @@
 import React, {useEffect, useRef, useState} from "react";
 import {cn, GET, getStoreData} from "@/app/(main)/components/functions";
 import Link from "next/link";
-import {IArticle, initArticle, loadArticleInfo} from "@/app/(main)/(links)/board/component";
+import {IArticle} from "@/app/(main)/(links)/board/component";
 import Scrollbars from "react-custom-scrollbars-2";
-import {Author, Category, Class_, Delete, Hr, IResponseNotices, Subject, Time, Title, Update} from "@/app/(main)/(links)/home/(pages)/desktop";
+import {Category, IResponseNotices, Subject} from "@/app/(main)/(links)/home/(pages)/desktop";
 import Homeworks from "@/app/(main)/(links)/home/components/homeworks";
 import Todo from "@/app/(main)/(links)/home/components/todo";
 

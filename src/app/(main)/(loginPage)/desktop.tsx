@@ -1,7 +1,7 @@
 "use client";
 
 import React, {useState} from "react";
-import {cn, POST} from "@/app/(main)/components/functions";
+import {cn, getStoreData, POST} from "@/app/(main)/components/functions";
 import {useRouter} from "next/navigation";
 
 export default function Desktop() {
@@ -19,7 +19,7 @@ export default function Desktop() {
             pw: pw
         })
         if (res.success) {
-            router.push('/home');
+            await getStoreData('/api/user/info', 'user-info', true);
         } else {
             setError({message: res.message, color: "text-red-600"});
         }
@@ -128,7 +128,7 @@ export default function Desktop() {
                                     if (e.key === "Enter") {
                                         if (isLogin) {
                                             setError({message: "로그인 하는중...", color: "text-red-600"});
-                                            login();
+                                            login().then(() => router.push('/home'));
                                         } else {
                                             setError({message: "회원 가입 하는중...", color: "text-red-600"});
                                             register();
