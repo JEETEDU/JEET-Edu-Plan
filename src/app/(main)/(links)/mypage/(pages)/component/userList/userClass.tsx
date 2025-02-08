@@ -68,12 +68,12 @@ export default function UserClass({uid, userType}: { uid: number; userType: numb
                     {(userType === 1) ? (
                         <StudentClass
                             text='반 추가'
-                            className="py-1 px-3 bg-blue-500 text-white rounded font-bold hover:bg-blue-600"
+                            className="py-1 px-3 bg-blue-500 text-white rounded font-bold lg:hover:bg-blue-600"
                         />
                     ) : (
                         <TeacherClass
                             text='반 추가'
-                            className="py-1 px-3 bg-blue-500 text-white rounded font-bold hover:bg-blue-600"
+                            className="py-1 px-3 bg-blue-500 text-white rounded font-bold lg:hover:bg-blue-600"
                         />
                     )}
                 </div>
@@ -82,7 +82,7 @@ export default function UserClass({uid, userType}: { uid: number; userType: numb
                 {user.classes.map((c) => (
                     <div
                         key={c.id}
-                        className="border-2 rounded flex w-full justify-between p-2 cursor-pointer hover:bg-white"
+                        className="border-2 rounded flex w-full justify-between p-2 cursor-pointer lg:hover:bg-white"
                     >
                         <div className="flex items-center gap-4">
                             <div>
@@ -108,7 +108,7 @@ export default function UserClass({uid, userType}: { uid: number; userType: numb
                                     }
                                 }
                             }}
-                            className="p-1 border-2 border-red rounded hover:bg-red hover:text-white duration-200"
+                            className="p-1 border-2 border-red rounded lg:hover:bg-red lg:hover:text-white duration-200"
                         >
                             <div className="i-system-uicons-exit-right"/>
                         </button>

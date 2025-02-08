@@ -167,7 +167,7 @@ export default function Desktop() {
 
                     <div className="flex justify-end">
                         <Link
-                            className="bg-white hover:bg-gray-200 transition duration-200 h-fit rounded-lg text-center py-2 px-5"
+                            className="bg-white lg:lg:hover:bg-gray-200 transition duration-200 h-fit rounded-lg text-center py-2 px-5"
                             href={'/board/new'}
                         >
                             게시글 추가하기

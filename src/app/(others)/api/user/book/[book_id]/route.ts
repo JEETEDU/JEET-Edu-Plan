@@ -82,7 +82,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ book
 
         return NextResponse.json({
             success: true,
-            book: book
+            book: book[0]
         });
     } catch (e) {
         console.error(e);

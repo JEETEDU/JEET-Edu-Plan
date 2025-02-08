@@ -44,11 +44,15 @@ export default function BookList({isMobile = false, setHeadAction = () => void n
         if (page > 1) reload(true);
     }, [page]);
 
+    useEffect(() => {
+        setHeadAction(head);
+    }, [head]);
+
     const router = useRouter();
 
     return (
         <div className="flex flex-col gap-2">
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-row gap-2 pr-1">
                 <div
                     className={cn(
                         "border-2 py-1 px-3 flex h-fit rounded justify-between items-center gap-3 bg-white flex-1 h-full",
@@ -68,8 +72,8 @@ export default function BookList({isMobile = false, setHeadAction = () => void n
                         onClick={() => reload()}
                     />
                 </div>
-                <div className="component-button">
-                    독서록 추가하기
+                <div className={cn("component-button aspect-square px-1")}>
+                    <div className="i-system-uicons:create"/>
                 </div>
             </div>
 
@@ -91,12 +95,12 @@ export default function BookList({isMobile = false, setHeadAction = () => void n
                             className="flex flex-row w-full pr-1"
                         >
                             <div
-                                className={cn("h flex-1 border-2 rounded flex flex-row p-2 gap-2 hover:bg-white items-center justify-between", {"border-black": (book.id === head)})}
+                                className={cn("h flex-1 border-2 rounded flex flex-row p-2 gap-2 lg:lg:hover:bg-white items-center justify-between", {"border-black": (book.id === head)})}
                                 onClick={() => {
                                     if (isMobile) {
-                                        router.push(`/book/${book.id}`)
+                                        router.push(`/book/${book.id}`);
                                     } else {
-                                        setHead(book.id)
+                                        setHead(book.id);
                                     }
                                 }}
                             >

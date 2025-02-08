@@ -45,7 +45,7 @@ export default function Desktop() {
                 <button
                     className={cn({
                         "bg-white pointer-events-none": isLogin,
-                        "bg-gray-300 hover:bg-gray-200 transition duration-200": !isLogin
+                        "bg-gray-300 lg:hover:bg-gray-200 transition duration-200": !isLogin
                     }, "h-fit rounded-l-lg text-center p-2")}
                     onClick={() => {
                         setIsLogin(true);
@@ -57,7 +57,7 @@ export default function Desktop() {
                 <button
                     className={cn({
                         "bg-white pointer-events-none": !isLogin,
-                        "bg-gray-300 hover:bg-gray-200 transition duration-200": isLogin
+                        "bg-gray-300 lg:hover:bg-gray-200 transition duration-200": isLogin
                     }, "h-fit rounded-r-lg text-center p-2")}
                     onClick={() => {
                         setIsLogin(false);
@@ -102,7 +102,7 @@ export default function Desktop() {
                                 if (e.key === "Enter") {
                                     if (isLogin) {
                                         setError({message: "로그인 하는중...", color: "text-red-600"});
-                                        login();
+                                        login().then(() => router.push('/home'));
                                     } else {
                                         setError({message: "회원 가입 하는중...", color: "text-red-600"});
                                         register();
@@ -153,12 +153,12 @@ export default function Desktop() {
                             {error.message}
                         </div>
                         <div
-                            className="component-button cursor-pointer"
+                            className={cn("w-full component-button")}
                             onClick={
                                 isLogin ? (
                                     () => {
                                         setError({message: "로그인 하는중...", color: "text-red-600"});
-                                        login();
+                                        login().then(() => router.push('/home'));
                                     }
                                 ) : (
                                     () => {
