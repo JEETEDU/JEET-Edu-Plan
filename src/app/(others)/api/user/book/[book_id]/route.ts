@@ -1,5 +1,5 @@
-import type { NextRequest } from 'next/server'
-import { db } from '@/database'
+import type {NextRequest} from 'next/server'
+import {db} from '@/database'
 import * as schema from '@/database/schema'
 import {NextResponse} from "next/server";
 import {eq, and, sql, count, SQL, desc, like} from "drizzle-orm";
@@ -60,7 +60,7 @@ import {
  *       500:
  *         description: Internal server error
  */
-export async function GET(req: NextRequest, { params }: { params: Promise<{ book_id: number }> }) {
+export async function GET(req: NextRequest, {params}: { params: Promise<{ book_id: number }> }) {
     try {
         const token = req.cookies.get("token")?.value ?? '';
         const decoded: DecodedToken | false = verifyToken(token);
@@ -79,6 +79,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ book
                     )
                 );
         if (!book) return return_400('Book not found');
+        if (book.length === 0) return return_400('Book not found');
 
         return NextResponse.json({
             success: true,

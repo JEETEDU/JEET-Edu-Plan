@@ -5,16 +5,16 @@ import {cn, DELETE, GET, POST, PUT} from "@/app/(main)/components/functions";
 import Scrollbars from "react-custom-scrollbars-2";
 import TextareaAutosize from "react-textarea-autosize";
 
-interface IBook {
+export interface IBook {
     id: number;
     title: string;
-    user_id: number;
+    user_id?: number;
     content: string;
     author: string;
     publisher: string;
 }
 
-const defaultBook: IBook = {
+export const defaultBook: IBook = {
     author: "",
     content: "",
     id: 0,
@@ -92,7 +92,7 @@ export default function BookReport({id = 0, setCountAction = () => void null, se
                         {error}
                     </div>
                     <div
-                        className={cn("p-1 border-2 border-blue rounded duration-200 cursor-pointer", edit ? "lg:hover:bg-white lg:hover:text-black bg-blue text-white" : "lg:hover:bg-blue lg:hover:text-white")}
+                        className={cn("p-1 border-2 border-blue rounded duration-200 cursor-pointer", edit ? "md:hover:bg-white md:hover:text-black bg-blue text-white" : "md:hover:bg-blue md:hover:text-white")}
                         onClick={() => {
                             if (edit) {
                                 save().then(r => {
@@ -108,7 +108,7 @@ export default function BookReport({id = 0, setCountAction = () => void null, se
                         <div className={cn(edit ? "i-system-uicons:clipboard-check" : "i-system-uicons-write")}/>
                     </div>
                     <div
-                        className="p-1 border-2 border-red rounded lg:hover:bg-red lg:hover:text-white duration-200 cursor-pointer"
+                        className="p-1 border-2 border-red rounded md:hover:bg-red md:hover:text-white duration-200 cursor-pointer"
                         onClick={() => {
                             delete_().then(r => {
                                 if (r.success) {

@@ -67,13 +67,13 @@ export default function Page({isMobile}: { isMobile: boolean }) {
         return (
             <div className="flex flex-row gap-4">
                 <button
-                    className="px-3 py-1 bg-red-500 text-white font-bold rounded lg:hover:bg-red-600 w-fit"
+                    className="px-3 py-1 bg-red-500 text-white font-bold rounded md:hover:bg-red-600 w-fit"
                     onClick={logout}
                 >
                     로그아웃
                 </button>
                 <button
-                    className="px-3 py-1 bg-red-500 text-white font-bold rounded lg:hover:bg-red-600 w-fit"
+                    className="px-3 py-1 bg-red-500 text-white font-bold rounded md:hover:bg-red-600 w-fit"
                     onClick={newPassword}
                 >
                     비밀번호 변경
@@ -89,7 +89,7 @@ export default function Page({isMobile}: { isMobile: boolean }) {
                     <div className="flex items-center gap-4">
                         {!isMobile && (
                             <button
-                                className="p-2 rounded text-lg font-bold bg-gray-500 text-white lg:hover:bg-gray-600"
+                                className="p-2 rounded text-lg font-bold bg-gray-500 text-white md:hover:bg-gray-600"
                                 onClick={() => setShowCalendar((prev) => !prev)}
                             >
                                 <div className='i-clarity-calendar-line'/>

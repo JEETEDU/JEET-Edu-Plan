@@ -68,7 +68,7 @@ export default function ManageUser(
                         {message[0]}
                     </div>
                     <button
-                        className="px-3 py-1 bg-blue-500 text-white text-md font-bold rounded lg:hover:bg-blue-600"
+                        className="px-3 py-1 bg-blue-500 text-white text-md font-bold rounded md:hover:bg-blue-600"
                         onClick={resetPassword}
                     >
                         비밀번호 리셋
@@ -79,7 +79,7 @@ export default function ManageUser(
                         {message[1]}
                     </div>
                     <button
-                        className="px-3 py-1 bg-red-500 text-white text-md font-bold rounded lg:hover:bg-red-600"
+                        className="px-3 py-1 bg-red-500 text-white text-md font-bold rounded md:hover:bg-red-600"
                         onClick={deleteUser}
                     >
                         유저 삭제

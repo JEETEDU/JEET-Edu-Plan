@@ -44,7 +44,7 @@ export default function Mobile() {
         <div className="component-container h-full px-1/6">
             <div className="grid grid-cols-2 component-form mb-4 p-0">
                 <button
-                    className={cn({"bg-white pointer-events-none": isLogin, "bg-gray-300 lg:hover:bg-gray-200 transition duration-200": !isLogin}, "h-fit rounded-l-lg text-center p-1")}
+                    className={cn({"bg-white pointer-events-none": isLogin, "bg-gray-300 md:hover:bg-gray-200 transition duration-200": !isLogin}, "h-fit rounded-l-lg text-center p-1")}
                     onClick={() => {
                         setIsLogin(true);
                         setError({message: "", color: ""})
@@ -53,7 +53,7 @@ export default function Mobile() {
                     로그인
                 </button>
                 <button
-                    className={cn({"bg-white pointer-events-none": !isLogin, "bg-gray-300 lg:hover:bg-gray-200 transition duration-200": isLogin}, "h-fit rounded-r-lg text-center p-1")}
+                    className={cn({"bg-white pointer-events-none": !isLogin, "bg-gray-300 md:hover:bg-gray-200 transition duration-200": isLogin}, "h-fit rounded-r-lg text-center p-1")}
                     onClick={() => {
                         setIsLogin(false);
                         setError({message: "", color: ""})

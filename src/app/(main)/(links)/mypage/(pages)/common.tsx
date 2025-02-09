@@ -181,7 +181,7 @@ export function IsStudent({date, isMobile}: { date: Date; isMobile: boolean }) {
                         <button
                             key={i}
                             className={cn(
-                                "flex justify-center lg:hover:bg-gray-300 p-1 rounded",
+                                "flex justify-center md:hover:bg-gray-300 p-1 rounded",
                                 {"border-2 border-gray": (i === tab)}
                             )}
                             onClick={() => setTab(i)}
@@ -208,8 +208,8 @@ export function IsStudent({date, isMobile}: { date: Date; isMobile: boolean }) {
                                 <button
                                     className={cn(
                                         "text-white rounded-lg font-semibold p-1",
-                                        {"bg-blue lg:hover:bg-blue-700": !editAnswer},
-                                        {"bg-blue-700 lg:hover:bg-blue": editAnswer},
+                                        {"bg-blue md:hover:bg-blue-700": !editAnswer},
+                                        {"bg-blue-700 md:hover:bg-blue": editAnswer},
                                         {"text-lg": !isMobile}
                                     )}
                                     onClick={update}
@@ -359,7 +359,7 @@ export function IsTeacher() {
                         <button
                             key={i}
                             className={cn(
-                                "flex justify-center lg:hover:bg-gray-300 p-1 rounded",
+                                "flex justify-center md:hover:bg-gray-300 p-1 rounded",
                                 {"border-2 border-gray": (i === tab)}
                             )}
                             onClick={() => setTab(i)}
@@ -597,7 +597,7 @@ export function IsAdmin({date}: { date: Date }) {
                         <button
                             key={i}
                             className={cn(
-                                "flex justify-center lg:hover:bg-gray-300 p-1 rounded",
+                                "flex justify-center md:hover:bg-gray-300 p-1 rounded",
                                 {"border-2 border-gray": (i === tab)}
                             )}
                             onClick={() => setTab(i)}
@@ -619,8 +619,8 @@ export function IsAdmin({date}: { date: Date }) {
                                 <button
                                     className={cn(
                                         "px-3 py-1 text-white text-lg font-bold rounded w-fit",
-                                        {"bg-blue lg:hover:bg-blue-700": !editQuestion},
-                                        {"bg-blue-700 lg:hover:bg-blue": editQuestion}
+                                        {"bg-blue md:hover:bg-blue-700": !editQuestion},
+                                        {"bg-blue-700 md:hover:bg-blue": editQuestion}
                                     )}
                                     onClick={updateQuestion}
                                 >
@@ -763,7 +763,7 @@ export function IsAdmin({date}: { date: Date }) {
                             />
                         </div>
                         <button
-                            className="px-3 py-1 bg-blue-500 text-white text-lg font-bold rounded lg:hover:bg-blue-600 w-fit"
+                            className="px-3 py-1 bg-blue-500 text-white text-lg font-bold rounded md:hover:bg-blue-600 w-fit"
                             onClick={() => refreshUser()}
                         >
                             새로고침
@@ -793,7 +793,7 @@ export function IsAdmin({date}: { date: Date }) {
                                         <div
                                             key={u.uid}
                                             className={cn(
-                                                "border-2 rounded flex w-full justify-between p-2 gap-8 cursor-pointer lg:hover:bg-white",
+                                                "border-2 rounded flex w-full justify-between p-2 gap-8 cursor-pointer md:hover:bg-white",
                                                 {"border-black": u.uid === head}
                                             )}
                                             onClick={() => setHead(u.uid)}
@@ -845,7 +845,7 @@ export function IsAdmin({date}: { date: Date }) {
                             신규 학생/선생님 목록
                         </div>
                         <button
-                            className="px-3 py-1 bg-blue-500 text-white text-lg font-bold rounded lg:hover:bg-blue-600 w-fit"
+                            className="px-3 py-1 bg-blue-500 text-white text-lg font-bold rounded md:hover:bg-blue-600 w-fit"
                             onClick={refreshNewUser}
                         >
                             새로고침
@@ -877,7 +877,7 @@ export function IsAdmin({date}: { date: Date }) {
                                             <button
                                                 className={cn(
                                                     "px-3 py-1 text-white text-lg font-bold rounded",
-                                                    (u.reject) ? "bg-black" : "bg-red-500 lg:hover:bg-red-600 w-fit"
+                                                    (u.reject) ? "bg-black" : "bg-red-500 md:hover:bg-red-600 w-fit"
                                                 )}
                                                 onClick={() => {
                                                     POST('/api/admin/user/reject', {user_id: u.uid});
@@ -893,7 +893,7 @@ export function IsAdmin({date}: { date: Date }) {
                                             <button
                                                 className={cn(
                                                     "px-3 py-1 text-white text-lg font-bold rounded",
-                                                    (u.reject) ? "bg-gray-500" : (u.accept) ? "bg-blue-500" : "bg-green-500 lg:hover:bg-green-600 w-fit",
+                                                    (u.reject) ? "bg-gray-500" : (u.accept) ? "bg-blue-500" : "bg-green-500 md:hover:bg-green-600 w-fit",
                                                     {"pointer-events-none": (u.reject)},
                                                 )}
                                                 onClick={() => {

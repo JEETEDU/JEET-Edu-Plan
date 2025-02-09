@@ -241,7 +241,7 @@ export default function TeacherClass({text, className}: { text: string; classNam
                                                 return (
                                                     <div
                                                         key={u.uid}
-                                                        className="border-2 rounded flex w-full justify-between p-2 gap-4 cursor-pointer lg:hover:bg-white"
+                                                        className="border-2 rounded flex w-full justify-between p-2 gap-4 cursor-pointer md:hover:bg-white"
                                                     >
                                                         <div className="flex items-center gap-4">
                                                             <div>
@@ -254,7 +254,7 @@ export default function TeacherClass({text, className}: { text: string; classNam
                                                             </div>
                                                         </div>
                                                         <div
-                                                            className="flex justify-center items-center px-1 rounded font-bold bg-green-500 text-white lg:hover:bg-green-600"
+                                                            className="flex justify-center items-center px-1 rounded font-bold bg-green-500 text-white md:hover:bg-green-600"
                                                             onClick={() => {
                                                                 setSelectedUserList((prev) => [...prev, u]);
                                                                 setUserList((prev) => prev.filter((_u) => (_u.uid !== u.uid)));
@@ -269,7 +269,7 @@ export default function TeacherClass({text, className}: { text: string; classNam
                                     </Scrollbars>
                                     {(userList.length !== 0) && (
                                         <div
-                                            className="w-full flex px-2 py-2 bg-blue-500 lg:hover:bg-blue-600 justify-center items-center rounded text-white font-bold cursor-pointer"
+                                            className="w-full flex px-2 py-2 bg-blue-500 md:hover:bg-blue-600 justify-center items-center rounded text-white font-bold cursor-pointer"
                                             onClick={() => {
                                                 (async () => {
                                                     userList.map(u => {
@@ -317,7 +317,7 @@ export default function TeacherClass({text, className}: { text: string; classNam
                                                 {classList.map((class_) => (
                                                     <div
                                                         key={class_.id}
-                                                        className="flex flex-row border-2 p-2 rounded gap-4 cursor-pointer lg:hover:bg-white justify-center"
+                                                        className="flex flex-row border-2 p-2 rounded gap-4 cursor-pointer md:hover:bg-white justify-center"
                                                     >
                                                         <div className="flex flex-col space-y-2 flex-1">
                                                             <div className="flex flex-row justify-between items-center">
@@ -341,8 +341,8 @@ export default function TeacherClass({text, className}: { text: string; classNam
                                                         </div>
                                                         <div
                                                             className={cn(
-                                                                "flex flex-row justify-center items-center px-1 rounded font-bold lg:hover:bg-blue-600",
-                                                                ((selectedClass !== null) && (class_.id === selectedClass.id)) ? "bg-blue-500 text-white" : "text-blue-500 lg:hover:text-white"
+                                                                "flex flex-row justify-center items-center px-1 rounded font-bold md:hover:bg-blue-600",
+                                                                ((selectedClass !== null) && (class_.id === selectedClass.id)) ? "bg-blue-500 text-white" : "text-blue-500 md:hover:text-white"
                                                             )}
                                                             onClick={() => {
                                                                 setSelectedClass(class_);
@@ -386,13 +386,13 @@ export default function TeacherClass({text, className}: { text: string; classNam
                                                         {subjectList.map((s) => (
                                                             <div
                                                                 key={s.id}
-                                                                className="flex flex-row border-2 p-2 rounded gap-4 cursor-pointer lg:hover:bg-white justify-between w-full"
+                                                                className="flex flex-row border-2 p-2 rounded gap-4 cursor-pointer md:hover:bg-white justify-between w-full"
                                                             >
                                                                 <div className="text-xl font-bold">
                                                                     {s.name}
                                                                 </div>
                                                                 <div
-                                                                    className="flex flex-row justify-center items-center px-1 rounded font-bold bg-green-500 text-white lg:hover:bg-green-600"
+                                                                    className="flex flex-row justify-center items-center px-1 rounded font-bold bg-green-500 text-white md:hover:bg-green-600"
                                                                     onClick={() => {
                                                                         if (!wasLessonSelected(s.id)) {
                                                                             setSelectedLessonList((prev) => [...prev, {
@@ -410,7 +410,7 @@ export default function TeacherClass({text, className}: { text: string; classNam
                                                 </Scrollbars>
                                                 {(subjectList.length !== 0) && (
                                                     <div
-                                                        className="w-full flex px-2 py-2 bg-blue-500 lg:hover:bg-blue-600 justify-center items-center rounded text-white font-bold cursor-pointer"
+                                                        className="w-full flex px-2 py-2 bg-blue-500 md:hover:bg-blue-600 justify-center items-center rounded text-white font-bold cursor-pointer"
                                                         onClick={() => {
                                                             subjectList.map(s => {
                                                                 if (!wasLessonSelected(s.id)) {
@@ -450,7 +450,7 @@ export default function TeacherClass({text, className}: { text: string; classNam
                                                             return (
                                                                 <div
                                                                     key={u.uid}
-                                                                    className="border-2 rounded flex w-full justify-between p-2 gap-4 cursor-pointer lg:hover:bg-white"
+                                                                    className="border-2 rounded flex w-full justify-between p-2 gap-4 cursor-pointer md:hover:bg-white"
                                                                 >
                                                                     <div className="flex items-center gap-4">
                                                                         <div>
@@ -463,7 +463,7 @@ export default function TeacherClass({text, className}: { text: string; classNam
                                                                         </div>
                                                                     </div>
                                                                     <div
-                                                                        className="flex justify-center items-center px-1 rounded font-bold bg-red-500 text-white lg:hover:bg-red-600"
+                                                                        className="flex justify-center items-center px-1 rounded font-bold bg-red-500 text-white md:hover:bg-red-600"
                                                                         onClick={() => {
                                                                             setSelectedUserList((prev) => prev.filter((_u) => (_u.uid !== u.uid)));
                                                                             setUserList((prev) => [...prev, u]);
@@ -477,7 +477,7 @@ export default function TeacherClass({text, className}: { text: string; classNam
                                                     </div>
                                                 </Scrollbars>
                                                 <div
-                                                    className="w-full flex px-2 py-2 bg-red-500 lg:hover:bg-red-600 justify-center items-center rounded text-white font-bold cursor-pointer"
+                                                    className="w-full flex px-2 py-2 bg-red-500 md:hover:bg-red-600 justify-center items-center rounded text-white font-bold cursor-pointer"
                                                     onClick={() => {
                                                         (async () => {
                                                             selectedUserList.map(c => {
@@ -505,7 +505,7 @@ export default function TeacherClass({text, className}: { text: string; classNam
                                                         {selectedLessonList.map((l) => (
                                                             <div
                                                                 key={l.subject.id}
-                                                                className="flex flex-row border-2 p-2 rounded gap-4 cursor-pointer lg:hover:bg-white justify-center"
+                                                                className="flex flex-row border-2 p-2 rounded gap-4 cursor-pointer md:hover:bg-white justify-center"
                                                             >
                                                                 {/*<div className="flex justify-center items-center border-2 px-1 border-green rounded font-bold bg-green text-white">*/}
                                                                 {/*    {String(class_.id).padStart(2, '0')}*/}
@@ -518,7 +518,7 @@ export default function TeacherClass({text, className}: { text: string; classNam
                                                                     </div>
                                                                 </div>
                                                                 <div
-                                                                    className="flex justify-center items-center px-1 rounded font-bold bg-red-500 text-white lg:hover:bg-red-600"
+                                                                    className="flex justify-center items-center px-1 rounded font-bold bg-red-500 text-white md:hover:bg-red-600"
                                                                     onClick={() => {
                                                                         setSelectedLessonList((prev) => prev.filter((_c) => (_c.subject.id !== l.subject.id)));
                                                                     }}
@@ -530,7 +530,7 @@ export default function TeacherClass({text, className}: { text: string; classNam
                                                     </div>
                                                 </Scrollbars>
                                                 <div
-                                                    className="w-full flex px-2 py-2 bg-red-500 lg:hover:bg-red-600 justify-center items-center rounded text-white font-bold cursor-pointer"
+                                                    className="w-full flex px-2 py-2 bg-red-500 md:hover:bg-red-600 justify-center items-center rounded text-white font-bold cursor-pointer"
                                                     onClick={() => setSelectedLessonList([])}
                                                 >
                                                     전체 선택 취소
@@ -551,13 +551,13 @@ export default function TeacherClass({text, className}: { text: string; classNam
                                     const res = confirm('등록을 취소하시겠습니까? (선택한 반과 유저는 초기화됩니다.)')
                                     if (res) setShow(false);
                                 }}
-                                className="bg-red-500 text-white px-4 py-2 rounded lg:hover:bg-red-600"
+                                className="bg-red-500 text-white px-4 py-2 rounded md:hover:bg-red-600"
                                 disabled={reg}
                             >
                                 취소
                             </button>
                             <button
-                                className="px-3 py-2 bg-blue-500 lg:hover:bg-blue-600 text-white rounded"
+                                className="px-3 py-2 bg-blue-500 md:hover:bg-blue-600 text-white rounded"
                                 onClick={register}
                                 disabled={reg}
                             >

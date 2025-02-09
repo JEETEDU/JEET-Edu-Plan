@@ -175,13 +175,13 @@ export default function Chatting({id, reloadArticlesAction = null}: { id: number
                                 <>
                                     <Link
                                         href={`/board/edit/${selectedArticle.id}`}
-                                        className="p-1 border-2 border-blue rounded lg:hover:bg-blue lg:hover:text-white duration-200"
+                                        className="p-1 border-2 border-blue rounded md:hover:bg-blue md:hover:text-white duration-200"
                                     >
                                         <div className="i-system-uicons-write"/>
                                     </Link>
                                     <button
                                         onClick={delete_}
-                                        className="p-1 border-2 border-red rounded lg:hover:bg-red lg:hover:text-white duration-200"
+                                        className="p-1 border-2 border-red rounded md:hover:bg-red md:hover:text-white duration-200"
                                     >
                                         <div className="i-system-uicons-trash"/>
                                     </button>
@@ -269,7 +269,7 @@ export default function Chatting({id, reloadArticlesAction = null}: { id: number
                                                     <div
                                                         className={cn(
                                                             "p-1 border-2 border-blue rounded h-full cursor-pointer duration-200",
-                                                            ((editComment === null) || (comment.id !== editComment.id)) ? "lg:hover:bg-blue lg:hover:text-white" : "lg:hover:bg-white lg:hover:text-black bg-blue text-white"
+                                                            ((editComment === null) || (comment.id !== editComment.id)) ? "md:hover:bg-blue md:hover:text-white" : "md:hover:bg-white md:hover:text-black bg-blue text-white"
                                                         )}
                                                         onClick={() => {
                                                             if (editComment === null) {
@@ -291,7 +291,7 @@ export default function Chatting({id, reloadArticlesAction = null}: { id: number
                                                                 }).then(reload);
                                                             }
                                                         }}
-                                                        className="p-1 border-2 border-red rounded lg:hover:bg-red lg:hover:text-white duration-200"
+                                                        className="p-1 border-2 border-red rounded md:hover:bg-red md:hover:text-white duration-200"
                                                     >
                                                         <div className="i-system-uicons-trash"/>
                                                     </button>
@@ -348,7 +348,7 @@ export default function Chatting({id, reloadArticlesAction = null}: { id: number
                             value={newComments}
                         />
                         <div
-                            className="h-full bg-blue-300 rounded-lg items-center flex flex-col justify-center content-center lg:hover:bg-blue-500 p-1"
+                            className="h-full bg-blue-300 rounded-lg items-center flex flex-col justify-center content-center md:hover:bg-blue-500 p-1"
                             onClick={(editComment === null) ? addComment : updateComment}
                         >
                             {(editComment === null) ? (
@@ -379,7 +379,7 @@ export default function Chatting({id, reloadArticlesAction = null}: { id: number
                                     <div key={index} className="flex gap-1 items-center border rounded whitespace-nowrap pl-1">
                                         {file.name}
                                         <div
-                                            className="lg:hover:bg-red p-1 rounded lg:hover:text-white duration-200"
+                                            className="md:hover:bg-red p-1 rounded md:hover:text-white duration-200"
                                             onClick={() => {
                                                 setEditComment((prev) => {
                                                     if (prev === null) return prev;
@@ -401,7 +401,7 @@ export default function Chatting({id, reloadArticlesAction = null}: { id: number
                             </div>
                         </Scrollbars>
                         <button
-                            className="h-full bg-blue-300 rounded-lg content-center lg:hover:bg-blue-500 p-1"
+                            className="h-full bg-blue-300 rounded-lg content-center md:hover:bg-blue-500 p-1"
                             onClick={fileInput}
                         >
                             <div className="i-system-uicons-files-stack"/>
