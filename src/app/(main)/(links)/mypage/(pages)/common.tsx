@@ -11,6 +11,7 @@ import Log from "@/app/(main)/(links)/mypage/(pages)/component/log";
 import ClassSetting from "@/app/(main)/(links)/mypage/(pages)/component/classSetting";
 import {Hr} from "@/app/(main)/(links)/home/(pages)/desktop";
 import Excel from "@/app/(main)/components/excel";
+import Setting from "@/app/(main)/components/setting";
 
 export function IsStudent({date, isMobile}: { date: Date; isMobile: boolean }) {
     const [editAnswer, setEditAnswer] = useState(false);
@@ -879,8 +880,8 @@ export function IsAdmin({date}: { date: Date }) {
                                                     "px-3 py-1 text-white text-lg font-bold rounded",
                                                     (u.reject) ? "bg-black" : "bg-red-500 md:hover:bg-red-600 w-fit"
                                                 )}
-                                                onClick={() => {
-                                                    POST('/api/admin/user/reject', {user_id: u.uid});
+                                                onClick={async () => {
+                                                    await POST('/api/admin/user/reject', {user_id: u.uid});
                                                     setNewUserList((users) => {
                                                         const _users = [...users];
                                                         _users[i].reject = true;
@@ -896,8 +897,8 @@ export function IsAdmin({date}: { date: Date }) {
                                                     (u.reject) ? "bg-gray-500" : (u.accept) ? "bg-blue-500" : "bg-green-500 md:hover:bg-green-600 w-fit",
                                                     {"pointer-events-none": (u.reject)},
                                                 )}
-                                                onClick={() => {
-                                                    POST('/api/admin/user/accept', {user_id: u.uid});
+                                                onClick={async () => {
+                                                    await POST('/api/admin/user/accept', {user_id: u.uid});
                                                     setNewUserList((users) => {
                                                         const _users = [...users];
                                                         _users[i].accept = true;
@@ -919,55 +920,7 @@ export function IsAdmin({date}: { date: Date }) {
                 <ClassSetting/>
             )}
             {(tab === 4) && (
-                <>
-                    <div className="flex items-center w-full justify-between">
-                        <div className="text-3xl text-gray-800 font-semibold">
-                            설정
-                        </div>
-                    </div>
-                    <Scrollbars
-                        className="w-full flex-1"
-                        universal
-                        autoHide
-                    >
-                        <div className="flex flex-col w-full items-start p-1 space-y-4">
-                            <div className="flex items-center">
-                                <input
-                                    checked={tabList["Log List"]}
-                                    id="checked-checkbox"
-                                    type="checkbox"
-                                    className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                                    onChange={() => setTabList(prev => {
-                                        return {
-                                            ...prev,
-                                            "Log List": !prev["Log List"],
-                                        }
-                                    })}
-                                />
-                                <label htmlFor="checked-checkbox" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">푸쉬 알림 동의</label>
-                            </div>
-                            <Hr/>
-                            <div className="text-xl text-gray-800 font-semibold">
-                                개발자 설정 (새로고침 시 초기화됩니다.)
-                            </div>
-                            <div className="flex items-center">
-                                <input
-                                    checked={tabList["Log List"]}
-                                    id="checked-checkbox"
-                                    type="checkbox"
-                                    className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                                    onChange={() => setTabList(prev => {
-                                        return {
-                                            ...prev,
-                                            "Log List": !prev["Log List"],
-                                        }
-                                    })}
-                                />
-                                <label htmlFor="checked-checkbox" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">사용자 로그 보이기</label>
-                            </div>
-                        </div>
-                    </Scrollbars>
-                </>
+                <Setting/>
             )}
             {(tab === 5) && (
                 <Log/>

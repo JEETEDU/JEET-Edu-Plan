@@ -12,7 +12,7 @@ export async function middleware(req: NextRequest) {
     }
 
     const {cookies} = req;
-    cookies.set("isMobile", isMobile);
+    cookies.set("isMobile", String(isMobile));
     const hasToken = cookies.has('token');
 
     // const res = NextResponse.next();
@@ -28,7 +28,7 @@ export async function middleware(req: NextRequest) {
         res = NextResponse.redirect(new URL('/', req.nextUrl.origin));
     }
 
-    res.cookies.set("isMobile", isMobile);
+    res.cookies.set("isMobile", String(isMobile));
 
     return res;
 }
