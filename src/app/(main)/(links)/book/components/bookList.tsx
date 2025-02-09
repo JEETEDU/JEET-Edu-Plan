@@ -88,7 +88,13 @@ export default function BookList({isMobile = false, setHeadAction = () => void n
                 </div>
                 <div
                     className={cn("component-button aspect-square px-1")}
-                    onClick={() => setHead(0)}
+                    onClick={() => {
+                        if (isMobile) {
+                            router.push('/book/new');
+                        } else {
+                            setHead(0);
+                        }
+                    }}
                 >
                     <div className="i-system-uicons:create"/>
                 </div>

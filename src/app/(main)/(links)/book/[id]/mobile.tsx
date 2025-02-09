@@ -23,7 +23,13 @@ const defaultBook: IBook = {
     user_id: 0
 };
 
-export default function BookReport({id = 0, setCountAction = () => void null, setHeadAction = () => void null}: { id: number; setCountAction?: (f: (h: number) => number) => void; setHeadAction?: (h: number) => void}) {
+interface IParams {
+    id: number;
+    setCountAction?: (f: (h: number) => number) => void;
+    setHeadAction?: (h: number) => void;
+}
+
+export default function BookReport({id = 0, setCountAction = () => void null, setHeadAction = () => void null}: IParams) {
     const [book, setBook] = useState<IBook>(defaultBook);
     const [error, setError] = useState<string>("");
     const [edit, setEdit] = useState<boolean>(false);
