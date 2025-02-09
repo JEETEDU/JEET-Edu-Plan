@@ -13,7 +13,7 @@ interface IBook {
     content: string;
 }
 
-export default function BookList({isMobile = false, setHeadAction = () => void null, _head = 0}: { isMobile?: boolean; setHeadAction?: (h: number) => void; _head?: number }) {
+export default function BookList({isMobile = false, setHeadAction = () => void null, count = 0, _head = 0}: { isMobile?: boolean; setHeadAction?: (h: number) => void; count?: number; _head?: number }) {
     const [books, setBooks] = useState<IBook[]>([]);
     const [search, setSearch] = useState<string>('');
     const [focusOnSearch, setFocusOnSearch] = useState<boolean>(false);
@@ -22,26 +22,36 @@ export default function BookList({isMobile = false, setHeadAction = () => void n
 
     const scrollbars = useRef<Scrollbars>(null);
 
-    function reload(append: boolean = false) {
+    function reload({append = false, changeHead = true}: { append?: boolean; changeHead?: boolean }) {
         (async () => {
             const res: { success: boolean; books: IBook[] } = await GET(`/api/user/book?title=${search}&offset=${(page - 1) * 10}`);
             if (res.success) {
                 if (append) setBooks((prev) => [...prev, ...res.books]);
                 else {
                     setBooks(res.books);
-                    if ((res.books.length > 0) && (!isMobile)) setHead(res.books[0].id);
+                    if ((res.books.length > 0) && (!isMobile) && changeHead) setHead(res.books[0].id);
                 }
+            }
+        })();
+    }
+
+    function reloadAll() {
+        (async () => {
+            const res: { success: boolean; books: IBook[] } = await GET(`/api/user/book?title=${search}&limit=${page * 10}`);
+            if (res.success) {
+                setBooks(res.books);
+                if ((res.books.length > 0) && (!isMobile) && (_head === 0)) setHead(res.books[0].id);
             }
         })();
     }
 
     useEffect(() => {
         setPage(1);
-        reload();
+        reload({});
     }, [search]);
 
     useEffect(() => {
-        if (page > 1) reload(true);
+        if (page > 1) reload({append: true});
     }, [page]);
 
     useEffect(() => {
@@ -49,8 +59,8 @@ export default function BookList({isMobile = false, setHeadAction = () => void n
     }, [head]);
 
     useEffect(() => {
-        if (_head !== head) reload();
-    }, [_head]);
+        reloadAll();
+    }, [count]);
 
     const router = useRouter();
 
@@ -59,7 +69,7 @@ export default function BookList({isMobile = false, setHeadAction = () => void n
             <div className="flex flex-row gap-2 pr-1">
                 <div
                     className={cn(
-                        "border-2 py-1 px-3 flex h-fit rounded justify-between items-center gap-3 bg-white flex-1 h-full",
+                        "border-2 py-1 px-3 flex rounded justify-between items-center gap-3 bg-white flex-1 h-full",
                         {"border-black": focusOnSearch}
                     )}
                     onFocus={() => setFocusOnSearch(true)}
@@ -73,10 +83,13 @@ export default function BookList({isMobile = false, setHeadAction = () => void n
                     />
                     <button
                         className="i-heroicons-outline-search"
-                        onClick={() => reload()}
+                        onClick={() => reload({})}
                     />
                 </div>
-                <div className={cn("component-button aspect-square px-1")}>
+                <div
+                    className={cn("component-button aspect-square px-1")}
+                    onClick={() => setHead(0)}
+                >
                     <div className="i-system-uicons:create"/>
                 </div>
             </div>

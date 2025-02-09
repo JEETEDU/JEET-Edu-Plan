@@ -1,10 +1,9 @@
 'use client';
 
 import React, {useEffect, useState} from "react";
-import {cn, DELETE, GET, PUT} from "@/app/(main)/components/functions";
+import {cn, DELETE, GET, POST, PUT} from "@/app/(main)/components/functions";
 import Scrollbars from "react-custom-scrollbars-2";
 import TextareaAutosize from "react-textarea-autosize";
-import {useRouter} from "next/navigation";
 
 interface IBook {
     id: number;
@@ -15,38 +14,64 @@ interface IBook {
     publisher: string;
 }
 
-export default function BookReport({id = 0, setHeadAction = () => void null}: { id: number; setHeadAction?: (h: number) => void }) {
-    const [book, setBook] = useState<IBook>({
-        author: "",
-        content: "",
-        id: 0,
-        publisher: "",
-        title: "",
-        user_id: 0
-    });
+const defaultBook: IBook = {
+    author: "",
+    content: "",
+    id: 0,
+    publisher: "",
+    title: "",
+    user_id: 0
+};
 
+export default function BookReport({id = 0, setCountAction = () => void null, setHeadAction = () => void null}: { id: number; setCountAction?: (f: (h: number) => number) => void; setHeadAction?: (h: number) => void}) {
+    const [book, setBook] = useState<IBook>(defaultBook);
+    const [error, setError] = useState<string>("");
     const [edit, setEdit] = useState<boolean>(false);
 
     useEffect(() => {
-        (async () => {
-            const res: { success: boolean; book: IBook } = await GET(`/api/user/book/${id}`);
-            if (res.success) setBook(res.book);
-        })();
+        if (id !== 0) {
+            setEdit(false);
+            (async () => {
+                const res: { success: boolean; book: IBook } = await GET(`/api/user/book/${id}`);
+                if (res.success) setBook(res.book);
+            })();
+        } else {
+            setEdit(true)
+            setBook(defaultBook);
+        }
     }, [id])
 
-    async function update() {
-        return await PUT('/api/user/book', book);
+    async function save() {
+        if (!book.title.trim()) {
+            setError("제목을 입력해 주세요");
+            return {success: false};
+        }
+        if (!book.content.trim()) {
+            setError("내용을 입력해 주세요");
+            return {success: false};
+        }
+        if (!book.author.trim()) {
+            setError("저자를 입력해 주세요");
+            return {success: false};
+        }
+        if (!book.publisher.trim()) {
+            setError("출판사를 입력해 주세요");
+            return {success: false};
+        }
+
+        if (id === 0) return await POST('/api/user/book', book);
+        else return await PUT('/api/user/book', book);
     }
 
     async function delete_() {
-        if (confirm("독서록을 삭제하시겠습니까?")) return await DELETE('/api/user/book', {
-            book_id: book.id
-        });
+        if (id !== 0) {
+            if (confirm("독서록을 삭제하시겠습니까?")) return await DELETE('/api/user/book', {
+                book_id: book.id
+            });
+        } else return {success: true};
     }
 
-    const router = useRouter();
-
-    return (id === 0) ? (
+    return (!book) ? (
         <div className="text-3xl font-bold w-full h-full flex justify-center items-center">
             로딩중...
         </div>
@@ -56,27 +81,34 @@ export default function BookReport({id = 0, setHeadAction = () => void null}: { 
                 <div className="col-span-4 text-gray-600 pl-2">
                     책 제목
                 </div>
-                <div className="flex flex-row gap-2">
+                <div className="flex flex-row gap-2 items-center">
+                    <div className="text-red-600 text-sm">
+                        {error}
+                    </div>
                     <div
-                        className={cn("p-1 border-2 border-blue rounded duration-200", edit ? "lg:hover:bg-white lg:hover:text-black bg-blue text-white" : "lg:hover:bg-blue lg:hover:text-white")}
+                        className={cn("p-1 border-2 border-blue rounded duration-200 cursor-pointer", edit ? "lg:hover:bg-white lg:hover:text-black bg-blue text-white" : "lg:hover:bg-blue lg:hover:text-white")}
                         onClick={() => {
                             if (edit) {
-                                update().then(r => {
-                                    if (r.success) alert('독서록이 업데이트 되었습니다!');
+                                save().then(r => {
+                                    if (r.success) {
+                                        alert(`독서록이 ${(id === 0) ? "저장" : "업데이트"} 되었습니다!`);
+                                        setCountAction(c => c + 1);
+                                        setEdit(false);
+                                    }
                                 });
-                            }
-                            setEdit(e => !e);
+                            } else setEdit(true);
                         }}
                     >
                         <div className={cn(edit ? "i-system-uicons:clipboard-check" : "i-system-uicons-write")}/>
                     </div>
                     <div
-                        className="p-1 border-2 border-red rounded lg:hover:bg-red lg:hover:text-white duration-200"
+                        className="p-1 border-2 border-red rounded lg:hover:bg-red lg:hover:text-white duration-200 cursor-pointer"
                         onClick={() => {
                             delete_().then(r => {
                                 if (r.success) {
                                     alert('독서록이 삭제 되었습니다!');
                                     setHeadAction(0);
+                                    setCountAction(c => c + 1);
                                 }
                             });
                         }}
@@ -87,8 +119,9 @@ export default function BookReport({id = 0, setHeadAction = () => void null}: { 
             </div>
             <input
                 className={cn("col-span-4 font-bold text-2xl rounded px-1", edit ? "bg-white" : "bg-inherit outline-none")}
-                value={book?.title}
+                value={book.title}
                 onChange={(e) => setBook(prev => {
+                    setError("");
                     const obj = {...prev};
                     obj.title = e.target.value;
                     return obj;
@@ -100,8 +133,9 @@ export default function BookReport({id = 0, setHeadAction = () => void null}: { 
                     <div className="flex-1">
                         <input
                             className={cn("w-full text-end px-1 rounded", edit ? "bg-white" : "bg-inherit outline-none")}
-                            value={book?.publisher}
+                            value={book.publisher}
                             onChange={(e) => setBook(prev => {
+                                setError("");
                                 const obj = {...prev};
                                 obj.publisher = e.target.value;
                                 return obj;
@@ -117,8 +151,9 @@ export default function BookReport({id = 0, setHeadAction = () => void null}: { 
                     <div className="flex-1">
                         <input
                             className={cn("w-full text-end px-1 rounded", edit ? "bg-white" : "bg-inherit outline-none")}
-                            value={book?.author}
+                            value={book.author}
                             onChange={(e) => setBook(prev => {
+                                setError("");
                                 const obj = {...prev};
                                 obj.author = e.target.value;
                                 return obj;
@@ -138,9 +173,10 @@ export default function BookReport({id = 0, setHeadAction = () => void null}: { 
                 autoHide
             >
                 <TextareaAutosize
-                    className={cn("w-full break-all resize-none outline-none px-1", edit ? "bg-white" : "bg-inherit")}
-                    value={book?.content}
+                    className={cn("w-full break-all resize-none outline-none min-h-full px-1", edit ? "bg-white" : "bg-inherit")}
+                    value={book.content}
                     onChange={(e) => setBook(prev => {
+                        setError("");
                         const obj = {...prev};
                         obj.content = e.target.value;
                         return obj;
