@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --experimental-https",
     "dev2": "next dev -p 3001 -H 0.0.0.0",
     "build": "next build",
     "start": "next start -p 3001 -H 0.0.0.0",
@@ -24,6 +24,7 @@
     "drizzle-orm": "^0.36.0",
     "easymde": "^2.18.0",
     "exceljs": "^4.4.0",
+    "firebase": "^11.3.0",
     "mysql2": "^3.11.3",
     "next": "15.0.2",
     "next-client-cookies": "^2.0.0",
