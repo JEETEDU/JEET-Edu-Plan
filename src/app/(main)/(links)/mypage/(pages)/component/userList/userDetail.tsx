@@ -6,6 +6,7 @@ import UserInfo from "./userInfo";
 import ManageUser from "./manageUser";
 import {TodayAnswer} from "@/app/(main)/(links)/mypage/(pages)/component/userList/todayAnswer";
 import UserClass from "@/app/(main)/(links)/mypage/(pages)/component/userList/userClass";
+import BookReport from "@/app/(main)/(links)/mypage/(pages)/component/userList/book";
 
 export interface IUserInfo {
     uid: number;
@@ -60,6 +61,8 @@ export default function UserDetail({uid, date, refreshAction}: { uid: number, da
                 uid={uid}
                 userType={userInfo.user_type || 1}
             />
+            <Hr/>
+            <BookReport uid={uid} userInfo={userInfo}/>
             <Hr/>
         </div>
     );

@@ -239,13 +239,13 @@ export default function ClassSetting() {
                                     alert("정확한 정보를 입력해 주세요");
                                 }
                             }}
-                            className="bg-blue-500 text-white px-4 py-2 rounded lg:hover:bg-blue-600"
+                            className="bg-blue-500 text-white px-4 py-2 rounded md:hover:bg-blue-600"
                         >
                             저장
                         </button>
                         <button
                             onClick={() => setNewClass(null)}
-                            className="bg-red-500 text-white px-4 py-2 rounded lg:hover:bg-red-600"
+                            className="bg-red-500 text-white px-4 py-2 rounded md:hover:bg-red-600"
                         >
                             취소
                         </button>
@@ -255,7 +255,7 @@ export default function ClassSetting() {
         )}
         <div className="h-full flex flex-col space-y-4">
             <div
-                className="bg-green-500 rounded text-white font-bold p-1 flex justify-center items-center lg:hover:bg-green-600 cursor-pointer"
+                className="bg-green-500 rounded text-white font-bold p-1 flex justify-center items-center md:hover:bg-green-600 cursor-pointer"
                 onClick={() => setNewClass({description: "", display: true, class_name: ""})}
             >
                 새로운 반 추가하기
@@ -286,7 +286,7 @@ export default function ClassSetting() {
             >
                 <div className="flex flex-col space-y-2 mb-1">
                     {classList.map((class_) => <div
-                        key={class_.id} className={cn("flex flex-row border-2 p-2 rounded gap-4 cursor-pointer lg:hover:bg-white justify-center", {"border-black": (class_.id === head)})}
+                        key={class_.id} className={cn("flex flex-row border-2 p-2 rounded gap-4 cursor-pointer md:hover:bg-white justify-center", {"border-black": (class_.id === head)})}
                         onClick={() => setHead(class_.id)}
                     >
                         <div className="flex justify-center items-center border-2 px-1 border-green rounded font-bold bg-green text-white">
@@ -329,7 +329,7 @@ export default function ClassSetting() {
                         </div>
                         <div className="flex flex-row gap-4">
                             <div
-                                className="px-3 py-1 bg-blue-500 text-white text-md font-bold rounded lg:hover:bg-blue-600 w-fit"
+                                className="px-3 py-1 bg-blue-500 text-white text-md font-bold rounded md:hover:bg-blue-600 w-fit"
                                 onClick={() => {
                                     if (edit) {
                                         setEdit(false);
@@ -344,7 +344,7 @@ export default function ClassSetting() {
                                 {edit ? "저장하기" : "편집하기"}
                             </div>
                             <div
-                                className="px-3 py-1 bg-red-500 text-white text-md font-bold rounded lg:hover:bg-red-600 w-fit"
+                                className="px-3 py-1 bg-red-500 text-white text-md font-bold rounded md:hover:bg-red-600 w-fit"
                                 onClick={async () => {
                                     const res = confirm("반을 삭제하시겠습니까?");
                                     if (res) {
@@ -457,14 +457,14 @@ export default function ClassSetting() {
                                 </label>
                                 <StudentClass
                                     text="학생 추가하기"
-                                    className="bg-blue-500 lg:hover:bg-blue-600 py-1 px-2 rounded font-bold text-sm text-white"
+                                    className="bg-blue-500 md:hover:bg-blue-600 py-1 px-2 rounded font-bold text-sm text-white"
                                 />
                             </div>
                             {selectedClass.students.map((s) => {
                                 return (
                                     <div
                                         key={s.uid}
-                                        className="border-2 rounded flex w-full justify-between p-2 cursor-pointer lg:hover:bg-white"
+                                        className="border-2 rounded flex w-full justify-between p-2 cursor-pointer md:hover:bg-white"
                                     >
                                         <div className="flex items-center gap-4">
                                             <div>
@@ -495,7 +495,7 @@ export default function ClassSetting() {
                                                         }).then(refreshClass);
                                                     }
                                                 }}
-                                                className="p-1 border-2 border-red rounded lg:hover:bg-red lg:hover:text-white duration-200"
+                                                className="p-1 border-2 border-red rounded md:hover:bg-red md:hover:text-white duration-200"
                                             >
                                                 <div className="i-system-uicons-exit-right"/>
                                             </button>
@@ -511,14 +511,14 @@ export default function ClassSetting() {
                                 </label>
                                 <TeacherClass
                                     text="선생님 추가하기"
-                                    className="bg-blue-500 lg:hover:bg-blue-600 py-1 px-2 rounded font-bold text-sm text-white"
+                                    className="bg-blue-500 md:hover:bg-blue-600 py-1 px-2 rounded font-bold text-sm text-white"
                                 />
                             </div>
                             {selectedClass.teachers.map((t) => {
                                 return (
                                     <div
                                         key={t.uid}
-                                        className="border-2 rounded flex w-full justify-between p-2 gap-8 cursor-pointer lg:hover:bg-white items-center"
+                                        className="border-2 rounded flex w-full justify-between p-2 gap-8 cursor-pointer md:hover:bg-white items-center"
                                     >
                                         <div className="flex items-center gap-2">
                                             <div className="text-xl font-bold">
@@ -542,7 +542,7 @@ export default function ClassSetting() {
                                                         }).then(refreshClass);
                                                     }
                                                 }}
-                                                className="p-1 border-2 border-red rounded lg:hover:bg-red lg:hover:text-white duration-200"
+                                                className="p-1 border-2 border-red rounded md:hover:bg-red md:hover:text-white duration-200"
                                             >
                                                 <div className="i-system-uicons-exit-right"/>
                                             </button>
@@ -558,7 +558,7 @@ export default function ClassSetting() {
                             과목 목록
                         </div>
                         <div
-                            className="px-3 py-1 bg-green-500 text-white text-md font-bold rounded lg:hover:bg-green-600 w-fit"
+                            className="px-3 py-1 bg-green-500 text-white text-md font-bold rounded md:hover:bg-green-600 w-fit"
                             onClick={() => {
                                 if (addSubject !== null) {
                                     setAddSubject(null);
@@ -594,7 +594,7 @@ export default function ClassSetting() {
                                 return (
                                     <div
                                         key={s.id}
-                                        className="border-2 rounded grid grid-cols-6 gap-4 w-full justify-between p-2 cursor-pointer lg:hover:bg-white"
+                                        className="border-2 rounded grid grid-cols-6 gap-4 w-full justify-between p-2 cursor-pointer md:hover:bg-white"
                                     >
                                         <div className="flex items-center gap-4">
                                             <div className="text-xl font-bold whitespace-nowrap">
@@ -614,7 +614,7 @@ export default function ClassSetting() {
                                                             return (
                                                                 <div
                                                                     key={t.uid * s.id}
-                                                                    className="border-2 rounded flex justify-between p-2 gap-4 cursor-pointer lg:hover:bg-white"
+                                                                    className="border-2 rounded flex justify-between p-2 gap-4 cursor-pointer md:hover:bg-white"
                                                                 >
                                                                     <div className="flex items-center gap-4">
                                                                         <div>
@@ -634,7 +634,7 @@ export default function ClassSetting() {
                                                                                 }).then(refreshClass);
                                                                             }
                                                                         }}
-                                                                        className="p-1 border-2 border-red rounded lg:hover:bg-red lg:hover:text-white duration-200"
+                                                                        className="p-1 border-2 border-red rounded md:hover:bg-red md:hover:text-white duration-200"
                                                                     >
                                                                         <div className="i-system-uicons-exit-right"/>
                                                                     </button>
@@ -653,7 +653,7 @@ export default function ClassSetting() {
                                                         }).then(refreshClass);
                                                     }
                                                 }}
-                                                className="p-1 border-2 border-red rounded lg:hover:bg-red lg:hover:text-white duration-200"
+                                                className="p-1 border-2 border-red rounded md:hover:bg-red md:hover:text-white duration-200"
                                             >
                                                 <div className="i-system-uicons-trash"/>
                                             </button>

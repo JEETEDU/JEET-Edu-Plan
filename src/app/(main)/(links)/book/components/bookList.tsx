@@ -4,14 +4,7 @@ import {cn, GET} from "@/app/(main)/components/functions";
 import Scrollbars from "react-custom-scrollbars-2";
 import React, {useEffect, useRef, useState} from "react";
 import {useRouter} from "next/navigation";
-
-interface IBook {
-    id: number;
-    title: string;
-    author: string;
-    publisher: string;
-    content: string;
-}
+import {IBook} from "@/app/(main)/(links)/book/[id]/mobile";
 
 export default function BookList({isMobile = false, setHeadAction = () => void null, count = 0, _head = 0}: { isMobile?: boolean; setHeadAction?: (h: number) => void; count?: number; _head?: number }) {
     const [books, setBooks] = useState<IBook[]>([]);
@@ -77,6 +70,7 @@ export default function BookList({isMobile = false, setHeadAction = () => void n
                 >
                     <input
                         className="flex-1 outline-none bg-white"
+                        value={search}
                         onChange={(e) => {
                             setSearch(e.target.value);
                         }}
@@ -118,7 +112,7 @@ export default function BookList({isMobile = false, setHeadAction = () => void n
                             className="flex flex-row w-full pr-1"
                         >
                             <div
-                                className={cn("h flex-1 border-2 rounded flex flex-row p-2 gap-2 lg:hover:bg-white items-center justify-between", {"border-black": (book.id === head)})}
+                                className={cn("flex-1 border-2 rounded flex flex-row p-2 gap-2 md:hover:bg-white items-center justify-between", {"border-black": (book.id === head)})}
                                 onClick={() => {
                                     if (isMobile) {
                                         router.push(`/book/${book.id}`);

@@ -36,7 +36,7 @@
     }
 }
 
-/*@media (lg:hover: none), (pointer: none), (pointer: coarse) {*/
+/*@media (md:hover: none), (pointer: none), (pointer: coarse) {*/
 /*    *:hover {*/
 /*        pointer-events: none;*/
 /*    }*/

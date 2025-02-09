@@ -41,7 +41,7 @@ export default function Excel() {
     return (
         <>
             <div
-                className="flex justify-center items-center py-1 px-2 border-2 border-blue rounded lg:hover:bg-white cursor-pointer"
+                className="flex justify-center items-center py-1 px-2 border-2 border-blue rounded md:hover:bg-white cursor-pointer"
                 onClick={() => setOpen(true)}
             >
                 오늘의 응답 엑셀 출력
