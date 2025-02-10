@@ -71,6 +71,9 @@ import {
  *                       content:
  *                         type: string
  *                         example: "Book content"
+ *                       update_time:
+ *                         type: string
+ *                         example: "2021-10-01T00:00:00.000Z"
  *       400:
  *         description: Invalid limit or offset
  *       401:

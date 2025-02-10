@@ -230,5 +230,6 @@ export const books = mysqlTable('book', {
     user_id: int().notNull().references(() => users.uid, {onDelete: 'cascade'}),
     content: text().notNull(),
     author: varchar({length: 255}),
-    publisher: varchar({length: 255})
+    publisher: varchar({length: 255}),
+    update_time: datetime().notNull().default(sql`CURRENT_TIMESTAMP()`)
 })
