@@ -51,19 +51,19 @@ export default function UserDetail({uid, date, refreshAction}: { uid: number, da
             />
             <ManageUser uid={uid}/>
             <Hr/>
-            {(userInfo.user_type === 1) && (
-                <>
-                    <TodayAnswer date={date} uid={uid}/>
-                    <Hr/>
-                </>
-            )}
             <UserClass
                 uid={uid}
                 userType={userInfo.user_type || 1}
             />
             <Hr/>
-            <BookReport uid={uid} userInfo={userInfo}/>
-            <Hr/>
+            {(userInfo.user_type === 1) && (
+                <>
+                    <TodayAnswer date={date} uid={uid}/>
+                    <Hr/>
+                    <BookReport uid={uid} userInfo={userInfo}/>
+                    <Hr/>
+                </>
+            )}
         </div>
     );
 }
