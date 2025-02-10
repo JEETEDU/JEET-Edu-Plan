@@ -1,6 +1,7 @@
 'use client';
 
 import React, {useEffect} from "react";
+import useFcmToken from "@/hooks/useFcmToken";
 
 export default function Body({children}: Readonly<{ children: React.ReactNode; }>) {
     function setScreenSizeProps() {
@@ -14,6 +15,7 @@ export default function Body({children}: Readonly<{ children: React.ReactNode; }
         setScreenSizeProps();
         window.addEventListener('resize', () => setScreenSizeProps());
     }, []);
+    const {token, notificationPermissionStatus} = useFcmToken();
 
     return <body style={{
         height: "var(--ih, 100vh)",
@@ -25,6 +27,9 @@ export default function Body({children}: Readonly<{ children: React.ReactNode; }
         position: "fixed",
         backgroundColor: "rgb(243 244 246 / 1)"
     }}>
+    <div>
+        {token}
+    </div>
     {children}
     </body>
 }

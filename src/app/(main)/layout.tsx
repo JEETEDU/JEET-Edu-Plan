@@ -6,10 +6,31 @@ import Navigation from "@/app/(main)/components/desktop";
 import {Navigation1, Navigation2} from "@/app/(main)/components/mobile";
 import {CookiesProvider} from "next-client-cookies/server";
 import Body from "@/app/(main)/_layout";
+import logo from '../../../public/jeet.png';
 
 export const metadata: Metadata = {
-    title: "JEET",
-    description: "hegelty & hoyakim",
+    title: "JEET Edu Plan",
+    authors: [{name: "hegelty"}, {name: "hoyakim"}],
+    creator: "@hegelty & @hoyakim",
+    applicationName: "JEET Edu Plan",
+    generator: "Next.js",
+    icons: "/vercel.svg",
+    openGraph: {
+        title: "JEET Edu Plan",
+        description: "JEET Edu Plan by 안성민",
+        url: "유알엘",
+        siteName: "JEET Edu Plan",
+        images: [
+            {
+                url: 'https://jeet.hegelty.me/jeet.png',
+                width: logo.width,
+                height: logo.height
+            }
+        ],
+        locale: "ko_KR",
+        alternateLocale: "en_US",
+        type: "website",
+    }
 };
 
 export default async function RootLayout(
@@ -21,7 +42,7 @@ export default async function RootLayout(
     return (
         <>
             <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-            <html lang="en">
+            <html lang="ko">
             <Body>
                 <div>
                     {isMobile?.value === 'true' ? <Navigation1/> : <Navigation/>}
