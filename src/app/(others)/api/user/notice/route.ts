@@ -138,7 +138,7 @@ export async function GET(req: NextRequest) {
                 }
             })
                 .from(schema.boards)
-                .leftJoin(
+                .rightJoin(
                     db.selectDistinct({
                             class_id: link_table.class_id
                         })
