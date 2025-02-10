@@ -14,7 +14,7 @@ export function Navigation1() {
         <div className="nav">
             {/* 상단 로고 */}
             <header className="nav-header flex justify-between">
-                <Image src={logo} alt="" height={25}/>
+                <Image src={logo} alt="" height={25} priority={true}/>
                 <Alert path={path} isMobile={true}/>
             </header>
         </div>

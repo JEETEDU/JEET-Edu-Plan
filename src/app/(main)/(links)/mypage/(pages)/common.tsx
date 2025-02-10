@@ -11,7 +11,7 @@ import Log from "@/app/(main)/(links)/mypage/(pages)/component/log";
 import ClassSetting from "@/app/(main)/(links)/mypage/(pages)/component/classSetting";
 import {Hr} from "@/app/(main)/(links)/home/(pages)/desktop";
 import Excel from "@/app/(main)/components/excel";
-import Setting from "@/app/(main)/components/setting";
+import Setting from "@/app/(main)/(links)/mypage/(pages)/component/setting";
 
 export function IsStudent({date, isMobile}: { date: Date; isMobile: boolean }) {
     const [editAnswer, setEditAnswer] = useState(false);
@@ -306,38 +306,7 @@ export function IsStudent({date, isMobile}: { date: Date; isMobile: boolean }) {
                 </>
             )}
             {(tab === 1) && (
-                <>
-                    <div className="flex items-center w-full justify-between">
-                        <div className="text-3xl text-gray-800 font-semibold">
-                            설정
-                        </div>
-                    </div>
-                    <Scrollbars
-                        className="w-full flex-1"
-                        universal
-                        autoHide
-                    >
-                        <div className="flex flex-col w-full items-start p-1 space-y-4">
-                            <div className="flex items-center">
-                                <input
-                                    // checked={tabList["Log List"]}
-                                    id="checked-checkbox"
-                                    type="checkbox"
-                                    className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                                    // onChange={() => setTabList(prev => {
-                                    //     return {
-                                    //         ...prev,
-                                    //         "Log List": !prev["Log List"],
-                                    //     }
-                                    // })}
-                                />
-                                <label htmlFor="checked-checkbox" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                                    푸쉬 알림 동의
-                                </label>
-                            </div>
-                        </div>
-                    </Scrollbars>
-                </>
+                <Setting/>
             )}
         </div>
     );
@@ -371,38 +340,7 @@ export function IsTeacher() {
                 })}
             </div>
             {(tab === 0) && (
-                <>
-                    <div className="flex items-center w-full justify-between">
-                        <div className="text-3xl text-gray-800 font-semibold">
-                            설정
-                        </div>
-                    </div>
-                    <Scrollbars
-                        className="w-full flex-1"
-                        universal
-                        autoHide
-                    >
-                        <div className="flex flex-col w-full items-start p-1 space-y-4">
-                            <div className="flex items-center">
-                                <input
-                                    // checked={tabList["Log List"]}
-                                    id="checked-checkbox"
-                                    type="checkbox"
-                                    className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                                    // onChange={() => setTabList(prev => {
-                                    //     return {
-                                    //         ...prev,
-                                    //         "Log List": !prev["Log List"],
-                                    //     }
-                                    // })}
-                                />
-                                <label htmlFor="checked-checkbox" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                                    푸쉬 알림 동의
-                                </label>
-                            </div>
-                        </div>
-                    </Scrollbars>
-                </>
+                <Setting/>
             )}
         </div>
     );
@@ -519,14 +457,14 @@ export function IsAdmin({date}: { date: Date }) {
     const [focusOnSearch, setFocusOnSearch] = useState(false);
 
     const [tab, setTab] = useState(0);
-    const [tabList, setTabList] = useState({
+    const tabList = {
         "오늘의 질문": true,
         "유저 목록": true,
         "신규 유저 승인": true,
         "반 관리": true,
         "설정": true,
-        "Log List": false
-    });
+        "Log List": true
+    };
 
     useEffect(() => {
         refreshUser();

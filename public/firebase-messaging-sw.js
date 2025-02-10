@@ -24,7 +24,8 @@ messaging.onBackgroundMessage((payload) => {
 
     // payload.fcmOptions?.link comes from our backend API route handle
     // payload.data.link comes from the Firebase Console where link is the 'key'
-    const link = payload.fcmOptions?.link || payload.data?.link;
+    // const link = payload.fcmOptions?.link || payload.data?.link;
+    const link = 'https://localhost:3000';
 
     const notificationTitle = payload.notification.title;
     const notificationOptions = {

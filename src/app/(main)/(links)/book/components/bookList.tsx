@@ -129,12 +129,12 @@ export default function BookList({isMobile = false, setHeadAction = () => void n
                                         {book.publisher} | {book.author}
                                     </div>
                                 </div>
-                                <div className="flex flex-col">
+                                <div className="flex flex-col justify-end items-end whitespace-nowrap">
                                     <div>
-                                        작성 날짜
+                                        {(new Date(book.update_time)).toLocaleDateString()}
                                     </div>
                                     <div>
-                                        수정 날짜
+                                        {(new Date(book.update_time)).toLocaleTimeString()}
                                     </div>
                                 </div>
                             </div>

@@ -31,8 +31,7 @@ async function getNotificationPermissionAndToken() {
 
 const useFcmToken = () => {
     const router = useRouter(); // Initialize the router for navigation.
-    const [notificationPermissionStatus, setNotificationPermissionStatus] =
-        useState<NotificationPermission | null>(null); // State to store the notification permission status.
+    const [notificationPermissionStatus, setNotificationPermissionStatus] = useState<NotificationPermission | null>(null); // State to store the notification permission status.
     const [token, setToken] = useState<string | null>(null); // State to store the FCM token.
     const retryLoadToken = useRef(0); // Ref to keep track of retry attempts.
     const isLoading = useRef(false); // Ref to keep track if a token fetch is currently in progress.

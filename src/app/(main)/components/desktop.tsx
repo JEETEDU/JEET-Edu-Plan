@@ -26,7 +26,7 @@ export default function Navigation() {
             <div className="bg-gray-100 dark:bg-gray-800 flex items-center justify-between px-6 py-4">
                 {/* 로고 자리 */}
                 <div className="flex flex-row gap-4 justify-start items-center">
-                    <Image src={logo} alt="" height={30}/>
+                    <Image src={logo} alt="" height={30} priority={true}/>
                     <Link href={"/home"} className="nav-item">
                         <div className="_nav-item w-fit">
                             문의하기
