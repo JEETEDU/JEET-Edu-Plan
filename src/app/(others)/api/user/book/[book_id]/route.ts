@@ -53,6 +53,8 @@ import {
  *                       type: string
  *                     content:
  *                       type: string
+ *                     update_time:
+ *                       type: string
  *       400:
  *         description: Bad request, invalid or missing required fields
  *       401:
