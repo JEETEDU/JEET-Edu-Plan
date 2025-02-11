@@ -235,7 +235,7 @@ export const books = mysqlTable('book', {
     update_time: datetime().notNull().default(sql`CURRENT_TIMESTAMP()`)
 })
 
-export const fcm_tokens = mysqlTable('fcm_token', {
+export const fcm = mysqlTable('fcm', {
     user_id: int().notNull().references(() => users.uid, {onDelete: 'cascade'}),
     token: tinytext().notNull()
 })
