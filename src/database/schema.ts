@@ -15,6 +15,7 @@ import {
     primaryKey, text
 } from "drizzle-orm/mysql-core";
 import {relations, sql} from "drizzle-orm";
+import {tinytext} from "drizzle-orm/mysql-core/columns/text";
 
 // User table
 export const users = mysqlTable('user', {
@@ -232,4 +233,9 @@ export const books = mysqlTable('book', {
     author: varchar({length: 255}),
     publisher: varchar({length: 255}),
     update_time: datetime().notNull().default(sql`CURRENT_TIMESTAMP()`)
+})
+
+export const fcm_tokens = mysqlTable('fcm_token', {
+    user_id: int().notNull().references(() => users.uid, {onDelete: 'cascade'}),
+    token: tinytext().notNull()
 })
