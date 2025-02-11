@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
 
             if (!fcm_token) return return_400('Missing required fields');
 
-            await db.insert(schema.fcm_tokens)
+            await db.insert(schema.fcm)
                 .values({
                     user_id: decoded.user_id,
                     token: fcm_token
@@ -105,9 +105,9 @@ export async function DELETE(req: NextRequest) {
             const decoded: DecodedToken | false = verifyToken(token);
             if (!decoded) return return_not_logged_in();
 
-            await db.delete(schema.fcm_tokens)
+            await db.delete(schema.fcm)
                 .where(
-                    eq(schema.fcm_tokens.user_id, decoded.user_id)
+                    eq(schema.fcm.user_id, decoded.user_id)
                 );
         });
     } catch (e) {

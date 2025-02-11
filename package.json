@@ -25,6 +25,7 @@
     "easymde": "^2.18.0",
     "exceljs": "^4.4.0",
     "firebase": "^11.3.0",
+    "firebase-admin": "^13.1.0",
     "mysql2": "^3.11.3",
     "next": "15.0.2",
     "next-client-cookies": "^2.0.0",
