@@ -120,7 +120,6 @@ export async function GET(req: NextRequest) {
 
         const subjects = Array.isArray(rows) ? rows.reduce((acc: any, row: any) => {
             let subject = acc.find((u: any) => u.id === row.id);
-            console.log(subject);
             if (!subject) {
                 subject = {
                     id: row.id,
