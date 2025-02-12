@@ -39,7 +39,7 @@ messaging.onBackgroundMessage((payload) => {
     };
     console.log(Notification.permission);
     navigator.serviceWorker.ready.then((registration) => {
-        registration.showNotification(notificationTitle, notificationOptions);
+        registration.showNotification(notificationTitle, notificationOptions).then();
     });
 });
 
