@@ -25,7 +25,7 @@ export default defineConfig({
         "component-input":
             "border border-gray-300 rounded px-4 py-2 w-full focus:border-blue-500 focus:ring focus:ring-blue-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white w-full px-3 py-1 border-gray-300 dark:border-gray-600 focus:(outline-none ring-2 ring-blue-400) bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100",
         "component-button":
-            "cursor-pointer bg-blue-500 text-white w-fit py-1 px-3 rounded md:hover:bg-blue-600 transition duration-200 dark:bg-blue-700 dark:md:hover:bg-blue-800 text-center bg-blue-500 md:hover:bg-blue-600 text-white py-1 transition duration-200 items-center flex justify-center",
+            "cursor-pointer bg-blue-500 text-white w-fit py-1 px-3 rounded md:hover:bg-blue-600 transition  dark:bg-blue-700 dark:md:hover:bg-blue-800 text-center bg-blue-500 md:hover:bg-blue-600 text-white py-1 transition  items-center flex justify-center",
         "component-button-info":
             cn("text-sm font-medium text-black dark:text-gray-300 mb-1"),
         "component-container":

@@ -94,7 +94,7 @@ export default function BookReport({id = 0, setCountAction = () => void null, se
                         {error}
                     </div>
                     <div
-                        className={cn("p-1 border-2 border-blue rounded duration-200 cursor-pointer", edit ? "md:hover:bg-white md:hover:text-black bg-blue text-white" : "md:hover:bg-blue md:hover:text-white")}
+                        className={cn("p-1 border-2 border-blue rounded  cursor-pointer", edit ? "md:hover:bg-white md:hover:text-black bg-blue text-white" : "md:hover:bg-blue md:hover:text-white")}
                         onClick={() => {
                             if (edit) {
                                 save().then(r => {
@@ -110,7 +110,7 @@ export default function BookReport({id = 0, setCountAction = () => void null, se
                         <div className={cn(edit ? "i-system-uicons:clipboard-check" : "i-system-uicons-write")}/>
                     </div>
                     <div
-                        className="p-1 border-2 border-red rounded md:hover:bg-red md:hover:text-white duration-200 cursor-pointer"
+                        className="p-1 border-2 border-red rounded md:hover:bg-red md:hover:text-white  cursor-pointer"
                         onClick={() => {
                             delete_().then(r => {
                                 if (r.success) {

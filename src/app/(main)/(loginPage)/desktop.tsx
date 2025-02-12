@@ -45,7 +45,7 @@ export default function Desktop() {
                 <button
                     className={cn({
                         "bg-white pointer-events-none": isLogin,
-                        "bg-gray-300 md:hover:bg-gray-200 transition duration-200": !isLogin
+                        "bg-gray-300 md:hover:bg-gray-200 transition ": !isLogin
                     }, "h-fit rounded-l-lg text-center p-2")}
                     onClick={() => {
                         setIsLogin(true);
@@ -57,7 +57,7 @@ export default function Desktop() {
                 <button
                     className={cn({
                         "bg-white pointer-events-none": !isLogin,
-                        "bg-gray-300 md:hover:bg-gray-200 transition duration-200": isLogin
+                        "bg-gray-300 md:hover:bg-gray-200 transition ": isLogin
                     }, "h-fit rounded-r-lg text-center p-2")}
                     onClick={() => {
                         setIsLogin(false);

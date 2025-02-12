@@ -495,7 +495,7 @@ export default function ClassSetting() {
                                                         }).then(refreshClass);
                                                     }
                                                 }}
-                                                className="p-1 border-2 border-red rounded md:hover:bg-red md:hover:text-white duration-200"
+                                                className="p-1 border-2 border-red rounded md:hover:bg-red md:hover:text-white "
                                             >
                                                 <div className="i-system-uicons-exit-right"/>
                                             </button>
@@ -542,7 +542,7 @@ export default function ClassSetting() {
                                                         }).then(refreshClass);
                                                     }
                                                 }}
-                                                className="p-1 border-2 border-red rounded md:hover:bg-red md:hover:text-white duration-200"
+                                                className="p-1 border-2 border-red rounded md:hover:bg-red md:hover:text-white "
                                             >
                                                 <div className="i-system-uicons-exit-right"/>
                                             </button>
@@ -634,7 +634,7 @@ export default function ClassSetting() {
                                                                                 }).then(refreshClass);
                                                                             }
                                                                         }}
-                                                                        className="p-1 border-2 border-red rounded md:hover:bg-red md:hover:text-white duration-200"
+                                                                        className="p-1 border-2 border-red rounded md:hover:bg-red md:hover:text-white "
                                                                     >
                                                                         <div className="i-system-uicons-exit-right"/>
                                                                     </button>
@@ -653,7 +653,7 @@ export default function ClassSetting() {
                                                         }).then(refreshClass);
                                                     }
                                                 }}
-                                                className="p-1 border-2 border-red rounded md:hover:bg-red md:hover:text-white duration-200"
+                                                className="p-1 border-2 border-red rounded md:hover:bg-red md:hover:text-white "
                                             >
                                                 <div className="i-system-uicons-trash"/>
                                             </button>

@@ -136,7 +136,7 @@ export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
                 </div>
                 <div className="w-full flex justify-end">
                     <button
-                        className="p-2 bg-blue-500 text-white rounded md:hover:bg-blue-600 md:hover:rounded-3xl duration-200 font-bold"
+                        className="p-2 bg-blue-500 text-white rounded md:hover:bg-blue-600 md:hover:rounded-3xl  font-bold"
                         onClick={async () => {
                             if (newTodo === null) {
                                 setNewTodo({
@@ -329,7 +329,7 @@ export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
                                 <div className={cn("flex", isMobile ? "w-full justify-between flex-row h-fit items-center" : "items-end gap-2 justify-between h-full flex-col")}>
                                     <div className="flex flex-row gap-2">
                                         <button
-                                            className="p-1 border-2 border-blue rounded md:hover:bg-blue md:hover:text-white duration-200 h-fit"
+                                            className="p-1 border-2 border-blue rounded md:hover:bg-blue md:hover:text-white  h-fit"
                                             onClick={() => {
                                                 setNewTodo({
                                                     id: todo.id,
@@ -342,7 +342,7 @@ export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
                                             <div className="i-system-uicons-write"/>
                                         </button>
                                         <button
-                                            className="p-1 border-2 border-red rounded md:hover:bg-red md:hover:text-white duration-200 h-fit"
+                                            className="p-1 border-2 border-red rounded md:hover:bg-red md:hover:text-white  h-fit"
                                             onClick={async () => {
                                                 const r = confirm("할 일을 삭제하시겠습니까?");
                                                 if (r) {

@@ -72,7 +72,7 @@ export default function Inquiry() {
                     </div>
                 </div>
             </div>
-            <div className="h-full grid grid-cols-4 hover:text-black duration-200">
+            <div className="h-full grid grid-cols-4 hover:text-black ">
                 <div className="text-4xl items-center grid grid-rows-3 w-full">
                     <div className={cn(nanumPenScript.className, "flex flex-col justify-end h-full")}>
                         안녕하세요,
