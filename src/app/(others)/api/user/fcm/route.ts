@@ -65,6 +65,10 @@ export async function POST(req: NextRequest) {
                     user_id: decoded.user_id,
                     token: fcm_token
                 });
+
+            return NextResponse.json({
+                success: true
+            });
         });
     } catch (e) {
         console.error(e);
@@ -109,6 +113,10 @@ export async function DELETE(req: NextRequest) {
                 .where(
                     eq(schema.fcm.user_id, decoded.user_id)
                 );
+
+            return NextResponse.json({
+                success: true
+            });
         });
     } catch (e) {
         console.error(e);
