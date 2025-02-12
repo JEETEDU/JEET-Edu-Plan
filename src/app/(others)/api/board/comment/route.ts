@@ -137,7 +137,7 @@ export async function POST(req: NextRequest) {
             })
                 .where(eq(schema.boards.id, article_id));
 
-            await register_alert(tx, user_id, `새 댓글이 달렸습니다.\n ${content.substring(0, 20)}`, 0, article_id)
+            await register_alert(tx, user_id, `새 댓글이 달렸습니다.`, content.substring(0, 30), 0, article_id)
 
             return NextResponse.json({ success: true });
         });

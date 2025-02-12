@@ -27,9 +27,9 @@ messaging.onBackgroundMessage((payload) => {
     // const link = payload.fcmOptions?.link || payload.data?.link;
     const link = 'https://localhost:3000';
 
-    const notificationTitle = payload.notification.title;
+    const notificationTitle = payload.data.title;
     const notificationOptions = {
-        body: payload.notification.body,
+        body: payload.data.message,
         icon: "/jeet.png",
         data: {url: link},
     };
