@@ -1,13 +1,16 @@
 import * as schema from '@/database/schema';
 import {and, eq} from 'drizzle-orm';
 import {MySqlTransaction} from "drizzle-orm/mysql-core";
-import {App, cert, initializeApp} from 'firebase-admin/app';
 import {getMessaging} from "firebase-admin/messaging";
 import {inArray} from "drizzle-orm/sql/expressions/conditions";
+import {initializeApp} from 'firebase-admin/app';
+import {credential, apps} from "firebase-admin";
 
-const firebase_app: App = initializeApp({
-    credential: cert(process.env["FIREBASE_SERVICE_ACCOUNT"] ?? ''),
-})
+if (!apps.length) {
+   initializeApp({
+        credential: credential.cert(process.env["GOOGLE_APPLICATION_CREDENTIALS"] ?? ''),
+    })
+}
 
 type TX = MySqlTransaction<any, any, any, any>;
 export enum AlertType {
@@ -17,12 +20,12 @@ export enum AlertType {
     HOMEWORK = 3
 }
 
-export async function register_alert(tx: TX, user_id: number | [number], message: string, alert_type: number = 0, article_id: number | null = null): Promise<void> {
+export async function register_alert(tx: TX, user_id: number | [number], title: string, message: string, alert_type: number = 0, article_id: number | null = null): Promise<void> {
     let tokens: { fcm_token: string }[];
     if (Array.isArray(user_id)) {
         await tx.insert(schema.alerts).values(user_id.map((id) => ({
             user_id: id,
-            message: message,
+            message: `<b>${title}</b>\n${message}`,
             alert_type: alert_type,
             article_id: article_id
         })));
@@ -36,7 +39,7 @@ export async function register_alert(tx: TX, user_id: number | [number], message
     else {
         await tx.insert(schema.alerts).values({
             user_id: user_id,
-            message: message,
+            message: `<b>${title}</b>\n${message}`,
             alert_type: alert_type,
             article_id: article_id
         });
@@ -48,8 +51,9 @@ export async function register_alert(tx: TX, user_id: number | [number], message
             .where(eq(schema.fcm.user_id, user_id));
     }
     if (tokens.length > 0) {
-        getMessaging(firebase_app).sendEachForMulticast({
+        getMessaging().sendEachForMulticast({
             data: {
+                title: title,
                 message: message,
                 alert_type: alert_type.toString(),
                 article_id: article_id?.toString() ?? ''
@@ -70,7 +74,7 @@ export async function register_alert(tx: TX, user_id: number | [number], message
     }
 }
 
-export async function register_alert_for_class(tx: TX, class_id: number, message: string, alert_type: number = 0, article_id: number | null = null): Promise<void> {
+export async function register_alert_for_class_students(tx: TX, class_id: number, title: string, message: string, alert_type: number = 0, article_id: number | null = null): Promise<void> {
     const users = await tx.select({
         user_id: schema.studentClasses.user_id,
     })
@@ -78,7 +82,18 @@ export async function register_alert_for_class(tx: TX, class_id: number, message
         .where(eq(schema.studentClasses.class_id, class_id));
     console.log(users);
     // @ts-ignore
-    await register_alert(tx, users.map((u) => u.user_id), message, alert_type, article_id);
+    await register_alert(tx, users.map((u) => u.user_id), title, message, alert_type, article_id);
+}
+
+export async function register_alert_for_class_teachers(tx: TX, class_id: number, title: string, message: string, alert_type: number = 0, article_id: number | null = null): Promise<void> {
+    const users = await tx.select({
+        user_id: schema.teacherClasses.user_id,
+    })
+        .from(schema.teacherClasses)
+        .where(eq(schema.teacherClasses.class_id, class_id));
+    console.log(users);
+    // @ts-ignore
+    await register_alert(tx, users.map((u) => u.user_id), title, message, alert_type, article_id);
 }
 
 export async function delete_alert(tx: TX, user_id: number, alert_id: number): Promise<void> {

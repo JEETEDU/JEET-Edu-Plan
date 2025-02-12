@@ -17,7 +17,7 @@ import {
     AlertType,
     delete_alerts_by_article,
     register_alert,
-    register_alert_for_class
+    register_alert_for_class_students, register_alert_for_class_teachers
 } from "@/app/(others)/api/(tools)/alerts";
 import {ArticleCategory} from "@/app/(others)/api/board/tools";
 
@@ -180,11 +180,11 @@ export async function POST(req: NextRequest) {
                             eq(schema.teacherClasses.class_id, class_id)
                         ))
                 if (!subject_.teacher_id) return return_400("Teacher not found");
-                await register_alert(tx, subject_.teacher_id, `새 질문이 등록되었습니다.\n${title}`, AlertType.NORMAL, article_id.id);
+                await register_alert_for_class_teachers(tx, class_id, `새 질문이 등록되었습니다.`, title, AlertType.NORMAL, article_id.id);
             }
 
             if (is_notice === 1) {
-                await register_alert_for_class(tx, class_id, `새 공지사항이 등록되었습니다.\n${title}`, AlertType.NOTICE, article_id.id);
+                await register_alert_for_class_students(tx, class_id, `새 공지사항이 등록되었습니다.`, title, AlertType.NOTICE, article_id.id);
             }
 
             return NextResponse.json({
@@ -339,7 +339,7 @@ export async function PATCH(req: NextRequest) {
                 if (!subject_) return return_400("Subject not found");
                 update_data['subject_id'] = subject_id;
                 if(category === ArticleCategory.QUESTION && subject_.teacher_id) {
-                    await register_alert(tx, subject_.teacher_id, `새 질문이 등록되었습니다.\n${title}`, AlertType.NORMAL, article_id);
+                    await register_alert(tx, subject_.teacher_id, `새 질문이 등록되었습니다.`, title, AlertType.NORMAL, article_id);
                 }
             }
             const files_path: SavedFileList = await update_files(tx, files, JSON.parse(article_.attach_files?.toString() ?? '[]'), attach_files);
@@ -348,7 +348,7 @@ export async function PATCH(req: NextRequest) {
             if (is_notice === 1 && article_.notice === 0) {
                 if (user_type < UserType.TEACHER) return return_permission_denied();
                 update_data['notice'] = 1;
-                await register_alert_for_class(tx, article_.class_id, `새 공지사항이 등록되었습니다.\n${title}`, AlertType.NOTICE, article_id);
+                await register_alert_for_class_students(tx, article_.class_id, `새 공지사항이 등록되었습니다.`, title, AlertType.NOTICE, article_id);
             }
             else if (is_notice === 0 && article_.notice === 1) {
                 if (user_type < UserType.TEACHER) return return_permission_denied();

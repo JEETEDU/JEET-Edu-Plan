@@ -237,5 +237,5 @@ export const books = mysqlTable('book', {
 
 export const fcm = mysqlTable('fcm', {
     user_id: int().notNull().references(() => users.uid, {onDelete: 'cascade'}),
-    token: tinytext().notNull()
+    token: tinytext().notNull().unique()
 })
