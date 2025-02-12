@@ -4,7 +4,6 @@ export async function middleware(req: NextRequest) {
     const userAgent = req.headers.get('user-agent') || '';
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
     const url = req.nextUrl.clone();
-    // const userInfo = await getStoreData('/api/user/info', 'user-info');
 
     const isAsset = url.pathname.match(/\.(png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$/);
     if (isAsset) {
@@ -14,11 +13,6 @@ export async function middleware(req: NextRequest) {
     const {cookies} = req;
     cookies.set("isMobile", String(isMobile));
     const hasToken = cookies.has('token');
-
-    // const res = NextResponse.next();
-    // res.cookies.set("isMobile", isMobile);
-
-    // return res;
 
     let res = NextResponse.next();
 

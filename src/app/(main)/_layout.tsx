@@ -1,7 +1,8 @@
 'use client';
 
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import useFcmToken from "@/hooks/useFcmToken";
+// import {getStoreData} from "@/app/(main)/components/functions";
 
 export default function Body({children}: Readonly<{ children: React.ReactNode; }>) {
     function setScreenSizeProps() {
@@ -11,9 +12,18 @@ export default function Body({children}: Readonly<{ children: React.ReactNode; }
         document.documentElement.style.setProperty('--ih', `${ih}px`);
     }
 
+    // const [uid, setUid] = useState<number>(0);
+
     useEffect(() => {
         setScreenSizeProps();
         window.addEventListener('resize', () => setScreenSizeProps());
+
+        // (async () => {
+        //     const res = (await getStoreData('/api/user/info', 'user-info')).response;
+        //     if (res.success) {
+        //         setUid(res.user.uid);
+        //     }
+        // })();
     }, []);
 
     useFcmToken();

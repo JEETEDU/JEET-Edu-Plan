@@ -38,11 +38,10 @@ const useFcmToken = () => {
     const isLoading = useRef(false); // Ref to keep track if a token fetch is currently in progress.
 
     const loadToken = async () => {
-        // Step 4: Prevent multiple fetches if already fetched or in progress.
         if (isLoading.current) return;
 
         isLoading.current = true; // Mark loading as in progress.
-        const token = await getNotificationPermissionAndToken(); // Fetch the token.
+        const token = await getNotificationPermissionAndToken();
 
         // Step 5: Handle the case where permission is denied.
         if (Notification.permission === "denied") {
@@ -56,34 +55,30 @@ const useFcmToken = () => {
             return;
         }
 
-        // Step 6: Retry fetching the token if necessary. (up to 3 times)
-        // This step is typical initially as the service worker may not be ready/installed yet.
-        if (!token) {
-            if (retryLoadToken.current >= 3) {
-                alert("Unable to load token, refresh the browser");
-                console.info(
-                    "%cPush Notifications issue - unable to load token after 3 retries",
-                    "color: green; background: #c7c7c7; padding: 8px; font-size: 20px"
-                );
-                isLoading.current = false;
-                return;
-            }
+        // if (!token) {
+        //     if (retryLoadToken.current >= 3) {
+        //         alert("Unable to load token, refresh the browser");
+        //         console.info(
+        //             "%cPush Notifications issue - unable to load token after 3 retries",
+        //             "color: green; background: #c7c7c7; padding: 8px; font-size: 20px"
+        //         );
+        //         isLoading.current = false;
+        //         return;
+        //     }
+        //
+        //     retryLoadToken.current += 1;
+        //     console.error("An error occurred while retrieving token. Retrying...");
+        //     isLoading.current = false;
+        //     await loadToken();
+        //     return;
+        // }
 
-            retryLoadToken.current += 1;
-            console.error("An error occurred while retrieving token. Retrying...");
-            isLoading.current = false;
-            await loadToken();
-            return;
-        }
-
-        // Step 7: Set the fetched token and mark as fetched.
         setNotificationPermissionStatus(Notification.permission);
         setToken(token);
         isLoading.current = false;
     };
 
     useEffect(() => {
-        // Step 8: Initialize token loading when the component mounts.
         if ("Notification" in window) {
             loadToken().then();
         }
@@ -97,7 +92,6 @@ const useFcmToken = () => {
             const m = await messaging();
             if (!m) return;
 
-            // Step 9: Register a listener for incoming FCM messages.
             return onMessage(m, (payload) => {
                 if (Notification.permission !== "granted") return;
 
@@ -125,8 +119,6 @@ const useFcmToken = () => {
                 //     );
                 // }
 
-                // --------------------------------------------
-                // Disable this if you only want toast notifications.
                 const n = new Notification(
                     payload.notification?.title || "New message",
                     {
@@ -145,7 +137,6 @@ const useFcmToken = () => {
                         console.log("No link found in the notification payload");
                     }
                 };
-                // --------------------------------------------
             });
         };
 
@@ -157,7 +148,6 @@ const useFcmToken = () => {
             }
         });
 
-        // Step 11: Cleanup the listener when the component unmounts.
         return () => unsubscribe?.();
     }, [token, router]);
 
@@ -171,7 +161,11 @@ const useFcmToken = () => {
         }
     }, [token]);
 
-    return {token, notificationPermissionStatus}; // Return the token and permission status.
+    // useEffect(() => {
+    //     resetToken().then();
+    // }, [uid])
+
+    return {token, notificationPermissionStatus};
 };
 
 export default useFcmToken;
