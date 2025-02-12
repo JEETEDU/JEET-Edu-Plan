@@ -1,7 +1,7 @@
-import type { NextRequest } from 'next/server';
-import { db } from '@/database';
+import type {NextRequest} from 'next/server';
+import {db} from '@/database';
 import * as schema from '@/database/schema';
-import { NextResponse } from 'next/server';
+import {NextResponse} from 'next/server';
 import {and, desc, eq, sql} from 'drizzle-orm';
 import {
     return_400,

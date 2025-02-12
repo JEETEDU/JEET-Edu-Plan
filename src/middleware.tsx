@@ -24,7 +24,7 @@ export async function middleware(req: NextRequest) {
 
     if (hasToken && req.nextUrl.pathname === '/') {
         res = NextResponse.redirect(new URL('/home', req.nextUrl.origin));
-    } else if (!hasToken && req.nextUrl.pathname !== '/') {
+    } else if (!hasToken && (req.nextUrl.pathname !== '/') && (req.nextUrl.pathname !== '/contact')) {
         res = NextResponse.redirect(new URL('/', req.nextUrl.origin));
     }
 
