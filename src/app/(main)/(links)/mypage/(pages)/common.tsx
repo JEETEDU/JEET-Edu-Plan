@@ -9,7 +9,6 @@ import Scrollbars from "react-custom-scrollbars-2";
 import UserDetail from "@/app/(main)/(links)/mypage/(pages)/component/userList/userDetail";
 import Log from "@/app/(main)/(links)/mypage/(pages)/component/log";
 import ClassSetting from "@/app/(main)/(links)/mypage/(pages)/component/classSetting";
-import {Hr} from "@/app/(main)/(links)/home/(pages)/desktop";
 import Excel from "@/app/(main)/components/excel";
 import Setting from "@/app/(main)/(links)/mypage/(pages)/component/setting";
 
@@ -182,8 +181,8 @@ export function IsStudent({date, isMobile}: { date: Date; isMobile: boolean }) {
                         <button
                             key={i}
                             className={cn(
-                                "flex justify-center md:hover:bg-gray-300 p-1 rounded",
-                                {"border-2 border-gray": (i === tab)}
+                                "flex justify-center md:hover:bg-gray-300 p-1 rounded border-2",
+                                {"border-gray": (i === tab)}
                             )}
                             onClick={() => setTab(i)}
                         >
@@ -329,8 +328,8 @@ export function IsTeacher() {
                         <button
                             key={i}
                             className={cn(
-                                "flex justify-center md:hover:bg-gray-300 p-1 rounded",
-                                {"border-2 border-gray": (i === tab)}
+                                "flex justify-center md:hover:bg-gray-300 p-1 rounded border-2",
+                                {"border-gray": (i === tab)}
                             )}
                             onClick={() => setTab(i)}
                         >
@@ -536,8 +535,8 @@ export function IsAdmin({date}: { date: Date }) {
                         <button
                             key={i}
                             className={cn(
-                                "flex justify-center md:hover:bg-gray-300 p-1 rounded",
-                                {"border-2 border-gray": (i === tab)}
+                                "flex justify-center md:hover:bg-gray-300 p-1 rounded border-2",
+                                {"border-gray": (i === tab)}
                             )}
                             onClick={() => setTab(i)}
                         >

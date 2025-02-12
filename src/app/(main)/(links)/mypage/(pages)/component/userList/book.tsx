@@ -197,7 +197,7 @@ export default function BookReport({uid, userInfo}: { uid: number; userInfo: IUs
                     <div
                         className={cn(
                             "flex p-1 border-2 border-gray-300 justify-center rounded",
-                            (page === 1) ? "bg-gray-300 text-gray pointer-events-none" : "cursor-pointer md:hover:bg-white md:hover:border-gray duration-200"
+                            (page === 1) ? "bg-gray-300 text-gray pointer-events-none" : "cursor-pointer md:hover:bg-white md:hover:border-gray "
                         )}
                         onClick={() => prevPage()}
                     >
@@ -209,7 +209,7 @@ export default function BookReport({uid, userInfo}: { uid: number; userInfo: IUs
                     <div
                         className={cn(
                             "flex p-1 border-2 border-gray-300 justify-center rounded",
-                            (nextBooks.length === 0) ? "bg-gray-300 text-gray pointer-events-none" : "cursor-pointer md:hover:bg-white md:hover:border-gray duration-200"
+                            (nextBooks.length === 0) ? "bg-gray-300 text-gray pointer-events-none" : "cursor-pointer md:hover:bg-white md:hover:border-gray "
                         )}
                         onClick={() => nextPage()}
                     >

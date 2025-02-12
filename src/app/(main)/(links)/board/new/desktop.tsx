@@ -487,7 +487,7 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
                                 <div key={index} className="flex gap-1 items-center border rounded whitespace-nowrap pl-1">
                                     {file.name}
                                     <div
-                                        className="md:hover:bg-red p-1 rounded md:hover:text-white duration-200"
+                                        className="md:hover:bg-red p-1 rounded md:hover:text-white "
                                         onClick={() => {
                                             setAttachedFiles((prev) => {
                                                 return prev.filter((p) => p.path !== file.path);
