@@ -5,6 +5,7 @@ import {cn, getStoreData} from "@/app/(main)/components/functions";
 import {usePathname} from "next/navigation";
 import React, {useEffect, useState} from "react";
 import {Alert, TodayQuestion} from "@/app/(main)/components/common";
+import {useRouter} from "next/navigation";
 
 import logo from "@/images/LOGO.png"
 import Image from "next/image";
@@ -20,15 +21,17 @@ export default function Navigation() {
         })();
     }, [path])
 
+    const router = useRouter();
+
     return (
         <div className='nav'>
             {(path !== '/') && <TodayQuestion device="desktop"/>}
-            <div className="bg-gray-100 dark:bg-gray-800 flex items-center justify-between px-6 py-4">
+            <div className="bg-gray-100 dark:bg-gray-800 flex items-center justify-between p-4">
                 {/* 로고 자리 */}
                 <div className="flex flex-row gap-4 justify-start items-center">
-                    <Image src={logo} alt="" height={30} priority={true}/>
-                    <Link href={"/home"} className="nav-item">
-                        <div className="_nav-item w-fit">
+                    <Image src={logo} alt="" priority={true} height={40} className="cursor-pointer md:hover:bg-white p-2 rounded" onClick={() => router.push('/home')}/>
+                    <Link href={"/contact"} className="nav-item">
+                        <div className={cn("_nav-item", {"bg-white": path === '/contact'})}>
                             문의하기
                         </div>
                     </Link>
@@ -42,7 +45,6 @@ export default function Navigation() {
                 {/*>*/}
                 {/*    강제 새로고침*/}
                 {/*</button>*/}
-                {/* 네비게이션 링크 */}
                 <div className="flex items-center space-x-4 min-w-1/3 justify-between">
                     <div className={cn("grid flex-1 justify-between items-center min-w-fit", (userType === 1) ? "grid-cols-5" : "grid-cols-4")}>
                         {(userType !== 0) && (<>

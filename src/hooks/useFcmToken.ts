@@ -4,6 +4,7 @@ import {useEffect, useRef, useState} from "react";
 import {onMessage, Unsubscribe} from "firebase/messaging";
 import {fetchToken, messaging} from "@/firebase";
 import {useRouter} from "next/navigation";
+import {DELETE, POST} from "@/app/(main)/components/functions";
 
 async function getNotificationPermissionAndToken() {
     // Step 1: Check if Notifications are supported in the browser.
@@ -51,6 +52,7 @@ const useFcmToken = () => {
                 "color: green; background: #c7c7c7; padding: 8px; font-size: 20px"
             );
             isLoading.current = false;
+            await DELETE('/api/user/fcm');
             return;
         }
 
@@ -83,7 +85,7 @@ const useFcmToken = () => {
     useEffect(() => {
         // Step 8: Initialize token loading when the component mounts.
         if ("Notification" in window) {
-            loadToken();
+            loadToken().then();
         }
     }, []);
 
@@ -158,6 +160,16 @@ const useFcmToken = () => {
         // Step 11: Cleanup the listener when the component unmounts.
         return () => unsubscribe?.();
     }, [token, router]);
+
+    useEffect(() => {
+        if (token) {
+            (async () => {
+                await POST('/api/user/fcm', {
+                    fcm_token: token,
+                });
+            })();
+        }
+    }, [token]);
 
     return {token, notificationPermissionStatus}; // Return the token and permission status.
 };
