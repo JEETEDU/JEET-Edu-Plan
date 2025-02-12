@@ -16,6 +16,8 @@ firebase.initializeApp(firebaseConfig);
 
 const messaging = firebase.messaging();
 
+navigator.serviceWorker.register("firebase-messaging-sw.js")
+
 messaging.onBackgroundMessage((payload) => {
     console.log(
         "[firebase-messaging-sw.js] Received background message ",
@@ -36,7 +38,9 @@ messaging.onBackgroundMessage((payload) => {
         data: {url: link},
     };
     console.log(Notification.permission);
-    self.registration.showNotification(notificationTitle, notificationOptions);
+    navigator.serviceWorker.ready.then((registration) => {
+        registration.showNotification(notificationTitle, notificationOptions);
+    });
 });
 
 self.addEventListener("notificationclick", function (event) {
