@@ -321,23 +321,25 @@ export function TodayQuestion({device}: { device: string }) {
 
     useEffect(() => {
         (async () => {
-            const userInfo = (await getStoreData('/api/user/info', 'user-info')).response.user;
-            setUserType(userInfo.user_type)
+            const res = (await getStoreData('/api/user/info', 'user-info')).response;
+            if (res.success) {
+                const userInfo = res.user;
+                setUserType(userInfo.user_type)
 
-            if (userInfo.user_type === 1) {
-                const today = new Date();
+                if (userInfo.user_type === 1) {
+                    const today = new Date();
 
-                let questions = await getStoreData(`/api/user/today/question`, 'question-list')
-                if (new Date(questions.last_update).getDate() !== today.getDate()) {
-                    questions = await getStoreData(`/api/user/today/question`, 'question-list', true)
-                }
+                    let questions = await getStoreData(`/api/user/today/question`, 'question-list')
+                    if (new Date(questions.last_update).getDate() !== today.getDate()) {
+                        questions = await getStoreData(`/api/user/today/question`, 'question-list', true)
+                    }
 
-                if (questions.response.success) {
-                    setQList(questions.response.answers[0].questions);
-                    setAnswered((questions.response.answers[0].answers.answer_1 !== null));
+                    if (questions.response.success) {
+                        setQList(questions.response.answers[0].questions);
+                        setAnswered((questions.response.answers[0].answers.answer_1 !== null));
+                    }
                 }
             }
-
         })();
     }, [answered]);
 
