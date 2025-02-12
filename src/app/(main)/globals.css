@@ -23,6 +23,10 @@
     }
 }
 
+* {
+    transition-duration: 200ms;
+}
+
 .quill {
 
     .ql-container {
