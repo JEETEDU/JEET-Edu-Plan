@@ -5,8 +5,8 @@ const transporter = nodemailer.createTransport({
     port: 587,
     secure: false,
     auth: {
-        user: process.env.NEXT_PUBLIC_AUTH_USER,
-        pass: process.env.NEXT_PUBLIC_AUTH_PASS,
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_PASS,
     },
     // tls: {
     //     rejectUnauthorized: false
@@ -30,7 +30,7 @@ type MailOptionType = {
 
 export function sendEmail({name, contact, title, content}: ContactType) {
     const mailOptions: MailOptionType = {
-        from: process.env.NEXT_PUBLIC_AUTH_USER || '',
+        from: process.env.GMAIL_USER || '',
         to: ['seoho7777.kim@gmail.com', 'dev@hegelty.me'],
         subject: `[JEET Edu Plan] ${title}`,
         text: `
