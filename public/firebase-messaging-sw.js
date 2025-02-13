@@ -16,7 +16,7 @@ firebase.initializeApp(firebaseConfig);
 
 const messaging = firebase.messaging();
 
-navigator.serviceWorker.register("firebase-messaging-sw.js")
+navigator.serviceWorker.register("firebase-messaging-sw.js").then();
 
 messaging.onBackgroundMessage((payload) => {
     console.log(
