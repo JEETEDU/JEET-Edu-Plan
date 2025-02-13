@@ -34,19 +34,19 @@ export const fetchToken = async () => {
     }
 };
 
-// export const resetToken = async () => {
-//     try {
-//         const fcmMessaging = await messaging();
-//         if (fcmMessaging) {
-//             return await deleteToken({app: app}).then(async () => {
-//                 await fetchToken();
-//             });
-//         }
-//         return null;
-//     } catch (err) {
-//         console.error("An error occurred while fetching the token:", err);
-//         return null;
-//     }
-// }
+export const resetToken = async () => {
+    try {
+        const fcmMessaging = await messaging();
+        if (fcmMessaging) {
+            return await deleteToken(fcmMessaging).then(async () => {
+                await fetchToken();
+            });
+        }
+        return null;
+    } catch (err) {
+        console.error("An error occurred while reset the token:", err);
+        return null;
+    }
+}
 
 export {app, messaging};

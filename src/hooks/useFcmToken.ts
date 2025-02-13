@@ -2,7 +2,7 @@
 
 import {useEffect, useRef, useState} from "react";
 import {onMessage, Unsubscribe} from "firebase/messaging";
-import {fetchToken, messaging} from "@/firebase";
+import {fetchToken, messaging, resetToken} from "@/firebase";
 import {useRouter} from "next/navigation";
 import {DELETE, POST} from "@/app/(main)/components/functions";
 
@@ -34,14 +34,19 @@ const useFcmToken = () => {
     const router = useRouter(); // Initialize the router for navigation.
     const [notificationPermissionStatus, setNotificationPermissionStatus] = useState<NotificationPermission | null>(null); // State to store the notification permission status.
     const [token, setToken] = useState<string | null>(null); // State to store the FCM token.
-    const retryLoadToken = useRef(0); // Ref to keep track of retry attempts.
+    // const retryLoadToken = useRef(0); // Ref to keep track of retry attempts.
     const isLoading = useRef(false); // Ref to keep track if a token fetch is currently in progress.
 
     const loadToken = async () => {
         if (isLoading.current) return;
 
         isLoading.current = true; // Mark loading as in progress.
-        const token = await getNotificationPermissionAndToken();
+
+        let token: string | null = null
+        await resetToken().then(async () => {
+            token = await getNotificationPermissionAndToken();
+        })
+
 
         // Step 5: Handle the case where permission is denied.
         if (Notification.permission === "denied") {
