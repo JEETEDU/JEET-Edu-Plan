@@ -18,6 +18,13 @@ export default function Body({children}: Readonly<{ children: React.ReactNode; }
         setScreenSizeProps();
         window.addEventListener('resize', () => setScreenSizeProps());
 
+        navigator.serviceWorker.register('firebase-messaging-sw.js').then((registration) => {
+            console.log('Service worker successfully registered.');
+            return registration;
+        }).catch(function (err) {
+            console.error('Unable to register service worker.', err);
+        });
+
         // (async () => {
         //     const res = (await getStoreData('/api/user/info', 'user-info')).response;
         //     if (res.success) {

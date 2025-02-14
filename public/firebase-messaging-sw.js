@@ -16,7 +16,7 @@ firebase.initializeApp(firebaseConfig);
 
 const messaging = firebase.messaging();
 
-navigator.serviceWorker.register("firebase-messaging-sw.js").then();
+// navigator.serviceWorker.register("firebase-messaging-sw.js").then();
 
 messaging.onBackgroundMessage((payload) => {
     console.log(
@@ -30,8 +30,8 @@ messaging.onBackgroundMessage((payload) => {
     const link = "https://jeet.hegelty.me";
 
     const notificationTitle = payload.data.title;
-    const notificationAlertType = payload.data.alert_type;
-    const notificationArticleId = payload.data.article_id;
+    // const notificationAlertType = payload.data.alert_type;
+    // const notificationArticleId = payload.data.article_id;
     const notificationOptions = {
         body: payload.data.message,
         icon: "/jeet.png",
