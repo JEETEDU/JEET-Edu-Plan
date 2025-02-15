@@ -62,7 +62,7 @@ export default function Mobile() {
                     회원가입
                 </button>
             </div>
-            <div className="flex flex-col w-full bg-white dark:bg-gray-800 rounded-lg p-4">
+            <div className="flex flex-col w-full bg-white rounded-lg p-4">
                 <h2 className="title-2">
                     {isLogin ? "로그인" : "회원 가입"}
                 </h2>
@@ -112,7 +112,7 @@ export default function Mobile() {
                             />
                             <button
                                 type="button"
-                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400"
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
                                 onClick={() => setShowPassword(!showPassword)}
                             >
                                 <div className={showPassword ? "i-system-uicons-eye" : "i-system-uicons-eye-closed"}/>

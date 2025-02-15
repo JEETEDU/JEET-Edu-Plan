@@ -18,7 +18,7 @@ export interface IUserInfo {
     joined_term: string;
 }
 
-const Hr = () => <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"/>;
+const Hr = () => <hr className="h-px my-8 bg-gray-200 border-0 "/>;
 
 export default function UserDetail({uid, date, refreshAction}: { uid: number, date: Date, refreshAction: (b?: boolean) => void }) {
     const [userInfo, setUserInfo] = useState<IUserInfo>({
