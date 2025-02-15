@@ -86,7 +86,7 @@ export function Time({create_time, update_time}: { create_time: string, update_t
 export function Hr() {
     return (
         <div className="w-full">
-            <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 w-full"/>
+            <hr className="h-px bg-gray-200 border-0  w-full"/>
         </div>
     );
 }

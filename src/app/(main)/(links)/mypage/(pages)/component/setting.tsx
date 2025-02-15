@@ -54,7 +54,7 @@ export default function Setting() {
                                     "i-system-uicons:check-circle-outside" :
                                     "i-system-uicons:circle"
                         }/>
-                        <div className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                        <div className="ms-2 text-sm font-medium text-gray-900">
                             푸쉬 알림 동의
                         </div>
                     </div>

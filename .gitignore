@@ -42,3 +42,5 @@ next-env.d.ts
 certificates
 /src/uploads/files/
 /fcm-demo-e5e67-firebase-adminsdk-fbsvc-7ad92671bc.json
+
+firebase-admin-sdk.json
