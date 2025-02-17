@@ -4,7 +4,7 @@ import {useEffect, useRef, useState} from "react";
 import {onMessage, Unsubscribe} from "firebase/messaging";
 import {fetchToken, messaging, resetToken} from "@/firebase";
 import {useRouter} from "next/navigation";
-import {DELETE, POST} from "@/app/(main)/components/functions";
+import {DELETE, GET, getStoreData, POST} from "@/app/(main)/components/functions";
 
 async function getNotificationPermissionAndToken() {
     // Step 1: Check if Notifications are supported in the browser.
@@ -166,6 +166,9 @@ const useFcmToken = () => {
                 await POST('/api/user/fcm', {
                     fcm_token: token,
                 });
+                const res = getStoreData(`/api/user/fcm?token=${token}`, 'fcmUid');
+                // await GET(`/api/user/fcm?token=${token}`);
+                console.log("res", res);
             })();
         }
     }, [token]);
