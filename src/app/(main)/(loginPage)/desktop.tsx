@@ -139,7 +139,7 @@ export default function Desktop() {
                             />
                             <button
                                 type="button"
-                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400"
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
                                 onClick={() => setShowPassword(!showPassword)}
                             >
                                 <div className={showPassword ? "i-system-uicons-eye" : "i-system-uicons-eye-closed"}/>

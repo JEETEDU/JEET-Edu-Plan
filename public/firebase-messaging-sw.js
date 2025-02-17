@@ -16,6 +16,8 @@ firebase.initializeApp(firebaseConfig);
 
 const messaging = firebase.messaging();
 
+// navigator.serviceWorker.register("firebase-messaging-sw.js").then();
+
 messaging.onBackgroundMessage((payload) => {
     console.log(
         "[firebase-messaging-sw.js] Received background message ",
@@ -25,18 +27,20 @@ messaging.onBackgroundMessage((payload) => {
     // payload.fcmOptions?.link comes from our backend API route handle
     // payload.data.link comes from the Firebase Console where link is the 'key'
     // const link = payload.fcmOptions?.link || payload.data?.link;
-    const link = process.env["BASE_URL"] ?? "https://localhost:3000";
+    const link = "https://jeet.hegelty.me";
 
     const notificationTitle = payload.data.title;
-    const notificationAlertType = payload.data.alert_type;
-    const notificationArticleId = payload.data.article_id;
+    // const notificationAlertType = payload.data.alert_type;
+    // const notificationArticleId = payload.data.article_id;
     const notificationOptions = {
         body: payload.data.message,
         icon: "/jeet.png",
         data: {url: link},
     };
     console.log(Notification.permission);
-    self.registration.showNotification(notificationTitle, notificationOptions);
+    navigator.serviceWorker.ready.then((registration) => {
+        registration.showNotification(notificationTitle, notificationOptions).then();
+    });
 });
 
 self.addEventListener("notificationclick", function (event) {
