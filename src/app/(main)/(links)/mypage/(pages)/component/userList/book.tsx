@@ -84,7 +84,7 @@ function BookItem({book, userInfo}: { book: IBook; userInfo: IUserInfo }) {
                                     </div>
                                 </div>
                             </div>
-                            <hr className="h-2px bg-gray-200 border-0 dark:bg-gray-700 w-full"/>
+                            <hr className="h-2px bg-gray-200 border-0  w-full"/>
                             <Scrollbars
                                 className="flex-1"
                                 universal

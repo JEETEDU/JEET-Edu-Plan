@@ -174,7 +174,7 @@ export default function BookReport({id = 0, setCountAction = () => void null, se
                     </div>
                 </div>
             </div>
-            <hr className="h-2px bg-gray-200 border-0 dark:bg-gray-700 w-full"/>
+            <hr className="h-2px bg-gray-200 border-0 w-full"/>
             <Scrollbars
                 className="flex-1"
                 universal
@@ -192,7 +192,7 @@ export default function BookReport({id = 0, setCountAction = () => void null, se
                     readOnly={!edit}
                 />
             </Scrollbars>
-            <hr className="h-2px bg-gray-200 border-0 dark:bg-gray-700 w-full"/>
+            <hr className="h-2px bg-gray-200 border-0  w-full"/>
             <div className="flex w-full justify-end text-gray-600">
                 {(new Date(book.update_time)).toLocaleString()} 에 편집됨
             </div>

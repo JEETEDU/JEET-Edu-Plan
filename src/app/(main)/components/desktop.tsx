@@ -26,7 +26,7 @@ export default function Navigation() {
     return (
         <div className='nav'>
             {(path !== '/') && <TodayQuestion device="desktop"/>}
-            <div className="bg-gray-100 dark:bg-gray-800 flex items-center justify-between p-4">
+            <div className="bg-gray-100 flex items-center justify-between p-4">
                 {/* 로고 자리 */}
                 <div className="flex flex-row gap-4 justify-start items-center">
                     <Image src={logo} alt="" priority={true} height={40} className="cursor-pointer md:hover:bg-white p-2 rounded" onClick={() => router.push('/home')}/>

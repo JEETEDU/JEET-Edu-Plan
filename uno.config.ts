@@ -11,31 +11,31 @@ export default defineConfig({
     // theme: {},
     shortcuts: {
         "nav":
-            cn("w-screen h-fit bg-gray-100 dark:bg-gray-900"),
+            cn("w-screen h-fit bg-gray-100"),
         "nav-bar":
-            cn("h-fit bottom-0 left-0 w-full bg-gray-100 py-2 dark:bg-gray-800 flex justify-around border-t border-gray-300 dark:border-gray-700"),
+            cn("h-fit bottom-0 left-0 w-full bg-gray-100 py-2 flex justify-around border-t border-gray-300"),
         "nav-item":
-            cn("h-fit px-2 w-full min-w-fit content-center text-gray-700 dark:text-gray-300 md:hover:text-blue-500 grid place-items-center"),
+            cn("h-fit px-2 w-full min-w-fit content-center text-gray-700 md:hover:text-blue-500 grid place-items-center"),
         "_nav-item":
             cn("h-fit w-full min-w-fit py-1 px-2 rounded flex justify-center"),
         "nav-header":
-            cn("h-fit w-full p-4 flex items-center justify-start bg-gray-100 dark:bg-gray-800"),
+            cn("h-fit w-full p-4 flex items-center justify-start bg-gray-100"),
         "nav-title":
-            cn("text-lg font-bold text-blue-600 dark:text-blue-400"),
+            cn("text-lg font-bold text-blue-600"),
         "component-input":
-            "border border-gray-300 rounded px-4 py-2 w-full focus:border-blue-500 focus:ring focus:ring-blue-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white w-full px-3 py-1 border-gray-300 dark:border-gray-600 focus:(outline-none ring-2 ring-blue-400) bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100",
+            "border border-gray-300 rounded px-4 py-2 w-full focus:border-blue-500 focus:ring focus:ring-blue-300 w-full px-3 py-1 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-100 text-gray-800",
         "component-button":
-            "cursor-pointer bg-blue-500 text-white w-fit py-1 px-3 rounded md:hover:bg-blue-600 transition  dark:bg-blue-700 dark:md:hover:bg-blue-800 text-center bg-blue-500 md:hover:bg-blue-600 text-white py-1 transition  items-center flex justify-center",
+            "cursor-pointer bg-blue-500 text-white w-fit py-1 px-3 rounded md:hover:bg-blue-600 transition text-center bg-blue-500 md:hover:bg-blue-600 text-white py-1 transition  items-center flex justify-center",
         "component-button-info":
-            cn("text-sm font-medium text-black dark:text-gray-300 mb-1"),
+            cn("text-sm font-medium text-black mb-1"),
         "component-container":
-            cn("flex items-center justify-center bg-gray-200 dark:bg-gray-900 text-black dark:text-white flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900"),
+            cn("flex items-center justify-center bg-gray-200 text-black flex flex-col items-center justify-center bg-gray-100"),
         "component-form":
-            cn("w-full bg-white dark:bg-gray-800 rounded-lg p-8 max-w-md"),
+            cn("w-full bg-white rounded-lg p-8 max-w-md"),
         "title-1":
-            cn("text-2xl font-semibold text-center text-gray-700 dark:text-gray-200 mb-6"),
+            cn("text-2xl font-semibold text-center text-gray-700 mb-6"),
         "title-2":
-            cn("text-xl font-semibold text-center text-gray-700 dark:text-gray-200 mb-4"),
+            cn("text-xl font-semibold text-center text-gray-700 mb-4"),
     },
 
     presets: [

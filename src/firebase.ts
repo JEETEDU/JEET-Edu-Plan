@@ -1,5 +1,5 @@
 import {getApp, getApps, initializeApp} from "firebase/app";
-import {getMessaging, getToken, isSupported} from "firebase/messaging";
+import {deleteToken, getMessaging, getToken, isSupported} from "firebase/messaging";
 
 // Replace the following with your app's Firebase project configuration
 const firebaseConfig = {
@@ -33,5 +33,20 @@ export const fetchToken = async () => {
         return null;
     }
 };
+
+export const resetToken = async () => {
+    try {
+        const fcmMessaging = await messaging();
+        if (fcmMessaging) {
+            return await deleteToken(fcmMessaging).then(async () => {
+                return await fetchToken();
+            });
+        }
+        return null;
+    } catch (err) {
+        console.error("An error occurred while reset the token:", err);
+        return null;
+    }
+}
 
 export {app, messaging};
