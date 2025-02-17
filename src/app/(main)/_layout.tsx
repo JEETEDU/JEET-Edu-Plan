@@ -2,7 +2,8 @@
 
 import React, {useEffect, useState} from "react";
 import useFcmToken from "@/hooks/useFcmToken";
-// import {getStoreData} from "@/app/(main)/components/functions";
+import {getStoreData} from "@/app/(main)/components/functions";
+import {usePathname} from "next/navigation";
 
 export default function Body({children}: Readonly<{ children: React.ReactNode; }>) {
     function setScreenSizeProps() {
@@ -12,7 +13,9 @@ export default function Body({children}: Readonly<{ children: React.ReactNode; }
         document.documentElement.style.setProperty('--ih', `${ih}px`);
     }
 
-    // const [uid, setUid] = useState<number>(0);
+    const [uid, setUid] = useState<number>(0);
+
+    const pathname = usePathname();
 
     useEffect(() => {
         setScreenSizeProps();
@@ -24,16 +27,18 @@ export default function Body({children}: Readonly<{ children: React.ReactNode; }
         }).catch(function (err) {
             console.error('Unable to register service worker.', err);
         });
-
-        // (async () => {
-        //     const res = (await getStoreData('/api/user/info', 'user-info')).response;
-        //     if (res.success) {
-        //         setUid(res.user.uid);
-        //     }
-        // })();
     }, []);
 
-    useFcmToken();
+    useEffect(() => {
+        (async () => {
+            const res = (await getStoreData('/api/user/info', 'user-info')).response;
+            if (res.success) {
+                setUid(res.user.uid);
+            }
+        })();
+    }, [pathname]);
+
+    useFcmToken(uid);
 
     return <body style={{
         height: "var(--ih, 100vh)",

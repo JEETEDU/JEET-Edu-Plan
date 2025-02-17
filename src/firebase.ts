@@ -39,7 +39,7 @@ export const resetToken = async () => {
         const fcmMessaging = await messaging();
         if (fcmMessaging) {
             return await deleteToken(fcmMessaging).then(async () => {
-                await fetchToken();
+                return await fetchToken();
             });
         }
         return null;
