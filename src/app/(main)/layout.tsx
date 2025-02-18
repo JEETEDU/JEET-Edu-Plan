@@ -6,15 +6,16 @@ import Navigation from "@/app/(main)/components/desktop";
 import {Navigation1, Navigation2} from "@/app/(main)/components/mobile";
 import {CookiesProvider} from "next-client-cookies/server";
 import Body from "@/app/(main)/_layout";
-import logo from '../../../public/jeet.png';
+import openGraph from '../../../public/opengraph.png';
 
 export const metadata: Metadata = {
+    metadataBase: new URL("https://jeetplan.xyz"),
     title: "JEET Edu Plan",
     authors: [{name: "hegelty"}, {name: "hoyakim"}],
     creator: "@hegelty & @hoyakim",
     applicationName: "JEET Edu Plan",
     generator: "Next.js",
-    icons: "/vercel.svg",
+    icons: "/logo.png",
     openGraph: {
         title: "JEET Edu Plan",
         description: "JEET Edu Plan by 안성민",
@@ -22,9 +23,9 @@ export const metadata: Metadata = {
         siteName: "JEET Edu Plan",
         images: [
             {
-                url: 'https://jeet.hegelty.me/jeet.png',
-                width: logo.width,
-                height: logo.height
+                url: openGraph.src,
+                width: openGraph.width,
+                height: openGraph.height
             }
         ],
         locale: "ko_KR",
