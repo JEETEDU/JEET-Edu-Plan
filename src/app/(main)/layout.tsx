@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: "JEET Edu Plan",
         description: "JEET Edu Plan by 안성민",
-        url: "유알엘",
+        url: "https://jeetplan.xyz",
         siteName: "JEET Edu Plan",
         images: [
             {

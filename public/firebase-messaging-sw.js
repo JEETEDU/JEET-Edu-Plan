@@ -27,14 +27,14 @@ messaging.onBackgroundMessage((payload) => {
     // payload.fcmOptions?.link comes from our backend API route handle
     // payload.data.link comes from the Firebase Console where link is the 'key'
     // const link = payload.fcmOptions?.link || payload.data?.link;
-    const link = "https://jeet.hegelty.me";
+    const link = "https://jeetplan.xyz";
 
     const notificationTitle = payload.data.title;
     // const notificationAlertType = payload.data.alert_type;
     // const notificationArticleId = payload.data.article_id;
     const notificationOptions = {
         body: payload.data.message,
-        icon: "/jeet.png",
+        icon: "/logo.png",
         data: {url: link},
     };
     console.log(Notification.permission);

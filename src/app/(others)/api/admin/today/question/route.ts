@@ -305,7 +305,6 @@ export async function GET(req: NextRequest) {
                 message: 'No question for today'
             });
         }
-        console.log(today_questions);
         return NextResponse.json({
             success: true,
             today_questions: {
