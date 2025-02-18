@@ -80,7 +80,6 @@ export async function register_alert_for_class_students(tx: TX, class_id: number
     })
         .from(schema.studentClasses)
         .where(eq(schema.studentClasses.class_id, class_id));
-    console.log(users);
     // @ts-ignore
     await register_alert(tx, users.map((u) => u.user_id), title, message, alert_type, article_id);
 }
@@ -91,7 +90,6 @@ export async function register_alert_for_class_teachers(tx: TX, class_id: number
     })
         .from(schema.teacherClasses)
         .where(eq(schema.teacherClasses.class_id, class_id));
-    console.log(users);
     // @ts-ignore
     await register_alert(tx, users.map((u) => u.user_id), title, message, alert_type, article_id);
 }

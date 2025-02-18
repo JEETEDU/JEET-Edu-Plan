@@ -416,13 +416,13 @@ export function TodayQuestion({device}: { device: string }) {
         {showQuestion && (
             <div
                 className="fixed inset-0 bg-black/50 flex items-center justify-center z-60"
-                onClick={() => setShowQuestion(p => !p)} // 모달 바깥 클릭 시 닫힘
+                onClick={() => setShowQuestion(false)} // 모달 바깥 클릭 시 닫힘
             >
                 <div
                     className="bg-white rounded-lg shadow-lg p-6 space-y-4 overflow-y-auto w-9/10 h-9/10 flex flex-col justify-between"
                     onClick={(e) => e.stopPropagation()} // 모달 내부 클릭 시 닫히지 않도록 방지
                 >
-                    <div className="flex flex-col gap-15 sm:flex-row justify-center items-center border p-6">
+                    <div className="flex flex-col sm:gap-15 sm:flex-row gap-6 justify-center items-center border p-6">
                         {/* 어제 밤에 잠든 시간 */}
                         <div className="flex flex-col items-center gap-3">
                             <label
@@ -439,7 +439,6 @@ export function TodayQuestion({device}: { device: string }) {
                                 onChangeAction={() => setError("")}
                             />
                         </div>
-
                         {/* 오늘 아침 일어난 시간 */}
                         <div className="flex flex-col items-center gap-3">
                             <label
@@ -457,77 +456,82 @@ export function TodayQuestion({device}: { device: string }) {
                             />
                         </div>
                     </div>
-
-                    <div className="space-y-4">
-                        <div>
-                            <label htmlFor="name" className="component-button-info">
-                                오늘의 학원 과제는?
-                            </label>
-                            <TextareaAutosize
-                                id="a"
-                                className="component-input resize-none"
-                                placeholder={"몰라요"}
-                                required
-                                onChange={() => setError("")}
-                            />
+                    <Scrollbars
+                        className="w-full flex-1 h-full duration-none"
+                        universal
+                        autoHide
+                    >
+                        <div className="flex flex-col items-center space-y-4 p-2">
+                            <div className="w-full">
+                                <label htmlFor="name" className="component-button-info">
+                                    오늘의 학원 과제는?
+                                </label>
+                                <TextareaAutosize
+                                    id="a"
+                                    className="component-input resize-none duration-none"
+                                    placeholder={"몰라요"}
+                                    required
+                                    onChange={() => setError("")}
+                                />
+                            </div>
+                            <div className="w-full">
+                                <label htmlFor="name" className="component-button-info">
+                                    어젯밤 공부한 내용은?
+                                </label>
+                                <TextareaAutosize
+                                    id="y"
+                                    className="component-input resize-none duration-none"
+                                    placeholder={"몰라요"}
+                                    required
+                                    onChange={() => setError("")}
+                                />
+                            </div>
+                            <div className="w-full">
+                                <label htmlFor="name" className="component-button-info">
+                                    오늘의 학교 과제는?
+                                </label>
+                                <TextareaAutosize
+                                    id="s"
+                                    className="component-input resize-none duration-none"
+                                    placeholder={"몰라요"}
+                                    required
+                                    onChange={() => setError("")}
+                                />
+                            </div>
+                            {Object.entries(qList).map(([key, value]) => {
+                                if (value !== null) {
+                                    return (
+                                        // eslint-disable-next-line react/jsx-key
+                                        <div key={key} className="w-full">
+                                            <label htmlFor="name" className="component-button-info">
+                                                {value!.toString()}
+                                            </label>
+                                            <TextareaAutosize
+                                                id={key}
+                                                className="component-input resize-none duration-none"
+                                                placeholder={"몰라요"}
+                                                required
+                                                onChange={() => setError("")}
+                                            />
+                                        </div>
+                                    );
+                                }
+                            })}
                         </div>
-                        <div>
-                            <label htmlFor="name" className="component-button-info">
-                                어젯밤 공부한 내용은?
-                            </label>
-                            <TextareaAutosize
-                                id="y"
-                                className="component-input resize-none"
-                                placeholder={"몰라요"}
-                                required
-                                onChange={() => setError("")}
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="name" className="component-button-info">
-                                오늘의 학교 과제는?
-                            </label>
-                            <TextareaAutosize
-                                id="s"
-                                className="component-input resize-none"
-                                placeholder={"몰라요"}
-                                required
-                                onChange={() => setError("")}
-                            />
-                        </div>
-                        {Object.entries(qList).map(([key, value]) => {
-                            if (value !== null) {
-                                return (
-                                    // eslint-disable-next-line react/jsx-key
-                                    <div key={key}>
-                                        <label htmlFor="name" className="component-button-info">
-                                            {value!.toString()}
-                                        </label>
-                                        <TextareaAutosize
-                                            id={key}
-                                            className="component-input resize-none"
-                                            placeholder={"몰라요"}
-                                            required
-                                            onChange={() => setError("")}
-                                        />
-                                    </div>
-                                );
-                            }
-                        })}
-                    </div>
+                    </Scrollbars>
                     <div className="flex flex-col items-center space-y-4">
                         <div className="text-red-600 font-bold">
                             {error}
                         </div>
                         <div className="w-full grid grid-cols-2 gap-4">
                             <button
-                                className="component-button bg-red-500 md:hover:bg-red-600"
+                                className="component-button bg-red-500 md:hover:bg-red-600 w-full"
                                 onClick={() => setShowQuestion(p => !p)}
                             >
                                 취소 (닫기)
                             </button>
                             <button
-                                className="component-button"
+                                className="component-button w-full"
                                 onClick={() => {
                                     register().then(r => {
                                         if (r) {
