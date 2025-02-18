@@ -9,6 +9,7 @@ import Body from "@/app/(main)/_layout";
 import openGraph from '../../../public/opengraph.png';
 
 export const metadata: Metadata = {
+    metadataBase: new URL("https://jeetplan.xyz"),
     title: "JEET Edu Plan",
     authors: [{name: "hegelty"}, {name: "hoyakim"}],
     creator: "@hegelty & @hoyakim",
