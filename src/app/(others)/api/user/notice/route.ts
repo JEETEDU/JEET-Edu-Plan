@@ -166,7 +166,7 @@ export async function GET(req: NextRequest) {
 
         return NextResponse.json({
             success: true,
-            notices: notices.map((notice: any) => {
+            notices: notices.map((notice) => {
                 return {
                     id: notice.id,
                     title: notice.title,

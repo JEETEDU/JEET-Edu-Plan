@@ -3,6 +3,8 @@
 import React, {useState} from "react";
 import {cn, getStoreData, POST} from "@/app/(main)/components/functions";
 import {useRouter} from "next/navigation";
+import Privacy from "@/app/(main)/components/privacy";
+import Scrollbars from "react-custom-scrollbars-2";
 
 export default function Desktop() {
     const [showPassword, setShowPassword] = useState(false);
@@ -12,6 +14,8 @@ export default function Desktop() {
     const [id, setId] = useState("");
     const [pw, setPw] = useState("");
     const [name, setName] = useState("");
+    const [privacy, setPrivacy] = useState(false);
+    const [showPrivacy, setShowPrivacy] = useState(false);
 
     const login = async () => {
         const res = await POST('/api/user/login', {
@@ -112,7 +116,6 @@ export default function Desktop() {
                             required
                         />
                     </div>
-
                     <div>
                         <label htmlFor="password" className="component-button-info">
                             비밀번호:
@@ -148,12 +151,37 @@ export default function Desktop() {
                         </div>
                     </div>
 
+                    {!isLogin && (
+                        <div className="flex flex-row gap-2 items-center">
+                            <div className="text-xl">
+                                <div
+                                    className={
+                                        privacy ? "i-system-uicons:checkbox-checked" : "i-system-uicons:checkbox-empty"
+                                    }
+                                    onClick={() => setPrivacy(!privacy)}
+                                />
+                            </div>
+                            <div>
+                                <span
+                                    className="text-blue-600 font-bold md:hover:text-blue-700 cursor-pointer"
+                                    onClick={() => setShowPrivacy(true)}
+                                >
+                                    개인정보 처리방침(보기)
+                                </span>
+                                에 동의합니다.
+                            </div>
+                        </div>
+                    )}
+
                     <div className="flex flex-col items-center space-y-1">
                         <div className={cn('font-bold', error.color)}>
                             {error.message}
                         </div>
                         <div
-                            className={cn("w-full component-button")}
+                            className={cn(
+                                "w-full component-button",
+                                (isLogin || privacy) ? "" : " bg-gray-400 pointer-events-none"
+                            )}
                             onClick={
                                 isLogin ? (
                                     () => {
@@ -173,6 +201,35 @@ export default function Desktop() {
                     </div>
                 </form>
             </div>
+            {showPrivacy && (
+                <div
+                    className="fixed inset-0 bg-black/50 flex items-center justify-center z-60"
+                    onClick={() => setShowPrivacy(false)} // 모달 바깥 클릭 시 닫힘
+                >
+                    <div
+                        className="bg-white rounded-lg shadow-lg space-y-4 overflow-y-auto w-9/10 h-9/10 flex flex-col justify-between"
+                        onClick={(e) => e.stopPropagation()} // 모달 내부 클릭 시 닫히지 않도록 방지
+                    >
+                        <Scrollbars
+                            className="w-full flex-1 h-full"
+                            universal
+                            autoHide
+                        >
+                            <div className="p-4">
+                                <Privacy/>
+                            </div>
+                        </Scrollbars>
+                        <div className="w-full flex items-center justify-center px-4 pb-4">
+                            <button
+                                className="component-button bg-gray-400 md:hover:bg-gray-600 w-full"
+                                onClick={() => setShowPrivacy(false)}
+                            >
+                                취소 (닫기)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

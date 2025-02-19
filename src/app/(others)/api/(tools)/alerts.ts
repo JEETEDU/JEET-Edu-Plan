@@ -7,12 +7,13 @@ import {initializeApp} from 'firebase-admin/app';
 import {credential, apps} from "firebase-admin";
 
 if (!apps.length) {
-   initializeApp({
+    initializeApp({
         credential: credential.cert(process.env["GOOGLE_APPLICATION_CREDENTIALS"] ?? ''),
     })
 }
 
 type TX = MySqlTransaction<any, any, any, any>;
+
 export enum AlertType {
     NORMAL = 0,
     NOTICE = 1,
@@ -35,8 +36,7 @@ export async function register_alert(tx: TX, user_id: number | [number], title: 
         })
             .from(schema.fcm)
             .where(inArray(schema.fcm.user_id, user_id));
-    }
-    else {
+    } else {
         await tx.insert(schema.alerts).values({
             user_id: user_id,
             message: `<b>${title}</b>\n${message}`,
@@ -52,13 +52,28 @@ export async function register_alert(tx: TX, user_id: number | [number], title: 
     }
     if (tokens.length > 0) {
         getMessaging().sendEachForMulticast({
+            // notification: {
+            //     title: title,
+            //     body: JSON.stringify({
+            //         message: message,
+            //         alert_type: alert_type.toString(),
+            //         article_id: article_id?.toString() ?? ''
+            //     }),
+            //     // body: message,
+            //     imageUrl: 'https://jeetplan.xyz/opengraph.png',
+            // },
             data: {
                 title: title,
                 message: message,
                 alert_type: alert_type.toString(),
                 article_id: article_id?.toString() ?? ''
             },
-            tokens: tokens.map((t) => t.fcm_token)
+            tokens: tokens.map((t) => t.fcm_token),
+            webpush: {
+                fcmOptions: {
+                    link: 'https://jeetplan.xyz',
+                }
+            }
         })
             .then((response) => {
                 if (response.failureCount > 0) {
@@ -80,7 +95,6 @@ export async function register_alert_for_class_students(tx: TX, class_id: number
     })
         .from(schema.studentClasses)
         .where(eq(schema.studentClasses.class_id, class_id));
-    console.log(users);
     // @ts-ignore
     await register_alert(tx, users.map((u) => u.user_id), title, message, alert_type, article_id);
 }
@@ -91,7 +105,6 @@ export async function register_alert_for_class_teachers(tx: TX, class_id: number
     })
         .from(schema.teacherClasses)
         .where(eq(schema.teacherClasses.class_id, class_id));
-    console.log(users);
     // @ts-ignore
     await register_alert(tx, users.map((u) => u.user_id), title, message, alert_type, article_id);
 }

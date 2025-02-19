@@ -21,7 +21,10 @@ export default function Body({children}: Readonly<{ children: React.ReactNode; }
         setScreenSizeProps();
         window.addEventListener('resize', () => setScreenSizeProps());
 
-        navigator.serviceWorker.register('firebase-messaging-sw.js').then((registration) => {
+        navigator.serviceWorker.register(
+            '/firebase-messaging-sw.js',
+            // {scope: "/firebase-cloud-messaging-push-scope"}
+        ).then((registration) => {
             console.log('Service worker successfully registered.');
             return registration;
         }).catch(function (err) {
