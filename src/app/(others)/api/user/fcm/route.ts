@@ -10,6 +10,42 @@ import {
 } from "@/app/(others)/api/(tools)/tools";
 import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
 
+/**
+ * @swagger
+ * /api/user/fcm:
+ *   get:
+ *     summary: Retrieve user ID by FCM token
+ *     description: Retrieves the user ID associated with the provided FCM token.
+ *     tags:
+ *       - User/FCM
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The FCM token to look up
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved user ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 uid:
+ *                   type: string
+ *                   example: "user_id_example"
+ *       400:
+ *         description: Bad request, invalid or missing required fields
+ *       401:
+ *         description: Unauthorized, user not logged in or lacks permissions
+ *       500:
+ *         description: Internal server error
+ */
 export async function GET(req: NextRequest) {
     try {
         const token = req.cookies.get("token")?.value ?? '';

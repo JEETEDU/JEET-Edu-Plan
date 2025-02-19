@@ -40,7 +40,6 @@ const useFcmToken = (uid: number) => {
         isLoading.current = true; // Mark loading as in progress.
 
         const token: string | null = await getNotificationPermissionAndToken();
-        console.log(token);
 
         // Step 5: Handle the case where permission is denied.
         if (Notification.permission === "denied") {
@@ -71,7 +70,7 @@ const useFcmToken = (uid: number) => {
         const setupListener = async () => {
             if (!token) return; // Exit if no token is available.
 
-            console.log(`onMessage registered with token ${token}`);
+            // console.log(`onMessage registered with token ${token}`);
             const m = await messaging();
             if (!m) return;
 
@@ -79,14 +78,15 @@ const useFcmToken = (uid: number) => {
                 if (Notification.permission !== "granted") return;
 
                 console.log("Foreground push notification received:", payload);
-                const link = payload.fcmOptions?.link || payload.data?.link;
+                const link = 'https://jeetplan.xyz';
 
                 navigator.serviceWorker.ready.then((registration) => {
                     registration.showNotification(
-                        payload.notification?.title || "New message",
+                        payload.data?.title || "New message",
                         {
-                            body: payload.notification?.body || "This is a new message",
-                            data: link ? {url: link} : undefined,
+                            body: payload.data?.message || "This is a new message",
+                            icon: "/logo.png",
+                            data: {url: link},
                         }
                     );
                 });
@@ -105,8 +105,7 @@ const useFcmToken = (uid: number) => {
     }, [token]);
 
     useEffect(() => {
-        console.log('uid', uid)
-        if (uid > 0) {
+        if ((uid > 0) && (token)) {
             (async () => {
                 const res: { success: boolean; uid: { uid: number }[] } = await GET(`/api/user/fcm?token=${token}`);
                 if (res.success) {
@@ -125,10 +124,14 @@ const useFcmToken = (uid: number) => {
                             fcm_token: token,
                         });
                     }
+                } else {
+                    await POST('/api/user/fcm', {
+                        fcm_token: token,
+                    });
                 }
             })();
         }
-    }, [uid]);
+    }, [uid, token]);
     // return {token, notificationPermissionStatus};
 };
 

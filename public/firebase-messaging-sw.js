@@ -1,5 +1,10 @@
-importScripts("https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js");
-importScripts("https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js");
+// importScripts("https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js");
+// importScripts("https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js");
+// import {initializeApp} from "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";
+// import {getMessaging} from "https://www.gstatic.com/firebasejs/11.3.0/firebase-messaging-sw.js";
+importScripts("https://www.gstatic.com/firebasejs/11.3.0/firebase-app-compat.js");
+importScripts("https://www.gstatic.com/firebasejs/11.3.0/firebase-messaging-compat.js");
+
 
 // Replace these with your own Firebase config keys...
 const firebaseConfig = {
@@ -13,38 +18,41 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-
 const messaging = firebase.messaging();
 
-// navigator.serviceWorker.register("firebase-messaging-sw.js").then();
+// const app = initializeApp(firebaseConfig);
+// const messaging = getMessaging(app);
+
+// navigator.serviceWorker.register("firebase-messaging-sw.js").then((registration) => {
+//     messaging.useServiceWorker(registration);
+// });
 
 messaging.onBackgroundMessage((payload) => {
     console.log(
         "[firebase-messaging-sw.js] Received background message ",
-        payload
+        payload,
+        payload.data || ""
     );
 
     // payload.fcmOptions?.link comes from our backend API route handle
     // payload.data.link comes from the Firebase Console where link is the 'key'
     // const link = payload.fcmOptions?.link || payload.data?.link;
-    const link = "https://jeet.hegelty.me";
+    const link = "https://jeetplan.xyz";
 
-    const notificationTitle = payload.data.title;
-    // const notificationAlertType = payload.data.alert_type;
-    // const notificationArticleId = payload.data.article_id;
-    const notificationOptions = {
-        body: payload.data.message,
-        icon: "/jeet.png",
-        data: {url: link},
-    };
-    console.log(Notification.permission);
-    navigator.serviceWorker.ready.then((registration) => {
-        registration.showNotification(notificationTitle, notificationOptions).then();
-    });
+    self.registration.showNotification(
+        payload.data?.title || "New message",
+        {
+            body: payload.data?.message || "This is a new message",
+            icon: "/logo.png",
+            data: {url: link},
+            image: "/opengraph.png",
+        }
+    );
 });
 
 self.addEventListener("notificationclick", function (event) {
     console.log("[firebase-messaging-sw.js] Notification click received.");
+    console.log(event.notification)
 
     event.notification.close();
 

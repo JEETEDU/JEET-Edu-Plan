@@ -321,7 +321,6 @@ export async function PATCH(req: NextRequest) {
             if (content) update_data['content'] = content;
             if (category !== -1) update_data['category'] = category;
             if (subject_id !== -1) {
-                console.log(article_.class_id);
                 const [subject_] =
                     await tx.select({
                         subject_id: schema.subjects.id,
@@ -708,7 +707,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({
             success: true,
             // @ts-ignore
-            articles: articles?.map((article: any) => {
+            articles: articles?.map((article) => {
                 return {
                     id: article.id,
                     title: article.title,

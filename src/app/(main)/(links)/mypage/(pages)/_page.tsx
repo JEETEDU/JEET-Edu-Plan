@@ -168,7 +168,7 @@ export default function Page({isMobile}: { isMobile: boolean }) {
                                     return day.toString().padStart(2, '0');
                                 }}
                                 maxDate={new Date()}
-                                minDate={new Date('2025-01-04')} // for test
+                                minDate={new Date('2025-02-18')} // for test
                                 minDetail="year"
                             />
 
@@ -202,7 +202,7 @@ export default function Page({isMobile}: { isMobile: boolean }) {
                                     return day.toString().padStart(2, '0');
                                 }}
                                 maxDate={new Date()}
-                                minDate={new Date('2025-01-04')} // for test
+                                minDate={new Date('2025-02-18')} // for test
                                 minDetail="year"
                             />
                         </div>

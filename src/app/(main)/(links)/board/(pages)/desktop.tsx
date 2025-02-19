@@ -1,7 +1,7 @@
 "use client";
 
 import React, {useEffect, useRef, useState} from "react";
-import {cn, getStoreData} from "@/app/(main)/components/functions";
+import {cn, GET, getStoreData} from "@/app/(main)/components/functions";
 import Link from "next/link";
 import Chatting from "@/app/(main)/(links)/board/[id]/mobile";
 import Scrollbars from "react-custom-scrollbars-2";
@@ -54,6 +54,10 @@ export default function Desktop() {
 
     const [articles, setArticles] = useState<IArticle[]>([]);
 
+    useEffect(() => {
+        console.log(articles)
+    }, [articles.length]);
+
     interface IClass {
         id: number;
         name: string;
@@ -70,10 +74,11 @@ export default function Desktop() {
 
     function reloadClasses() {
         (async () => {
-            const resClass: IResponseClasses = (await getStoreData("/api/user/class", 'class-list')).response;
-            if (resClass.success) {
-                setClasses(resClass.classes);
-                const c = resClass.classes[0];
+            // const resClass: IResponseClasses = (await getStoreData("/api/user/class", 'class-list')).response;
+            const res: IResponseClasses = await GET("/api/user/class");
+            if (res.success) {
+                setClasses(res.classes);
+                const c = res.classes[0];
                 setSelectedClass(`${c.id}/${c.name} | ${c.description}`);
             }
         })();
