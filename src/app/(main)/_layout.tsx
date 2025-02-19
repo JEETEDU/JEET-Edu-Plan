@@ -22,7 +22,7 @@ export default function Body({children}: Readonly<{ children: React.ReactNode; }
         window.addEventListener('resize', () => setScreenSizeProps());
 
         navigator.serviceWorker.register(
-            'firebase-messaging-sw.js',
+            '/firebase-messaging-sw.js',
             // {scope: "/firebase-cloud-messaging-push-scope"}
         ).then((registration) => {
             console.log('Service worker successfully registered.');
