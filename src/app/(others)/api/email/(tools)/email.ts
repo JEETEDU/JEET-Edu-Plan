@@ -31,7 +31,7 @@ type MailOptionType = {
 export function sendEmail({name, contact, title, content}: ContactType) {
     const mailOptions: MailOptionType = {
         from: process.env.GMAIL_USER || '',
-        to: ['seoho7777.kim@gmail.com', 'dev@hegelty.me'],
+        to: ['help@jeetplan.xyz'],
         subject: `[JEET Edu Plan] ${title}`,
         text: `
 이름: ${name}
