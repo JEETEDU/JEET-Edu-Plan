@@ -78,15 +78,15 @@ const useFcmToken = (uid: number) => {
                 if (Notification.permission !== "granted") return;
 
                 console.log("Foreground push notification received:", payload);
-                const link = payload.fcmOptions?.link || payload.data?.link;
+                const link = 'https://jeetplan.xyz';
 
                 navigator.serviceWorker.ready.then((registration) => {
                     registration.showNotification(
-                        payload.notification?.title || "New message",
+                        payload.data?.title || "New message",
                         {
-                            body: payload.notification?.body || "This is a new message",
+                            body: payload.data?.message || "This is a new message",
                             icon: "/logo.png",
-                            data: link ? {url: link} : undefined,
+                            data: {url: link},
                         }
                     );
                 });
