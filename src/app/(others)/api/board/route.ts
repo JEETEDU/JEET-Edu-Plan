@@ -707,7 +707,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({
             success: true,
             // @ts-ignore
-            articles: articles?.map((article: any) => {
+            articles: articles?.map((article) => {
                 return {
                     id: article.id,
                     title: article.title,

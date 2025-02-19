@@ -130,6 +130,10 @@ export default function Desktop() {
     }
 
     useEffect(() => {
+        console.log(notices)
+    }, [notices.length]);
+
+    useEffect(() => {
         (async () => {
             setUserType((await getStoreData('/api/user/info', 'user-info')).response.user.user_type);
         })();
