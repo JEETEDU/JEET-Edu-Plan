@@ -173,7 +173,7 @@ export default function Inquiry() {
                                         <path fill="currentColor" d="M20 18h-2V9.25L12 13L6 9.25V18H4V6h1.2l6.8 4.25L18.8 6H20m0-2H4c-1.11 0-2 .89-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2"/>
                                     </svg>
                                     <div className="flex flex-col flex-1 text-blue-400 hover:text-blue-600">
-                                        skxodid0305@gmail.com
+                                        dev@hegelty.me
                                     </div>
                                 </div>
                                 <div className="flex flex-row w-full items-center justify-center gap-2">
