@@ -152,7 +152,7 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
             const resClass: {
                 success: boolean;
                 classes: IClass[]
-            } = (await getStoreData("/api/user/class", 'class-list')).response;
+            } = await GET("/api/user/class");
             if (resClass.success) {
                 setClasses(resClass.classes);
                 if (prev === null) {

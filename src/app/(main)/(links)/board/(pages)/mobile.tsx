@@ -33,15 +33,8 @@ export default function Mobile() {
         }
 
         (async () => {
-            const userInfo = (await getStoreData('/api/user/info', 'user-info')).response.user;
-
-            if (userInfo.user_type === 1) {
-                const classList = (await getStoreData("/api/user/class", 'class-list')).response.classes;
-                setClasses(classList);
-            } else if (userInfo.user_type >= 2) {
-                const classList = (await getStoreData("/api/user/class", 'class-list')).response.classes;
-                setClasses(classList);
-            }
+            const res = await GET("/api/user/class");
+            if (res.success) setClasses(res.classes);
 
             const resClass: IResponseClasses = await GET('/api/user/class');
             if (resClass.success) {
