@@ -165,6 +165,7 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
     }, [])
 
     useEffect(() => {
+        setContent({...content, class_id: Number(selectedClass.split('/')[0])});
         (async () => {
             const res: { success: boolean; class_: IClassInfo } = await GET(`/api/class/${selectedClass.split('/')[0]}`);
             if (res.success) {
@@ -173,15 +174,17 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
                     if (!prev) {
                         const s = res.class_.subjects[0];
                         setSelectedSubject({label: s.name, value: String(s.id)});
-                        setContent({...content, subject_id: s.id});
                     } else {
                         setSelectedSubject({label: String(prev.subject.name), value: String(prev.subject.id)});
-                        setContent({...content, subject_id: prev.subject.id || 1});
                     }
                 }
             }
         })();
     }, [selectedClass]);
+
+    useEffect(() => {
+        setContent({...content, subject_id: Number(selectedSubject.value) || 1});
+    }, [selectedSubject]);
 
     const save = () => {
         if (!storage) return;
