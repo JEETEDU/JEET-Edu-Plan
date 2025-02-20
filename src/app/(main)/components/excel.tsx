@@ -59,6 +59,7 @@ export default function Excel() {
                         closeAction={setOpen}
                         isMobile={false}
                         maxDate={today}
+                        minDate={new Date('2025-02-18')}
                     />
                 </div>
             )}

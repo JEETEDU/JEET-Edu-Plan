@@ -157,25 +157,26 @@ export function TodayAnswer({date, uid}: CTodayAnswer) {
                             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                             // @ts-expect-error
                             if (question[`question_${key}`] !== null) {
-                                return (
-                                    <div key={i}>
-                                        <label htmlFor="name" className="component-button-info">
-                                            {
+                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                // @ts-expect-error
+                                const q = question[`question_${key}`];
+                                if (q) {
+                                    return (
+                                        <div key={i}>
+                                            <label htmlFor="name" className="component-button-info">
+                                                {q}
+                                            </label>
+                                            <TextareaAutosize
+                                                readOnly
+                                                className="component-input resize-none"
+                                                cacheMeasurements
                                                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                                                 // @ts-expect-error
-                                                question[`question_${key}`]
-                                            }
-                                        </label>
-                                        <TextareaAutosize
-                                            readOnly
-                                            className="component-input resize-none"
-                                            cacheMeasurements
-                                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                            // @ts-expect-error
-                                            value={answer[`answer_${key}`] || "아직 응답하지 않았습니다."}
-                                        />
-                                    </div>
-                                )
+                                                value={answer[`answer_${key}`] || "아직 응답하지 않았습니다."}
+                                            />
+                                        </div>
+                                    )
+                                }
                             }
                         })
                     }
