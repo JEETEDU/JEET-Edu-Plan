@@ -49,7 +49,10 @@ export default function UserDetail({uid, date, refreshAction}: { uid: number, da
                 setUserInfo={setUserInfo}
                 refresh={refreshAction}
             />
-            <ManageUser uid={uid}/>
+            <ManageUser
+                uid={uid}
+                userType={userInfo.user_type || 1}
+            />
             <Hr/>
             <UserClass
                 uid={uid}
