@@ -220,8 +220,14 @@ export default function HtmlEditor({prev = null}: { prev?: IArticle | null }) {
     }
 
     const upload = () => {
-        if (!content.title.trim()) return;
-        if (!content.content.trim()) return;
+        if (!content.title.trim()) {
+            alert('제목을 입력해 주세요');
+            return;
+        }
+        if (!content.content.trim()) {
+            alert('내용을 입력해 주세요')
+            return;
+        }
         const formData = new FormData();
         formData.append("article", JSON.stringify(content));
         fileList.map((file: File) => {
