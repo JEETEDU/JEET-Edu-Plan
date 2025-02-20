@@ -739,22 +739,19 @@ export function IsAdmin({date}: { date: Date }) {
                                             <div className="flex items-center gap-4">
                                                 <div>
                                                     <div className="text-xl font-bold">
-                                                        {u.name as string}
+                                                        {u.name || ""}
                                                     </div>
                                                     <div className="text-sm text-gray-500">
-                                                        {u.login_id as string}
+                                                        {u.login_id || ""}
                                                     </div>
                                                 </div>
-                                                {/*<div>*/}
-                                                {/*    {(u.user_type === 1) ? "S" : (u.user_type === 2) ? "T" : "A"}*/}
-                                                {/*</div>*/}
                                             </div>
-                                            <div className="flex flex-col">
+                                            <div className="grid grid-rows-2">
                                                 <div className="flex items-center justify-end">
-                                                    {String(u.first_year)} {u.joined_term as string}
+                                                    {u.first_year || ""} {u.joined_term || ""}
                                                 </div>
                                                 <div className="flex items-center justify-end">
-                                                    {u.school as string}
+                                                    {u.school || ""}
                                                 </div>
                                             </div>
                                         </div>

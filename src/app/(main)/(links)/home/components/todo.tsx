@@ -118,7 +118,7 @@ export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
                                         endDueDate={endDueDate}
                                         setEndDueDateAction={setEndDueDate}
                                         isMobile={isMobile}
-                                        closeAction={setOpenDatePicker}
+                                        closeAction={() => setOpenDatePicker(false)}
                                     />
                                 </div>
                             )}

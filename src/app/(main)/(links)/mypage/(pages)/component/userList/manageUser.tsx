@@ -5,11 +5,12 @@ import {DELETE, POST} from "@/app/(main)/components/functions";
 
 export interface CManageUser {
     uid: number
+    userType: number
 }
 
 export default function ManageUser(
     {
-        uid
+        uid, userType
     }: CManageUser,
 ) {
     const [message, setMessage] = useState<[string, string]>(["", ""]);
@@ -26,10 +27,9 @@ export default function ManageUser(
         }).then((res) => {
             if (res.success) {
                 setMessage((prev) => [
-                        `새로운 비밀번호는 ${res.message.split(':')[1]} 입니다.\n(복사하세요)`,
-                        prev[1]
-                    ]
-                );
+                    `새로운 비밀번호는 ${res.message.split(':')[1]} 입니다.\n(복사하세요)`,
+                    prev[1]
+                ]);
             } else {
                 setError("오류가 발생하였습니다.");
             }
@@ -42,10 +42,9 @@ export default function ManageUser(
         }).then((res) => {
             if (res.success) {
                 setMessage((prev) => [
-                        prev[0],
-                        "유저가 삭제되었습니다. (다른 유저를 선택하세요)"
-                    ]
-                );
+                    prev[0],
+                    "유저가 삭제되었습니다. (다른 유저를 선택하세요)"
+                ]);
             } else {
                 setError("오류가 발생하였습니다.");
             }
@@ -74,17 +73,19 @@ export default function ManageUser(
                         비밀번호 리셋
                     </button>
                 </div>
-                <div className="flex items-center w-full justify-end gap-4">
-                    <div className="flex items-center text-lg text-green-700 font-bold">
-                        {message[1]}
+                {(userType !== 3) && (
+                    <div className="flex items-center w-full justify-end gap-4">
+                        <div className="flex items-center text-lg text-green-700 font-bold">
+                            {message[1]}
+                        </div>
+                        <button
+                            className="px-3 py-1 bg-red-500 text-white text-md font-bold rounded md:hover:bg-red-600"
+                            onClick={deleteUser}
+                        >
+                            유저 삭제
+                        </button>
                     </div>
-                    <button
-                        className="px-3 py-1 bg-red-500 text-white text-md font-bold rounded md:hover:bg-red-600"
-                        onClick={deleteUser}
-                    >
-                        유저 삭제
-                    </button>
-                </div>
+                )}
             </div>
         </div>
     );
