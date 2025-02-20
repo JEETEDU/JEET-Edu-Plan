@@ -10,33 +10,26 @@ export default function Excel() {
     const [start, setStart] = useState<Date | null>(null);
     const [end, setEnd] = useState<Date | null>(today);
     const [open, setOpen] = useState<boolean>(false);
-    const [ready, setReady] = useState<boolean>(false);
 
-    useEffect(() => {
-        if (open) {
-            setReady(true);
-        } else if (!open && ready) {
-            (async () => {
-                const res: Blob = await fetch(`/api/admin/today/response/excel?${start ? `start_date=${parseDate(start)}&` : ""}${end ? `end_date=${parseDate(end)}` : ""}`, {
-                    method: 'GET',
-                }).then(
-                    (res) => res.blob()
-                ).then(
-                    (res) => {
-                        return res;
-                    }
-                );
+    async function downloadExcel() {
+        const res: Blob = await fetch(`/api/admin/today/response/excel?${start ? `start_date=${parseDate(start)}&` : ""}${end ? `end_date=${parseDate(end)}` : ""}`, {
+            method: 'GET',
+        }).then(
+            (res) => res.blob()
+        ).then(
+            (res) => {
+                return res;
+            }
+        );
 
-                const data = new Blob([res], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
-                const url = URL.createObjectURL(data);
-                const link = document.createElement("a");
-                link.href = url;
-                link.download = `오늘의질문.xlsx`;
-                link.click();
-                URL.revokeObjectURL(url);
-            })();
-        }
-    }, [open])
+        const data = new Blob([res], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+        const url = URL.createObjectURL(data);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `오늘의질문 [ ${start?.toLocaleDateString() || ""} ~ ${end?.toLocaleDateString() || ""} ].xlsx`;
+        link.click();
+        URL.revokeObjectURL(url);
+    }
 
     return (
         <>
@@ -48,7 +41,7 @@ export default function Excel() {
             </div>
             {(open) && (
                 <div
-                    className="fixed inset-0 bg-black/50 flex items-center justify-center z-60"
+                    className="fixed inset-0 bg-black/50 flex flex-col items-center justify-center z-60"
                     onClick={() => setOpen(false)} // 모달 바깥 클릭 시 닫힘
                 >
                     <DateRangePicker
@@ -56,7 +49,10 @@ export default function Excel() {
                         setStartDueDateAction={setStart}
                         endDueDate={end}
                         setEndDueDateAction={setEnd}
-                        closeAction={setOpen}
+                        closeAction={async () => {
+                            setOpen(false);
+                            downloadExcel().then(() => alert("파일이 다운로드 되었습니다!"));
+                        }}
                         isMobile={false}
                         maxDate={today}
                         minDate={new Date('2025-02-18')}
