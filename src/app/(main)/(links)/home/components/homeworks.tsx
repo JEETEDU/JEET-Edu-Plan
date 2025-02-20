@@ -161,7 +161,7 @@ export function DateRangePicker(
         setStartDueDateAction: React.Dispatch<React.SetStateAction<Date | null>>;
         endDueDate: Date | null;
         setEndDueDateAction: React.Dispatch<React.SetStateAction<Date | null>>;
-        closeAction: React.Dispatch<React.SetStateAction<boolean>>;
+        closeAction: () => void;
         isMobile: boolean;
         minDate?: Date;
         maxDate?: Date;
@@ -197,6 +197,7 @@ export function DateRangePicker(
                         placeholderText="전체 기한"
                         inline
                         minDate={minDate}
+                        maxDate={maxDate}
                     />
                     {(isMobile) && (
                         <div
@@ -216,7 +217,7 @@ export function DateRangePicker(
                         dateFormat='yyyy-MM-dd'
                         placeholderText="전체 기한"
                         inline
-                        minDate={startDueDate || new Date("")}
+                        minDate={startDueDate || minDate}
                         maxDate={maxDate}
                     />
                     {(isMobile) && (
@@ -240,7 +241,7 @@ export function DateRangePicker(
                 )}
                 <div
                     className="col-span-2 flex items-center justify-center text-center bg-blue-500 md:hover:bg-blue-600 text-white py-1 rounded"
-                    onClick={() => closeAction(false)}
+                    onClick={() => closeAction()}
                 >
                     저장하기
                 </div>
@@ -429,7 +430,7 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
                                         endDueDate={endDueDate}
                                         setEndDueDateAction={setEndDueDate}
                                         isMobile={isMobile}
-                                        closeAction={setOpenDatePicker}
+                                        closeAction={() => setOpenDatePicker(false)}
                                     />
                                 </div>
                             )}
