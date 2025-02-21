@@ -8,9 +8,6 @@ const transporter = nodemailer.createTransport({
         user: process.env.GMAIL_USER,
         pass: process.env.GMAIL_PASS,
     },
-    // tls: {
-    //     rejectUnauthorized: false
-    // },
 });
 
 export type ContactType = {
@@ -21,7 +18,7 @@ export type ContactType = {
 };
 
 type MailOptionType = {
-    to: string[];
+    to: string;
     from: string;
     subject: string;
     text: string;
@@ -31,7 +28,7 @@ type MailOptionType = {
 export function sendEmail({name, contact, title, content}: ContactType) {
     const mailOptions: MailOptionType = {
         from: process.env.GMAIL_USER || '',
-        to: ['help@jeetplan.xyz'],
+        to: 'help@jeetplan.xyz',
         subject: `[JEET Edu Plan] ${title}`,
         text: `
 이름: ${name}

@@ -7,7 +7,8 @@ import {IsAdmin, IsStudent, IsTeacher} from "@/app/(main)/(links)/mypage/(pages)
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import {Hr} from "@/app/(main)/(links)/home/(pages)/desktop";
-// import {useEffectAsync} from "@/app/(main)/hooks";
+import Image from "next/image";
+import banner from "../../../../../../uploads/banner/banner.png";
 
 export default function Page({isMobile}: { isMobile: boolean }) {
     const [error, setError] = useState<string>("");
@@ -27,7 +28,6 @@ export default function Page({isMobile}: { isMobile: boolean }) {
             return new Date
         }
     });
-
 
     useEffect(() => {
         (async () => {
@@ -82,8 +82,33 @@ export default function Page({isMobile}: { isMobile: boolean }) {
         );
     }
 
+    const [showBanner, setShowBanner] = useState(false);
+
     return (
         <>
+            {(showBanner) && (
+                <div
+                    className="fixed backdrop-blur inset-0 bg-black/50 flex items-center justify-center z-60 p-6"
+                    onClick={() => setShowBanner(false)} // 모달 바깥 클릭 시 닫힘
+                >
+                    <div className="h-full" style={{aspectRatio: 210 / 297}}>
+                        <div
+                            className="relative w-full h-full"
+                            onClick={(e) => e.stopPropagation()} // 모달 내부 클릭 시 닫히지 않도록 방지
+                        >
+                            <Image
+                                src={banner.src}
+                                alt="배너 이미지"
+                                fill={true}
+                                style={{objectFit: "contain"}}
+                                className="shadow-xl"
+                                priority={true}
+                                // placeholder="blur"
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
             <div className="w-full h-full flex flex-col items-center bg-gray-100">
                 <div className="w-full flex flex-row justify-between items-center py-3 px-6">
                     <div className="flex items-center gap-4">
@@ -187,9 +212,21 @@ export default function Page({isMobile}: { isMobile: boolean }) {
                 <div className="flex lg:flex-row flex-col w-full p-6 h-full gap-6">
                     {(!isMobile && showCalendar) && (
                         <div className="flex flex-row lg:flex-col gap-2">
-                            <div className="grow border-2 border-gray-500 text-center p-2 flex items-center justify-center">
-                                여기도 뭔가 넣어싶어요<br/><br/>
-                                오늘의 전반적인 요약 같은걸 넣으면 어떨까
+                            <div className="grow p-2 flex items-center justify-center relative hover:p-0">
+                                <div
+                                    className="relative w-full h-full cursor-pointer"
+                                    onClick={() => setShowBanner(true)}
+                                >
+                                    <Image
+                                        src={banner.src}
+                                        alt="배너 이미지"
+                                        fill={true}
+                                        style={{objectFit: "contain"}}
+                                        className="shadow-xl"
+                                        priority={true}
+                                        // placeholder="blur"
+                                    />
+                                </div>
                             </div>
                             <Calendar
                                 locale="ko"
