@@ -422,6 +422,5 @@ export default function Chatting({id, reloadArticlesAction = null}: { id: number
             </>
             }
         </div>
-    )
-        ;
+    );
 }
