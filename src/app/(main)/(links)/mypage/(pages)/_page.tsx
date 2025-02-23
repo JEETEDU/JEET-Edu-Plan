@@ -101,6 +101,8 @@ export default function Page({isMobile}: { isMobile: boolean }) {
                                 setNewBanner(file);
                             } else {
                                 alert(".png 확장자 이미지 파일을 선택해 주세요");
+                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                // @ts-expect-error
                                 document.getElementById("fileUpload")!.value = null;
                             }
                         } else {
@@ -133,6 +135,8 @@ export default function Page({isMobile}: { isMobile: boolean }) {
                                     <div
                                         className="p-1 rounded border-2 text-xl bg-red hover:bg-red-600 border-black cursor-pointer"
                                         onClick={() => {
+                                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                            // @ts-expect-error
                                             document.getElementById("fileUpload")!.value = null;
                                             setNewBanner(null)
                                         }}
