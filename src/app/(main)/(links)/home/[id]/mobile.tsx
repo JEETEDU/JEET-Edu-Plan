@@ -86,7 +86,14 @@ export default function Notice({id}: { id: number }) {
                     >
                         게시물 바로가기
                     </Link>
-                    <Time create_time={selectedNotice.create_time} update_time={selectedNotice.update_time}/>
+                    <div className="grid grid-rows-2 text-sm justify-end items-center flex-1 text-gray-600 gap-1">
+                        <div className="flex justify-end items-center">
+                            {(new Date(selectedNotice.update_time)).toLocaleDateString()}
+                        </div>
+                        <div className="flex justify-end items-center">
+                            {new Date(selectedNotice.update_time).toLocaleTimeString()}
+                        </div>
+                    </div>
                 </div>
             </>
         </div>
