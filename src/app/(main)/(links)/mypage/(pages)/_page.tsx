@@ -93,8 +93,7 @@ export default function Page({isMobile}: { isMobile: boolean }) {
             method: "PUT",
             body: formData
         }).then(r => r.json()).then(r => {
-            alert(r);
-            router.refresh();
+            if (r.success) router.refresh();
         })
     }
 
@@ -129,45 +128,47 @@ export default function Page({isMobile}: { isMobile: boolean }) {
                     className="fixed space-y-4 flex-col backdrop-blur inset-0 bg-black/50 flex items-center justify-center z-60 p-6"
                     onClick={() => setShowBanner(false)} // 모달 바깥 클릭 시 닫힘
                 >
-                    <div
-                        onClick={(e) => e.stopPropagation()}
-                        className="bg-gray p-2 rounded flex flex-row gap-4 justify-center items-center"
-                    >
+                    {(userType === 3) && (
                         <div
-                            className="px-2 py-1 rounded bg-white font-bold border-2 border-blue hover:bg-blue hover:text-white cursor-pointer"
-                            onClick={() => document.getElementById("fileUpload")!.click()}
+                            onClick={(e) => e.stopPropagation()}
+                            className="bg-gray p-2 rounded flex flex-row gap-4 justify-center items-center"
                         >
-                            배너 이미지 변경하기
+                            <div
+                                className="px-2 py-1 rounded bg-white font-bold border-2 border-blue hover:bg-blue hover:text-white cursor-pointer"
+                                onClick={() => document.getElementById("fileUpload")!.click()}
+                            >
+                                배너 이미지 변경하기
+                            </div>
+                            {(newBanner) && (
+                                <>
+                                    <div className="px-2 py-1 rounded border-2 border-black">
+                                        {newBanner.name}
+                                    </div>
+                                    <div className="flex flex-row gap-1">
+                                        <div
+                                            className="p-1 rounded border-2 text-xl bg-red hover:bg-red-600 border-black cursor-pointer"
+                                            onClick={() => {
+                                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                                // @ts-expect-error
+                                                document.getElementById("fileUpload")!.value = null;
+                                                setNewBanner(null)
+                                            }}
+                                        >
+                                            <div className="i-system-uicons:cross"/>
+                                        </div>
+                                        <div
+                                            className="p-1 rounded border-2 text-xl bg-green hover:bg-green-600 border-black cursor-pointer"
+                                            onClick={() => {
+                                                updateBanner()
+                                            }}
+                                        >
+                                            <div className="i-system-uicons:check"/>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                         </div>
-                        {(newBanner) && (
-                            <>
-                                <div className="px-2 py-1 rounded border-2 border-black">
-                                    {newBanner.name}
-                                </div>
-                                <div className="flex flex-row gap-1">
-                                    <div
-                                        className="p-1 rounded border-2 text-xl bg-red hover:bg-red-600 border-black cursor-pointer"
-                                        onClick={() => {
-                                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                            // @ts-expect-error
-                                            document.getElementById("fileUpload")!.value = null;
-                                            setNewBanner(null)
-                                        }}
-                                    >
-                                        <div className="i-system-uicons:cross"/>
-                                    </div>
-                                    <div
-                                        className="p-1 rounded border-2 text-xl bg-green hover:bg-green-600 border-black cursor-pointer"
-                                        onClick={() => {
-                                            alert('save API')
-                                        }}
-                                    >
-                                        <div className="i-system-uicons:check"/>
-                                    </div>
-                                </div>
-                            </>
-                        )}
-                    </div>
+                    )}
 
                     <div className="h-full" style={{aspectRatio: 210 / 297}}>
                         <div
