@@ -85,6 +85,19 @@ export default function Page({isMobile}: { isMobile: boolean }) {
     const [showBanner, setShowBanner] = useState(false);
     const [newBanner, setNewBanner] = useState<File | null>(null);
 
+    function updateBanner() {
+        if (!newBanner) return;
+        const formData = new FormData();
+        formData.append("file", newBanner);
+        fetch("/api/admin/banner", {
+            method: "PUT",
+            body: formData
+        }).then(r => r.json()).then(r => {
+            alert(r);
+            router.refresh();
+        })
+    }
+
     return (
         <>
             <input
