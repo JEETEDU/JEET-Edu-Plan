@@ -41,10 +41,9 @@ export async function PUT(req: NextRequest) {
         if (token instanceof NextResponse) return token;
 
         const data = await req.formData();
-        // @ts-expect-error
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         const file = data.get("file") as File;
-
-        console.log(file.name)
 
         const file_path = 'uploads/banner/banner.png';
 
