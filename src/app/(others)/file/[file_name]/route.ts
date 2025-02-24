@@ -66,7 +66,7 @@ export async function GET(req: NextRequest, { params }: { params: { file_name: s
     return new Response(fs.readFileSync(file_path), {
         headers: {
             'Content-Type': content_type,
-            'Content-Disposition': `attachment; filename=${encodeURIComponent(file_name.name)}`
+            'Content-Disposition': `inline; filename=${encodeURIComponent(file_name.name)}`
         }
     });
 }

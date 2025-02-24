@@ -708,15 +708,16 @@ export async function GET(req: NextRequest) {
             success: true,
             // @ts-ignore
             articles: articles?.map((article) => {
+                console.debug(typeof article.create_time)
                 return {
                     id: article.id,
                     title: article.title,
-                    create_time: article.create_time,
-                    update_time: article.update_time,
+                    create_time: new Date(article.create_time),
+                    update_time: new Date(article.update_time),
                     attach_files_exist: article.attach_files_exist,
                     category: article.category,
                     is_notice: article.notice,
-                    due_date: article.due_date,
+                    due_date: new Date(article.due_date),
                     comment_count: article.comment_count,
                     user: {
                         id: article.user_id,

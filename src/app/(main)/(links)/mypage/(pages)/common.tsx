@@ -459,7 +459,7 @@ export function IsAdmin({date}: { date: Date }) {
     const tabList = {
         "오늘의 질문": true,
         "유저 목록": true,
-        "신규 유저 승인": true,
+        "신규 유저": true,
         "반 관리": true,
         "설정": true,
         "Log List": true
