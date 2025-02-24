@@ -8,7 +8,7 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import {Hr} from "@/app/(main)/(links)/home/(pages)/desktop";
 import Image from "next/image";
-import banner from "../../../../../../uploads/banner/banner.png";
+import banner from "@/../uploads/banner/banner.png";
 
 export default function Page({isMobile}: { isMobile: boolean }) {
     const [error, setError] = useState<string>("");
@@ -201,8 +201,9 @@ export default function Page({isMobile}: { isMobile: boolean }) {
                                 alt="배너 이미지"
                                 fill={true}
                                 style={{objectFit: "contain"}}
-                                priority={true}
+                                // priority={true}
                                 // placeholder="blur"
+                                sizes="2160px"
                             />
                         </div>
                     </div>
@@ -322,8 +323,9 @@ export default function Page({isMobile}: { isMobile: boolean }) {
                                         fill={true}
                                         style={{objectFit: "contain"}}
                                         className="shadow"
-                                        priority={true}
+                                        // priority={true}
                                         // placeholder="blur"
+                                        sizes="540px"
                                     />
                                 </div>
                             </div>
