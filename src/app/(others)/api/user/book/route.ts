@@ -110,7 +110,16 @@ export async function GET(req: NextRequest) {
 
         return NextResponse.json({
             success: true,
-            books: books
+            books: books.map((book: any) => {
+                return {
+                    id: book.id,
+                    title: book.title,
+                    content: book.content,
+                    author: book.author,
+                    publisher: book.publisher,
+                    update_time: new Date(book.update_time)
+                }
+            })
         });
     } catch (e) {
         console.error(e);
