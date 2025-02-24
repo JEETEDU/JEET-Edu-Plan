@@ -103,7 +103,10 @@ export default function Page({isMobile}: { isMobile: boolean }) {
             method: "PUT",
             body: formData
         }).then(r => r.json()).then(r => {
-            if (r.success) router.refresh();
+            if (r.success) {
+                setNewBanner(null)
+                router.refresh();
+            }
         })
     }
 
