@@ -111,7 +111,7 @@ export default function Chatting({id, reloadArticlesAction = null}: { id: number
         fetch('/api/board/comment', {
             method: "PATCH",
             body: formData
-        }).then(r => r.blob()).then(r => {
+        }).then(() => {
             reload();
         });
         setNewComments(""); // 입력란 초기화
@@ -422,6 +422,5 @@ export default function Chatting({id, reloadArticlesAction = null}: { id: number
             </>
             }
         </div>
-    )
-        ;
+    );
 }

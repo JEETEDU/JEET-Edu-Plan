@@ -166,16 +166,16 @@ export async function GET(req: NextRequest) {
 
         return NextResponse.json({
             success: true,
-            notices: notices.map((notice) => {
+            notices: notices.map((notice: any) => {
                 return {
                     id: notice.id,
                     title: notice.title,
-                    create_time: notice.create_time,
-                    update_time: notice.update_time,
+                    create_time: new Date(notice.create_time),
+                    update_time: new Date(notice.update_time),
                     attach_files_exist: notice.attach_files_exist,
                     category: notice.category,
                     notice: notice.notice,
-                    due_date: notice.due_date,
+                    due_date: notice.due_date ? new Date(notice.due_date) : null,
                     comment_count: notice.comment_count,
                     class_: {
                         id: notice.class_.id,

@@ -7,7 +7,8 @@ import {IsAdmin, IsStudent, IsTeacher} from "@/app/(main)/(links)/mypage/(pages)
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import {Hr} from "@/app/(main)/(links)/home/(pages)/desktop";
-// import {useEffectAsync} from "@/app/(main)/hooks";
+import Image from "next/image";
+import banner from "../../../../../../uploads/banner/banner.png";
 
 export default function Page({isMobile}: { isMobile: boolean }) {
     const [error, setError] = useState<string>("");
@@ -27,7 +28,6 @@ export default function Page({isMobile}: { isMobile: boolean }) {
             return new Date
         }
     });
-
 
     useEffect(() => {
         (async () => {
@@ -82,8 +82,112 @@ export default function Page({isMobile}: { isMobile: boolean }) {
         );
     }
 
+    const [showBanner, setShowBanner] = useState(false);
+    const [newBanner, setNewBanner] = useState<File | null>(null);
+
+    function updateBanner() {
+        if (!newBanner) return;
+        const formData = new FormData();
+        formData.append("file", newBanner);
+        fetch("/api/admin/banner", {
+            method: "PUT",
+            body: formData
+        }).then(r => r.json()).then(r => {
+            if (r.success) router.refresh();
+        })
+    }
+
     return (
         <>
+            <input
+                type="file"
+                style={{display: "none"}}
+                id="fileUpload"
+                accept="image/png"
+                onChange={(e) => {
+                    const files = e.target.files;
+                    if (files) {
+                        if (files.length === 1) {
+                            const file = files[0];
+                            if (file.type === "image/png") {
+                                setNewBanner(file);
+                            } else {
+                                alert(".png 확장자 이미지 파일을 선택해 주세요");
+                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                // @ts-expect-error
+                                document.getElementById("fileUpload")!.value = null;
+                            }
+                        } else {
+                            setNewBanner(null);
+                        }
+                    }
+                }}
+            />
+            {(showBanner) && (
+                <div
+                    className="fixed space-y-4 flex-col backdrop-blur inset-0 bg-black/50 flex items-center justify-center z-60 p-6"
+                    onClick={() => setShowBanner(false)} // 모달 바깥 클릭 시 닫힘
+                >
+                    {(userType === 3) && (
+                        <div
+                            onClick={(e) => e.stopPropagation()}
+                            className="bg-gray p-2 rounded flex flex-row gap-4 justify-center items-center"
+                        >
+                            <div
+                                className="px-2 py-1 rounded bg-white font-bold border-2 border-blue hover:bg-blue hover:text-white cursor-pointer"
+                                onClick={() => document.getElementById("fileUpload")!.click()}
+                            >
+                                배너 이미지 변경하기
+                            </div>
+                            {(newBanner) && (
+                                <>
+                                    <div className="px-2 py-1 rounded border-2 border-black">
+                                        {newBanner.name}
+                                    </div>
+                                    <div className="flex flex-row gap-1">
+                                        <div
+                                            className="p-1 rounded border-2 text-xl bg-red hover:bg-red-600 border-black cursor-pointer"
+                                            onClick={() => {
+                                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                                // @ts-expect-error
+                                                document.getElementById("fileUpload")!.value = null;
+                                                setNewBanner(null)
+                                            }}
+                                        >
+                                            <div className="i-system-uicons:cross"/>
+                                        </div>
+                                        <div
+                                            className="p-1 rounded border-2 text-xl bg-green hover:bg-green-600 border-black cursor-pointer"
+                                            onClick={() => {
+                                                updateBanner()
+                                            }}
+                                        >
+                                            <div className="i-system-uicons:check"/>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    )}
+
+                    <div className="h-full" style={{aspectRatio: 210 / 297}}>
+                        <div
+                            className="relative w-full h-full"
+                            onClick={(e) => e.stopPropagation()} // 모달 내부 클릭 시 닫히지 않도록 방지
+                        >
+                            <Image
+                                src={banner.src}
+                                alt="배너 이미지"
+                                fill={true}
+                                style={{objectFit: "contain"}}
+                                className="shadow-xl"
+                                priority={true}
+                                // placeholder="blur"
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
             <div className="w-full h-full flex flex-col items-center bg-gray-100">
                 <div className="w-full flex flex-row justify-between items-center py-3 px-6">
                     <div className="flex items-center gap-4">
@@ -187,9 +291,21 @@ export default function Page({isMobile}: { isMobile: boolean }) {
                 <div className="flex lg:flex-row flex-col w-full p-6 h-full gap-6">
                     {(!isMobile && showCalendar) && (
                         <div className="flex flex-row lg:flex-col gap-2">
-                            <div className="grow border-2 border-gray-500 text-center p-2 flex items-center justify-center">
-                                여기도 뭔가 넣어싶어요<br/><br/>
-                                오늘의 전반적인 요약 같은걸 넣으면 어떨까
+                            <div className="grow p-2 flex items-center justify-center relative hover:p-0">
+                                <div
+                                    className="relative w-full h-full cursor-pointer"
+                                    onClick={() => setShowBanner(true)}
+                                >
+                                    <Image
+                                        src={banner.src}
+                                        alt="배너 이미지"
+                                        fill={true}
+                                        style={{objectFit: "contain"}}
+                                        className="shadow"
+                                        priority={true}
+                                        // placeholder="blur"
+                                    />
+                                </div>
                             </div>
                             <Calendar
                                 locale="ko"
