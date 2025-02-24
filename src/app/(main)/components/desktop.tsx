@@ -16,8 +16,11 @@ export default function Navigation() {
 
     useEffect(() => {
         (async () => {
-            const userInfo = (await getStoreData('/api/user/info', 'user-info')).response.user;
-            if (userInfo) setUserType(userInfo.user_type);
+            if (path === '/') setUserType(0);
+            else {
+                const userInfo = (await getStoreData('/api/user/info', 'user-info')).response.user;
+                if (userInfo) setUserType(userInfo.user_type);
+            }
         })();
     }, [path])
 
