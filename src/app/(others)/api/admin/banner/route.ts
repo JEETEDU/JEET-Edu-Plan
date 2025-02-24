@@ -62,15 +62,3 @@ export async function PUT(req: NextRequest) {
         return return_500();
     }
 }
-
-export async function GET(req: NextRequest) {
-    const token: DecodedToken | NextResponse = check_admin_permission(req.cookies.get("token")?.value ?? '');
-    if (token instanceof NextResponse) return token;
-
-    return new Response(fs.readFileSync('uploads/banner/banner.png'), {
-        headers: {
-            'Content-Type': 'image/png',
-            'Content-Disposition': `inline; filename=${encodeURIComponent('banner.png')}`,
-        }
-    });
-}

@@ -116,7 +116,9 @@ export default function Page({isMobile}: { isMobile: boolean }) {
     });
 
     async function renderBanner() {
-        const res = await fetch("/api/admin/banner", {method: "GET"}).then(r => r.blob()).then(r => {
+        const res = await fetch("/api/banner", {
+            method: "GET"
+        }).then(r => r.blob()).then(r => {
             return r
         });
         const src = URL.createObjectURL(res)
