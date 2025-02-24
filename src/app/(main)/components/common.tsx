@@ -345,7 +345,14 @@ export function TodayQuestion({device}: { device: string }) {
 
     const register = async () => {
 
-        const body = {
+        const body: {
+            answer_lastday: string;
+            answer_school: string;
+            answer_academy: string;
+            answer_1?: string;
+            answer_2?: string;
+            answer_3?: string;
+        } = {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-expect-error
             answer_lastday: document.getElementById('y')!.value,
@@ -364,6 +371,14 @@ export function TodayQuestion({device}: { device: string }) {
                 body[`answer_${index + 1}`] = document.getElementById(key)!.value;
             }
         });
+
+        console.log(body);
+
+        if (Object.keys(body).reduce((acc, cur) => {
+            return (acc || !(cur.trim()));
+        }, false)) {
+            return;
+        }
 
         if (timeData.sleep > timeData.wakeup) timeData.sleep.setDate(timeData.sleep.getDate() - 1);
 
