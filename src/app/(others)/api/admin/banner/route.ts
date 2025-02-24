@@ -41,8 +41,11 @@ export async function PUT(req: NextRequest) {
         if (token instanceof NextResponse) return token;
 
         const data = await req.formData();
-        // @ts-ignore
+        // @ts-expect-error
         const file = data.get("file") as File;
+
+        console.log(file.name)
+
         const file_path = 'uploads/banner/banner.png';
 
         file.arrayBuffer().then((buffer) => {
