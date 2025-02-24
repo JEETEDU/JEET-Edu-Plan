@@ -1,8 +1,11 @@
 import {NextRequest, NextResponse} from "next/server";
-import {DecodedToken} from "@/app/(others)/api/(tools)/auth";
-import {return_500} from "@/app/(others)/api/(tools)/tools";
+import {DecodedToken, verifyToken} from "@/app/(others)/api/(tools)/auth";
+import {return_404, return_500, return_not_logged_in} from "@/app/(others)/api/(tools)/tools";
 import fs from "node:fs";
 import {check_admin_permission} from "@/app/(others)/api/admin/(tools)/tools";
+import {db} from "@/database";
+import * as schema from "@/database/schema";
+import {eq} from "drizzle-orm";
 
 /**
  * @swagger
@@ -41,10 +44,9 @@ export async function PUT(req: NextRequest) {
         if (token instanceof NextResponse) return token;
 
         const data = await req.formData();
-        // @ts-expect-error
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         const file = data.get("file") as File;
-
-        console.log(file.name)
 
         const file_path = 'uploads/banner/banner.png';
 
@@ -59,4 +61,16 @@ export async function PUT(req: NextRequest) {
         console.error(e);
         return return_500();
     }
+}
+
+export async function GET(req: NextRequest) {
+    const token: DecodedToken | NextResponse = check_admin_permission(req.cookies.get("token")?.value ?? '');
+    if (token instanceof NextResponse) return token;
+
+    return new Response(fs.readFileSync('uploads/banner/banner.png'), {
+        headers: {
+            'Content-Type': 'image/png',
+            'Content-Disposition': `inline; filename=${encodeURIComponent('banner.png')}`,
+        }
+    });
 }
