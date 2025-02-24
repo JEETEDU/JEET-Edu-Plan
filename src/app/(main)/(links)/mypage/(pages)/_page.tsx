@@ -8,7 +8,6 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import {Hr} from "@/app/(main)/(links)/home/(pages)/desktop";
 import Image from "next/image";
-import banner from "@/../uploads/banner/banner.png";
 
 export default function Page({isMobile}: { isMobile: boolean }) {
     const [error, setError] = useState<string>("");
@@ -105,10 +104,34 @@ export default function Page({isMobile}: { isMobile: boolean }) {
         }).then(r => r.json()).then(r => {
             if (r.success) {
                 setNewBanner(null)
-                router.refresh();
+                renderBanner().then();
             }
         })
     }
+
+    const [banner, setBanner] = useState<{ src: string; width: number; height: number }>({
+        src: "/",
+        width: 0,
+        height: 0
+    });
+
+    async function renderBanner() {
+        const res = await fetch("/api/admin/banner", {method: "GET"}).then(r => r.blob()).then(r => {
+            return r
+        });
+        const src = URL.createObjectURL(res)
+        await createImageBitmap(res).then((img) => {
+            setBanner({
+                src: src,
+                width: img.width,
+                height: img.height
+            })
+        })
+    }
+
+    useEffect(() => {
+        renderBanner().then();
+    }, []);
 
     return (
         <>

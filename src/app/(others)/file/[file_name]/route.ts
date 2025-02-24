@@ -43,7 +43,7 @@ export async function GET(req: NextRequest, { params }: { params: { file_name: s
     const decoded: DecodedToken | false = verifyToken(token);
     if (!decoded) return return_not_logged_in();
 
-    let file_id = (await params).file_name;
+    let file_id = (params).file_name;
 
     const file_path = 'uploads/files/' + file_id;
     const file_ext = file_id.split('.').pop();
