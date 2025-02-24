@@ -12,6 +12,32 @@ import ClassSetting from "@/app/(main)/(links)/mypage/(pages)/component/classSet
 import Excel from "@/app/(main)/components/excel";
 import Setting from "@/app/(main)/(links)/mypage/(pages)/component/setting";
 
+function Tabs({tabList, tab, setTab}: {
+    tabList: string[];
+    tab: number;
+    setTab: (tab: number) => void;
+}) {
+    return <div
+        className="grid text-lg font-bold gap-2 items-center h-fit grid-cols-4"
+        style={{gridTemplateColumns: `repeat(${tabList.length}, minmax(0, 1fr))`}}
+    >
+        {tabList.map((t, i) => {
+            return (
+                <button
+                    key={i}
+                    className={cn(
+                        "flex justify-center md:hover:bg-gray-300 rounded border-2",
+                        {"border-gray": (i === tab)}
+                    )}
+                    onClick={() => setTab(i)}
+                >
+                    {t}
+                </button>
+            )
+        })}
+    </div>
+}
+
 export function IsStudent({date, isMobile}: { date: Date; isMobile: boolean }) {
     const [editAnswer, setEditAnswer] = useState(false);
     const [error, setError] = useState("");
@@ -165,32 +191,14 @@ export function IsStudent({date, isMobile}: { date: Date; isMobile: boolean }) {
     }
 
     const [tab, setTab] = useState(0);
-    const tabList = {
-        "오늘의 질문": true,
-        "설정": true,
-    };
+    const tabList = [
+        "오늘의 질문",
+        "설정"
+    ];
 
     return (
         <div className="w-full h-full flex flex-col gap-4">
-            <div
-                className="grid text-xl font-bold gap-2 items-center h-fit grid-cols-4"
-                style={{gridTemplateColumns: `repeat(${Object.entries(tabList).filter(t => t[1]).length}, minmax(0, 1fr))`}}
-            >
-                {Object.entries(tabList).filter(t => t[1]).map((t, i) => {
-                    return (
-                        <button
-                            key={i}
-                            className={cn(
-                                "flex justify-center md:hover:bg-gray-300 p-1 rounded border-2",
-                                {"border-gray": (i === tab)}
-                            )}
-                            onClick={() => setTab(i)}
-                        >
-                            {t[0]}
-                        </button>
-                    )
-                })}
-            </div>
+            <Tabs tabList={tabList} tab={tab} setTab={setTab}/>
             {(tab === 0) && (
                 <>
                     <div className="flex items-center w-full justify-between">
@@ -313,31 +321,13 @@ export function IsStudent({date, isMobile}: { date: Date; isMobile: boolean }) {
 
 export function IsTeacher() {
     const [tab, setTab] = useState(0);
-    const tabList = {
-        "설정": true,
-    };
+    const tabList = [
+        "설정"
+    ]
 
     return (
         <div className="w-full h-full flex flex-col gap-4">
-            <div
-                className="grid text-xl font-bold gap-2 items-center h-fit grid-cols-4"
-                style={{gridTemplateColumns: `repeat(${Object.entries(tabList).filter(t => t[1]).length}, minmax(0, 1fr))`}}
-            >
-                {Object.entries(tabList).filter(t => t[1]).map((t, i) => {
-                    return (
-                        <button
-                            key={i}
-                            className={cn(
-                                "flex justify-center md:hover:bg-gray-300 p-1 rounded border-2",
-                                {"border-gray": (i === tab)}
-                            )}
-                            onClick={() => setTab(i)}
-                        >
-                            {t[0]}
-                        </button>
-                    )
-                })}
-            </div>
+            <Tabs tabList={tabList} tab={tab} setTab={setTab}/>
             {(tab === 0) && (
                 <Setting/>
             )}
@@ -456,14 +446,14 @@ export function IsAdmin({date}: { date: Date }) {
     const [focusOnSearch, setFocusOnSearch] = useState(false);
 
     const [tab, setTab] = useState(0);
-    const tabList = {
-        "오늘의 질문": true,
-        "유저 목록": true,
-        "신규 유저": true,
-        "반 관리": true,
-        "설정": true,
-        "Log List": true
-    };
+    const tabList = [
+        "오늘의 질문",
+        "유저 목록",
+        "신규 유저",
+        "반 관리",
+        "설정",
+        "Log List"
+    ];
 
     useEffect(() => {
         refreshUser();
@@ -526,25 +516,7 @@ export function IsAdmin({date}: { date: Date }) {
 
     return (
         <div className="w-full h-full flex flex-col gap-4">
-            <div
-                className="grid text-xl font-bold gap-2 items-center h-fit grid-cols-4"
-                style={{gridTemplateColumns: `repeat(${Object.entries(tabList).filter(t => t[1]).length}, minmax(0, 1fr))`}}
-            >
-                {Object.entries(tabList).filter(t => t[1]).map((t, i) => {
-                    return (
-                        <button
-                            key={i}
-                            className={cn(
-                                "flex justify-center md:hover:bg-gray-300 p-1 rounded border-2",
-                                {"border-gray": (i === tab)}
-                            )}
-                            onClick={() => setTab(i)}
-                        >
-                            {t[0]}
-                        </button>
-                    )
-                })}
-            </div>
+            <Tabs tabList={tabList} tab={tab} setTab={setTab}/>
             {(tab === 0) && (
                 <>
                     <div className="flex items-center w-full justify-between">

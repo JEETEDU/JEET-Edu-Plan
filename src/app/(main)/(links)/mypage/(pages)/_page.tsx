@@ -54,6 +54,7 @@ export default function Page({isMobile}: { isMobile: boolean }) {
                     }
                 }
             }));
+            if (window) sessionStorage.clear();
             router.push('/');
         } else {
             setError(res.message);
@@ -334,7 +335,7 @@ export default function Page({isMobile}: { isMobile: boolean }) {
                     </div>
                 )}
                 <Hr/>
-                <div className="flex lg:flex-row flex-col w-full p-6 h-full gap-6">
+                <div className="flex lg:flex-row flex-col w-full p-3 h-full gap-3">
                     {(!isMobile && showCalendar) && (
                         <div className="flex flex-row lg:flex-col gap-2">
                             <div className="grow p-2 flex items-center justify-center relative hover:p-0">
