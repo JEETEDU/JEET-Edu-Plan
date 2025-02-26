@@ -54,10 +54,6 @@ export default function Desktop() {
 
     const [articles, setArticles] = useState<IArticle[]>([]);
 
-    useEffect(() => {
-        console.log(articles)
-    }, [articles.length]);
-
     interface IClass {
         id: number;
         name: string;
@@ -113,6 +109,17 @@ export default function Desktop() {
     }, [selectedClass]);
 
     const scrollbars = useRef<Scrollbars>(null);
+
+    useEffect(() => {
+        if (articles.length > 0) {
+            const scrollHeight = scrollbars.current?.getScrollHeight();
+            const clientHeight = scrollbars.current?.getClientHeight();
+
+            if (scrollHeight === clientHeight) {
+                setPage(p => p + 1);
+            }
+        }
+    }, [articles.length]);
 
     return (
         <>

@@ -78,6 +78,17 @@ export default function Todo({isMobile = false}: { isMobile?: boolean; }) {
 
     const scrollbars = useRef<Scrollbars>(null);
 
+    useEffect(() => {
+        if (todos.length > 0) {
+            const scrollHeight = scrollbars.current?.getScrollHeight();
+            const clientHeight = scrollbars.current?.getClientHeight();
+
+            if (scrollHeight === clientHeight) {
+                setPage(p => p + 1);
+            }
+        }
+    }, [todos.length]);
+
     const [newTodo, setNewTodo] = useState<INewTodo | null>(null);
 
     return (

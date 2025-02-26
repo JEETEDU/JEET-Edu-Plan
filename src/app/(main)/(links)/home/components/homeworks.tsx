@@ -352,6 +352,17 @@ export default function Homeworks({isMobile = false, setHeadAction = () => void 
 
     const scrollbars = useRef<Scrollbars>(null);
 
+    useEffect(() => {
+        if (homeworks.length > 0) {
+            const scrollHeight = scrollbars.current?.getScrollHeight();
+            const clientHeight = scrollbars.current?.getClientHeight();
+
+            if (scrollHeight === clientHeight) {
+                setPage(p => p + 1);
+            }
+        }
+    }, [homeworks.length]);
+
     const router = useRouter();
 
     return (

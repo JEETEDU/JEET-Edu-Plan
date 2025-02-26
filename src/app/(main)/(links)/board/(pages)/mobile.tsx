@@ -66,6 +66,17 @@ export default function Mobile() {
 
     const scrollbars = useRef<Scrollbars>(null);
 
+    useEffect(() => {
+        if (articles.length > 0) {
+            const scrollHeight = scrollbars.current?.getScrollHeight();
+            const clientHeight = scrollbars.current?.getClientHeight();
+
+            if (scrollHeight === clientHeight) {
+                setPage(p => p + 1);
+            }
+        }
+    }, [articles.length]);
+
     return (
         <div className="flex flex-col h-full bg-gray-100 gap-2">
             <Select
