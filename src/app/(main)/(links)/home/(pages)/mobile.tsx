@@ -49,6 +49,17 @@ export default function Mobile() {
 
     const scrollbars = useRef<Scrollbars>(null);
 
+    useEffect(() => {
+        if (notices.length > 0) {
+            const scrollHeight = scrollbars.current?.getScrollHeight();
+            const clientHeight = scrollbars.current?.getClientHeight();
+
+            if (scrollHeight === clientHeight) {
+                setPage(p => p + 1);
+            }
+        }
+    }, [notices.length]);
+
     return (
         <div className="flex flex-col h-full w-full">
             <div className={cn("h-fit w-full", (userType === 1) ? "grid grid-cols-3" : "flex justify-center bg-white")}>

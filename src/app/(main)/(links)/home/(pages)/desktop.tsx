@@ -152,6 +152,17 @@ export default function Desktop() {
 
     const scrollbars = useRef<Scrollbars>(null);
 
+    useEffect(() => {
+        if (notices.length > 0) {
+            const scrollHeight = scrollbars.current?.getScrollHeight();
+            const clientHeight = scrollbars.current?.getClientHeight();
+
+            if (scrollHeight === clientHeight) {
+                setPage(p => p + 1);
+            }
+        }
+    }, [notices.length]);
+
     return (
         <>
             <div className="h-full flex flex-col space-y-4 pb-4">
