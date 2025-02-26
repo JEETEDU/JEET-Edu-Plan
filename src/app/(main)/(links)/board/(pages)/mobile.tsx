@@ -1,16 +1,12 @@
 "use client";
 
 import React, {useEffect, useRef, useState} from "react";
-import {cn, GET, getStoreData} from "@/app/(main)/components/functions";
+import {GET} from "@/app/(main)/components/functions";
 import Link from "next/link";
 import {IArticle, loadArticle} from "@/app/(main)/(links)/board/component";
 import Scrollbars from "react-custom-scrollbars-2";
 import {Category, Subject} from "@/app/(main)/(links)/home/(pages)/desktop";
 import Select from "react-select";
-
-// 더 할 작업
-// 1. 공지사항은 종류에 따라 색으로 구분, 기한 표시 등등
-// 3. 디자인 좀 수정해야됨...(그림자 빼기 등)
 
 export default function Mobile() {
     const [articles, setArticles] = useState<IArticle[]>([]);
@@ -117,13 +113,8 @@ export default function Mobile() {
                                     <div className="font-semibold text-gray-800 text-lg whitespace-nowrap truncate">
                                         {article.title}
                                     </div>
-                                    <div className="flex flex-col items-end">
-                                        <div className="text-sm text-gray-500 whitespace-nowrap">
-                                            {article.update_time.split(' ')[0]}
-                                        </div>
-                                        <div className="text-sm text-gray-500 whitespace-nowrap">
-                                            {article.update_time.split(' ')[1]}
-                                        </div>
+                                    <div className="text-sm text-gray-500 whitespace-nowrap">
+                                        {(new Date(article.update_time)).toLocaleString()}
                                     </div>
                                 </div>
                                 <hr className="my-2 border-gray-300"/>
