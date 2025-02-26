@@ -15,6 +15,17 @@ export default function BookList({isMobile = false, setHeadAction = () => void n
 
     const scrollbars = useRef<Scrollbars>(null);
 
+    useEffect(() => {
+        if (books.length > 0) {
+            const scrollHeight = scrollbars.current?.getScrollHeight();
+            const clientHeight = scrollbars.current?.getClientHeight();
+
+            if (scrollHeight === clientHeight) {
+                setPage(p => p + 1);
+            }
+        }
+    }, [books.length]);
+
     function reload({append = false, changeHead = true}: { append?: boolean; changeHead?: boolean }) {
         (async () => {
             const res: { success: boolean; books: IBook[] } = await GET(`/api/user/book?title=${search}&offset=${(page - 1) * 10}`);
