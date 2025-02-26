@@ -1,7 +1,7 @@
-import type { NextRequest } from 'next/server';
-import { db } from '@/database';
+import type {NextRequest} from 'next/server';
+import {db} from '@/database';
 import * as schema from '@/database/schema';
-import { NextResponse } from 'next/server';
+import {NextResponse} from 'next/server';
 import {and, asc, count, desc, eq, like, or, SQL, sql} from 'drizzle-orm';
 import {
     return_400,
@@ -157,17 +157,16 @@ export async function POST(req: NextRequest) {
             const files_path: SavedFileList = await save_files(tx, files);
 
             const [article_id] = await tx.insert(schema.boards).values({
-                    class_id: class_id,
-                    user_id: user_id,
-                    title: title,
-                    content: content,
-                    category: category,
-                    notice: is_notice,
-                    subject_id: subject_id === 0 ? null : subject_id,
-                    comment_count: 0,
-                    attach_files: files_path.length === 0 ? null : files_path
-                }
-            ).$returningId();
+                class_id: class_id,
+                user_id: user_id,
+                title: title,
+                content: content,
+                category: category,
+                notice: is_notice,
+                subject_id: subject_id === 0 ? null : subject_id,
+                comment_count: 0,
+                attach_files: files_path.length === 0 ? null : files_path
+            }).$returningId();
 
             if (category === ArticleCategory.QUESTION && subject_id) {
                 const [subject_] =
@@ -337,7 +336,7 @@ export async function PATCH(req: NextRequest) {
                         ))
                 if (!subject_) return return_400("Subject not found");
                 update_data['subject_id'] = subject_id;
-                if(category === ArticleCategory.QUESTION && subject_.teacher_id) {
+                if (category === ArticleCategory.QUESTION && subject_.teacher_id) {
                     await register_alert(tx, subject_.teacher_id, `새 질문이 등록되었습니다.`, title, AlertType.NORMAL, article_id);
                 }
             }
@@ -348,8 +347,7 @@ export async function PATCH(req: NextRequest) {
                 if (user_type < UserType.TEACHER) return return_permission_denied();
                 update_data['notice'] = 1;
                 await register_alert_for_class_students(tx, article_.class_id, `새 공지사항이 등록되었습니다.`, title, AlertType.NOTICE, article_id);
-            }
-            else if (is_notice === 0 && article_.notice === 1) {
+            } else if (is_notice === 0 && article_.notice === 1) {
                 if (user_type < UserType.TEACHER) return return_permission_denied();
                 update_data['notice'] = 0;
                 await delete_alerts_by_article(tx, article_id, AlertType.NOTICE);
@@ -364,7 +362,7 @@ export async function PATCH(req: NextRequest) {
                 throw e;
             }
 
-            return NextResponse.json({ success: true });
+            return NextResponse.json({success: true});
         });
     } catch (e) {
         console.error(e);
@@ -436,7 +434,7 @@ export async function DELETE(req: NextRequest) {
             await tx.delete(schema.boards)
                 .where(eq(schema.boards.id, article_id))
 
-            return NextResponse.json({ success: true });
+            return NextResponse.json({success: true});
         });
     } catch (e) {
         console.error(e);
@@ -644,7 +642,8 @@ export async function GET(req: NextRequest) {
             title: schema.boards.title,
             create_time: schema.boards.create_time,
             update_time: schema.boards.update_time,
-            attach_files_exist: sql`IF(attach_files IS NULL, 0, 1)`.as('attach_files_exist'),
+            attach_files_exist: sql`IF
+            (attach_files IS NULL, 0, 1)`.as('attach_files_exist'),
             category: schema.boards.category,
             notice: schema.boards.notice,
             due_date: schema.boards.due_date,
@@ -680,8 +679,7 @@ export async function GET(req: NextRequest) {
                     like(schema.boards.title, `%${search_string}%`),
                     like(schema.boards.content, `%${search_string}%`)
                 ));
-            }
-            else if (search_by === 'author') where_clause = and(where_clause, like(schema.users.name, `%${search_string}%`));
+            } else if (search_by === 'author') where_clause = and(where_clause, like(schema.users.name, `%${search_string}%`));
             else return return_400("Invalid search_by");
         }
         query = query.where(where_clause);
@@ -708,7 +706,7 @@ export async function GET(req: NextRequest) {
             success: true,
             // @ts-ignore
             articles: articles?.map((article) => {
-                console.debug(typeof article.create_time)
+                // console.debug(typeof article.create_time)
                 return {
                     id: article.id,
                     title: article.title,

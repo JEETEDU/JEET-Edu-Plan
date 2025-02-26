@@ -140,7 +140,7 @@ export default function BookList({isMobile = false, setHeadAction = () => void n
                                         {book.publisher} | {book.author}
                                     </div>
                                 </div>
-                                <div className="flex flex-col justify-end items-end whitespace-nowrap">
+                                <div className="flex flex-col justify-end items-end whitespace-nowrap text-gray-500 text-sm">
                                     <div>
                                         {(new Date(book.update_time)).toLocaleDateString()}
                                     </div>

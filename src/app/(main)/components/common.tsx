@@ -372,8 +372,6 @@ export function TodayQuestion({device}: { device: string }) {
             }
         });
 
-        console.log(body);
-
         if (Object.keys(body).reduce((acc, cur) => {
             return (acc || !(cur.trim()));
         }, false)) {
