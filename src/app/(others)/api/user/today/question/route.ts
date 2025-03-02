@@ -113,71 +113,41 @@ export async function GET(req: NextRequest) {
         }
         else date = todayString();
 
-        const queryBuilder = new QueryBuilder();
-        const query =
-            queryBuilder.select({
+        const answer =
+            await db.select({
                     answers: schema.todayAnswers,
                     questions: schema.todayQuestions
                 })
-                .from(schema.todayQuestions)
+                .from(schema.todayAnswers)
                 .leftJoin(
-                    schema.todayAnswers,
-                    and(
-                        eq(schema.todayAnswers.date, schema.todayQuestions.date),
-                        eq(schema.todayAnswers.user_id, user_id)
-                    )
+                    schema.todayQuestions,
+                    eq(schema.todayAnswers.date, schema.todayQuestions.date)
                 )
                 .where(
-                    // @ts-ignore
-                    eq(schema.todayQuestions.date, date)
-                )
-                .union(
-                    // @ts-ignore
-                    queryBuilder.select({
-                        answers: schema.todayAnswers,
-                        questions: schema.todayQuestions
-                    })
-                    .from(schema.todayQuestions)
-                    .rightJoin(
-                        schema.todayAnswers,
-                        and(
-                            eq(schema.todayAnswers.date, schema.todayQuestions.date),
-                            eq(schema.todayAnswers.user_id, user_id)
-                        )
-                    )
-                    .where(
+                    and(
                         // @ts-ignore
-                        eq(schema.todayAnswers.date, date)
+                        eq(schema.todayAnswers.date, date),
+                        eq(schema.todayAnswers.user_id, user_id)
                     )
-                ).$dynamic();
-
-        const [answers] = await db.execute(query);
-
-        // @ts-ignore
-        if (answers.length == 0) {
-            return return_400("No data found");
-        }
+                );
+        if (!answer) return return_400("No data found");
+        if (answer.length === 0) return return_400("No data found");
 
         return NextResponse.json({
             success: true,
-            // @ts-ignore
-            answers: answers.map((answer: any) => {
-                return {
-                    answers: {
-                        answer_1: answer.answer_1,
-                        answer_2: answer.answer_2,
-                        answer_3: answer.answer_3,
-                        answer_lastday: answer.answer_lastday,
-                        answer_school: answer.answer_school,
-                        answer_academy: answer.answer_academy
-                    },
-                    questions: {
-                        question_1: answer.question_1,
-                        question_2: answer.question_2,
-                        question_3: answer.question_3
-                    }
-                };
-            })
+            answers: {
+                answer_1: answer[0].answers?.answer_1,
+                answer_2: answer[0].answers?.answer_2,
+                answer_3: answer[0].answers?.answer_3,
+                answer_lastday: answer[0].answers?.answer_lastday,
+                answer_school: answer[0].answers?.answer_school,
+                answer_academy: answer[0].answers?.answer_academy
+            },
+            questions: {
+                question_1: answer[0].questions?.question_1 ?? '',
+                question_2: answer[0].questions?.question_2 ?? '',
+                question_3: answer[0].questions?.question_3 ?? ''
+            }
         }, {status: 200});
     } catch (e: any) {
         console.error(e);
@@ -307,15 +277,9 @@ export async function PUT(req: NextRequest) {
             const answer_school = data.answer_school ?? '';
             const answer_academy = data.answer_academy ?? '';
 
-            if (question_1 && !answer_1) {
-                return return_400('answer_1 is required');
-            }
-            if (question_2 && !answer_2) {
-                return return_400('answer_2 is required');
-            }
-            if (question_3 && !answer_3) {
-                return return_400('answer_3 is required');
-            }
+            if (question_1 && !answer_1) return return_400('answer_1 is required');
+            if (question_2 && !answer_2) return return_400('answer_2 is required');
+            if (question_3 && !answer_3) return return_400('answer_3 is required');
 
             const [todayAnswers] =
                 await tx.select({
@@ -324,7 +288,8 @@ export async function PUT(req: NextRequest) {
                 .from(schema.todayAnswers)
                 .where(and(
                     eq(schema.todayAnswers.user_id, user_id),
-                    eq(schema.todayAnswers.date, sql`CURDATE()`)
+                    // @ts-ignore
+                    eq(schema.todayAnswers.date, todayString())
                 ));
             if(todayAnswers.count != 0) {
                 await tx.update(schema.todayAnswers)
@@ -338,7 +303,8 @@ export async function PUT(req: NextRequest) {
                     })
                     .where(and(
                         eq(schema.todayAnswers.user_id, user_id),
-                        eq(schema.todayAnswers.date, sql`CURDATE()`)
+                        // @ts-ignore
+                        eq(schema.todayAnswers.date, todayString())
                     ));
                 return NextResponse.json({
                     success: true,
@@ -348,7 +314,8 @@ export async function PUT(req: NextRequest) {
 
             await tx.insert(schema.todayAnswers)
                 .values({
-                    date: questions?.date ?? sql`CURDATE()`,
+                    // @ts-ignore
+                    date: todayString(),
                     user_id: user_id,
                     answer_1: answer_1,
                     answer_2: answer_2,

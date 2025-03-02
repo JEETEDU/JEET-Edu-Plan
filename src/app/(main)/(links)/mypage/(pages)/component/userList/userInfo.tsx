@@ -41,19 +41,21 @@ export default function UserInfo(
                 <div className="text-2xl text-gray-800 font-semibold">
                     유저 정보
                 </div>
-                <div
-                    className="px-3 py-1 bg-blue-500 text-white text-md font-bold rounded md:hover:bg-blue-600 w-fit"
-                    onClick={() => {
-                        if (editInfo) {
-                            setEditInfo(false);
-                            updateUserInfo();
-                        } else {
-                            setEditInfo(true);
-                        }
-                    }}
-                >
-                    {editInfo ? "저장하기" : "편집하기"}
-                </div>
+                {(userInfo.user_type !== 3) && (
+                    <div
+                        className="px-3 py-1 bg-blue-500 text-white text-md font-bold rounded md:hover:bg-blue-600 w-fit"
+                        onClick={() => {
+                            if (editInfo) {
+                                setEditInfo(false);
+                                updateUserInfo();
+                            } else {
+                                setEditInfo(true);
+                            }
+                        }}
+                    >
+                        {editInfo ? "저장하기" : "편집하기"}
+                    </div>
+                )}
             </div>
             <div className="flex flex-col space-y-4">
                 <div className="grid grid-cols-3 gap-4">

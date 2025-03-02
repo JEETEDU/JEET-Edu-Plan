@@ -335,8 +335,8 @@ export function TodayQuestion({device}: { device: string }) {
                     }
 
                     if (questions.response.success) {
-                        setQList(questions.response.answers[0].questions);
-                        setAnswered((questions.response.answers[0].answers.answer_1 !== null));
+                        setQList(questions.response.questions);
+                        setAnswered((questions.response.answers.answer_1 !== null));
                     }
                 }
             }
@@ -371,8 +371,6 @@ export function TodayQuestion({device}: { device: string }) {
                 body[`answer_${index + 1}`] = document.getElementById(key)!.value;
             }
         });
-
-        console.log(body);
 
         if (Object.keys(body).reduce((acc, cur) => {
             return (acc || !(cur.trim()));
