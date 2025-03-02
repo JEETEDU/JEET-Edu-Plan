@@ -76,15 +76,17 @@ export function IsStudent({date, isMobile}: { date: Date; isMobile: boolean }) {
 
             if (questions.response.success) {
                 //----------------------------------------------
-                const _q: string[] = Object.values(questions.response.answers[0].questions);
+                const _q: string[] = Object.values(questions.response.questions);
                 const qArr = _q.concat("오늘의 학원 과제는?", "어젯밤 공부한 내용은?", "오늘의 학교 과제는?");
-                const aArr: string[] = Object.values(questions.response.answers[0].answers);
+                const aArr: string[] = Object.values(questions.response.answers);
                 const qaArr: [string, string][] = qArr.map((q, i) => {
                     return [q || "", aArr[i]];
                 });
                 //----------------------------------------------
                 setAList(qaArr);
-                setAnswered(Boolean(questions.response.answers[0].answers.answer_1 !== null));
+                setAnswered(Boolean(questions.response.answers.answer_1 !== null));
+            } else {
+                setAnswered(false);
             }
 
             let times: {
@@ -138,9 +140,9 @@ export function IsStudent({date, isMobile}: { date: Date; isMobile: boolean }) {
             const questions = await getStoreData(`/api/user/today/question?${params}`, `question-list-${params}`, true);
 
             //---
-            const _q: string[] = Object.values(questions.response.answers[0].questions);
+            const _q: string[] = Object.values(questions.response.questions);
             const qArr: string[] = _q.concat("오늘의 학원 과제는?", "어젯밤 공부한 내용은?", "오늘의 학교 과제는?");
-            const aArr: string[] = Object.values(questions.response.answers[0].answers);
+            const aArr: string[] = Object.values(questions.response.answers);
             const qaArr: [string, string][] = qArr.map((q, i) => {
                 return [q || "", aArr[i]];
             });

@@ -49,10 +49,12 @@ export default function UserDetail({uid, date, refreshAction}: { uid: number, da
                 setUserInfo={setUserInfo}
                 refresh={refreshAction}
             />
-            <ManageUser
-                uid={uid}
-                userType={userInfo.user_type || 1}
-            />
+            {(userInfo.user_type !== 3) && (
+                <ManageUser
+                    uid={uid}
+                    userType={userInfo.user_type || 1}
+                />
+            )}
             <Hr/>
             <UserClass
                 uid={uid}
