@@ -73,19 +73,17 @@ export default function ManageUser(
                         비밀번호 리셋
                     </button>
                 </div>
-                {(userType !== 3) && (
-                    <div className="flex items-center w-full justify-end gap-4">
-                        <div className="flex items-center text-lg text-green-700 font-bold">
-                            {message[1]}
-                        </div>
-                        <button
-                            className="px-3 py-1 bg-red-500 text-white text-md font-bold rounded md:hover:bg-red-600"
-                            onClick={deleteUser}
-                        >
-                            유저 삭제
-                        </button>
+                <div className="flex items-center w-full justify-end gap-4">
+                    <div className="flex items-center text-lg text-green-700 font-bold">
+                        {message[1]}
                     </div>
-                )}
+                    <button
+                        className="px-3 py-1 bg-red-500 text-white text-md font-bold rounded md:hover:bg-red-600"
+                        onClick={deleteUser}
+                    >
+                        유저 삭제
+                    </button>
+                </div>
             </div>
         </div>
     );
