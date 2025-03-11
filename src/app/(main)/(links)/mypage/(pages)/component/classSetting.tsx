@@ -479,10 +479,10 @@ export default function ClassSetting() {
                                         <div className="flex gap-2 flex-1 justify-end">
                                             <div className="flex flex-col justify-center">
                                                 <div className="flex items-center justify-end">
-                                                    {String(s.first_year)} {s.joined_term as string}
+                                                    {s.first_year || ""} {s.joined_term || ""}
                                                 </div>
                                                 <div className="flex items-center justify-end">
-                                                    {s.school as string}
+                                                    {s.school || ""}
                                                 </div>
                                             </div>
                                             <button
