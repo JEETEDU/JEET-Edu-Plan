@@ -150,11 +150,11 @@ export default function Chatting({id, reloadArticlesAction = null}: { id: number
                 <div className="flex items-start flex-col gap-2">
                     <div className="flex w-full justify-between items-center">
                         <div className="flex gap-2 w-fit items-center">
-                            {(selectedArticle.is_notice === 1) && (
-                                <div className="flex flex-col border-2 border-blue-500 p-1 rounded justify-center items-end text-black">
-                                    공지
-                                </div>
-                            )}
+                            {/*{(selectedArticle.is_notice === 1) && (*/}
+                            {/*    <div className="flex flex-col border-2 border-blue-500 p-1 rounded justify-center items-end text-black">*/}
+                            {/*        공지*/}
+                            {/*    </div>*/}
+                            {/*)}*/}
                             <Category category={selectedArticle.category}/>
                             <Subject subject={selectedArticle.subject.name || ""}/>
                         </div>
