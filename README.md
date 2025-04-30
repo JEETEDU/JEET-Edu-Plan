@@ -1,6 +1,6 @@
 # for students' MIRACLE-MORNING
 <div><img src="https://wakapi.hegelty.me/api/badge/hegelty/interval:any/project:miracle-morning"/></div>
-
+ERD: https://www.erdcloud.com/d/h9okifvs69m9pTox5
 ---
 ## Kill Port (in Window)
 ```bash
